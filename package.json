@@ -1,0 +1,49 @@
+{
+  "name": "mms-expressions",
+  "version": "1.0.0",
+  "description": "Evaluation of MMS expressions",
+  "main": "dist/cjs/mmsExpressions.js",
+  "module": "dist/mjs/mmsExpressions.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/mmsExpressions.js",
+      "require": "./dist/cjs/mmsExpressions.js"
+    }
+  },
+  "types": "./dist/mmsExpressions.d.ts",
+  "files": [
+    "./dist/*"
+  ],
+  "engines": {
+    "node": ">=14.16"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run make-parser && npm run transpile",
+    "clean": "gulp clean",
+    "make-parser": "java -jar ./antlr4/antlr-4.13.0-complete.jar -Dlanguage=TypeScript -visitor src/grammar/MmsExpression.g4 -o ./generated/parser",
+    "transpile": "gulp build",
+    "test": "jest --coverage"
+  },
+  "keywords": [
+    "MMS",
+    "Expressions",
+    "BIM",
+    "Merkmalservice",
+    "Formula"
+  ],
+  "dependencies": {
+    "antlr4": "^4.13.0",
+    "decimal.js": "^10.4.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.2",
+    "del": "^7.0.0",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "gulp-uglify": "^3.0.2",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.1.3"
+  }
+}
