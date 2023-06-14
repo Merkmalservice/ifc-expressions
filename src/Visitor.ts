@@ -4,7 +4,7 @@ import {
     ExprContext,
     NumAddSubContext,
     NumExprContext, NumLitContext,
-    NumLiteralContext, NumMulDivContext,
+    NumLiteralContext, NumMulDivContext, NumParensContext,
     StringLiteralContext
 } from "../generated/parser/MmsExpressionParser";
 import {Expr} from "./expression/Expr";
@@ -15,6 +15,7 @@ import {MinusExpr} from "./expression/numeric/MinusExpr";
 import {ParserRuleContext} from "antlr4";
 import {MultiplyExpr} from "./expression/numeric/MultiplyExpr";
 import {DivideExpr} from "./expression/numeric/DivideExpr";
+import {NumParenthesisExpr} from "./expression/numeric/NumParenthesisExpr";
 
 export class Visitor extends MmsExpressionVisitor<Expr<any>>{
 
@@ -59,6 +60,10 @@ export class Visitor extends MmsExpressionVisitor<Expr<any>>{
         }
     }
 
+
+    visitNumParens: (ctx: NumParensContext) => Expr<any> = ctx => {
+        return new NumParenthesisExpr(this.visit(ctx.getChild(1)));
+    };
 
     visitExpr: (ctx: ExprContext) => Expr<any> = ctx => {
         return this.visit(ctx.getChild(0));

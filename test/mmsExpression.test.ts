@@ -11,10 +11,22 @@ describe.each([
     ["1/5",new Decimal("0.2")],
     ["2*2+1",new Decimal("5")],
     ["1+2*2",new Decimal("5")],
+    ["(1+2)*2",new Decimal("6")],
+    ["(1+(2)*2)",new Decimal("5")],
+
 ])
 ("mmsExpression", (input: string, result:any) => {
     it(`evaluate("${input}") = ${result}`, () => {
         const result = MmsExpression.evaluate(input);
         expect(result).toStrictEqual(result);
     });
+})
+
+describe("mmsExpression", () => {
+    it(".evaluate() throws SyntaxErrorException", () => {
+       expect(() => MmsExpression.evaluate("1+")).toThrow();
+    })
+    it(".parse() does not throw SyntaxErrorException", () => {
+        expect(() => MmsExpression.parse("1+")).not.toThrow();
+    })
 })
