@@ -30,15 +30,17 @@ stringExpr :
 
 stringLiteral : STRING ;
 
-objectReference : THIS | '${' IDENTIFIER '}' ;
+objectReference :
+    '$' relRef=( PROP | ELEM)           # relativeRef
+    | '$' nameOrGuid=BRACKETED_STRING              # nameOrGuidRef
 
 attributeRef :  objectReference '.' attributeChain  ;
 
-attributeChain : IDENTIFIER '.' attributeChain | IDENTIFIER;
+attributeChain : name=(IDENTIFIER|BRACKETED_STRING) '.' attributeChain | name=(IDENTIFIER|BRACKETED_STRING);
 
 numValueRef : attributeRef ;
 
-functionCall : IDENTIFIER '(' exprList ')' ;
+functionCall : name=IDENTIFIER '(' exprList ')' ;
 
 exprList : expr | expr ',' exprList ;
 
@@ -53,8 +55,10 @@ arrayElementList : expr | expr ',' arrayElementList ;
 
 INT     : [0-9]+ ;
 FLOAT  : [0-9]+ '.' [0-9]+;
+PROP : 'prop' | 'PROP' ;
+ELEM : 'elem' | 'ELEM' ;
 IDENTIFIER : [a-zA-Z0-9]+ ;
-THIS : '$this' | '$THIS' ;
 WS : [ \t]+ -> skip ;
 NEWLINE : [\r\n]+ -> skip;
 STRING : '"' .*? '"' ;
+BRACKETED_STRING: '{' .*? '}' ;
