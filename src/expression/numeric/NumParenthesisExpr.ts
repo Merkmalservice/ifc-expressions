@@ -1,15 +1,16 @@
 import {Expr1} from "../Expr1";
-import Decimal from "decimal.js";
 import {Expr} from "../Expr";
+import {MmsExpressionContext} from "../../context/MmsExpressionContext";
+import {NumericValue} from "../../context/value/NumericValue";
 
-export class NumParenthesisExpr extends Expr1<Expr<Decimal>, Decimal> {
+export class NumParenthesisExpr extends Expr1<Expr<NumericValue>, NumericValue> {
 
-    constructor(expression: Expr<Decimal>) {
+    constructor(expression: Expr<NumericValue>) {
         super(expression);
     }
 
-    evaluate(): Decimal {
-        return this.value.evaluate();
+    evaluate(ctx: MmsExpressionContext): NumericValue {
+        return this.value.evaluate(ctx);
     }
 
 }

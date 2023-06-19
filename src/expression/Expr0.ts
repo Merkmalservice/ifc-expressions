@@ -1,11 +1,9 @@
 import {Expr} from "./Expr";
 import {MmsExpressionContext} from "../context/MmsExpressionContext";
 
-export abstract class Expr1<V, E> implements Expr<E>{
-    readonly value: V;
+export abstract class Expr0<E> implements Expr<E>{
 
-    protected constructor(value: V) {
-        this.value = value;
+    protected constructor() {
     }
 
     abstract evaluate(ctx: MmsExpressionContext): E;

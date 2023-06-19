@@ -13,8 +13,8 @@ numExpr:
     | numExpr op=('+'|'-') numExpr    # numAddSub
     | numLiteral                      # numLit
     | '(' numExpr ')'                 # numParens
-    | numFunctionCall                 # numFunCall
-    | numValueRef                     # numValRef
+    | functionCall                 # numFunCall
+    | attributeRef                    # numAttributeRef
     ;
 
 numLiteral:
@@ -25,28 +25,30 @@ numLiteral:
 stringExpr :
     | stringLiteral
     | stringExpr '+' stringExpr
-    | stringFunctionCall
+    | functionCall
+    | attributeRef
     ;
 
-stringLiteral : STRING ;
+stringLiteral : QUOTED_STRING ;
 
-objectReference :
-    '$' relRef=( PROP | ELEM)           # relativeRef
-    | '$' nameOrGuid=BRACKETED_STRING              # nameOrGuidRef
+objectRef : PROP | ELEM ;
 
-attributeRef :  objectReference '.' attributeChain  ;
+attributeRef :  objectRef nestedObjectChain ;
 
-attributeChain : name=(IDENTIFIER|BRACKETED_STRING) '.' attributeChain | name=(IDENTIFIER|BRACKETED_STRING);
+nestedObjectChain :
+    '.' namedRef nestedObjectChain              #nestedObjectChainInner
+    | '@' name=RESERVED_ATTRIBUTE_NAME          #nestedObjectChainEnd
+    ;
 
-numValueRef : attributeRef ;
+namedRef:
+    name=RESERVED_RELATION_NAME
+    | name=BRACKETED_STRING
+    | name=IDENTIFIER
+    ;
 
 functionCall : name=IDENTIFIER '(' exprList ')' ;
 
 exprList : expr | expr ',' exprList ;
-
-numFunctionCall: functionCall ;
-
-stringFunctionCall: functionCall ;
 
 array : '[' arrayElementList ']' ;
 
@@ -57,8 +59,10 @@ INT     : [0-9]+ ;
 FLOAT  : [0-9]+ '.' [0-9]+;
 PROP : 'prop' | 'PROP' ;
 ELEM : 'elem' | 'ELEM' ;
-IDENTIFIER : [a-zA-Z0-9]+ ;
+RESERVED_ATTRIBUTE_NAME : 'value'|'guid'|'name'|'description'|'ifcClass' ;
+RESERVED_RELATION_NAME: 'type' | 'pset' ;
+QUOTED_STRING : '"' .*? '"' ;
+BRACKETED_STRING: '{' .+? '}' ;
+IDENTIFIER : [a-zA-Z0-9_\-$&]+ ;
 WS : [ \t]+ -> skip ;
 NEWLINE : [\r\n]+ -> skip;
-STRING : '"' .*? '"' ;
-BRACKETED_STRING: '{' .*? '}' ;

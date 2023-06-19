@@ -27,3 +27,15 @@ MAP($this.value,
 
 Frage: wie die typinformation vom client in die / aus der expression übertragen. Typed value wäre eine Möglichkeit.
 
+$PROP@value // 1.5, "some text", [1.5, 1.2], [[1,2],[3,4]]
+$PROP // (shorthand) 1.5, "some text", [1.5, 1.2], [[1,2],[3,4]]
+$PROP@name // "breite in mm"
+$ELEM@name // "vierte wand von links"
+$ELEM@guid // "3245-34-2345asdwersdfhasd"
+$ELEM.{breite in mm}@value
+$ELEM.{1234-afed-43334-facde}@value
+$ELEM.{breite in mm}@name
+$PROP.elem@name //"vierte wand von links"
+$PROP.pset@name //"STRABAG"
+
+
