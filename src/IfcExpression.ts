@@ -17,6 +17,12 @@ import { BooleanValue } from "./value/BooleanValue";
 import { LogicalValue } from "./value/LogicalValue";
 import { LiteralValue } from "./value/LiteralValue";
 import { ReferenceValue } from "./value/ReferenceValue";
+import { IfcPropertySetAccessor } from "./context/IfcPropertySetAccessor";
+import { IfcPropertyAccessor } from "./context/IfcPropertyAccessor";
+import { IfcRootObjectAccessor } from "./context/IfcRootObjectAccessor";
+import { IfcTypeObjectAccessor } from "./context/IfcTypeObjectAccessor";
+import { NamedObjectAccessor } from "./context/NamedObjectAccessor";
+import { ObjectAccessor } from "./context/ObjectAccessor";
 import { IfcExpressionEvaluationException } from "./expression/IfcExpressionEvaluationException";
 import IfcExpressionVisitor from "../generated/parser/IfcExpressionVisitor";
 import type { LiteralValueAnyArity } from "./value/LiteralValueAnyArity";
@@ -31,11 +37,18 @@ export {
   NumericValue,
   LiteralValue,
   ReferenceValue,
+  IfcPropertySetAccessor,
+  IfcPropertyAccessor,
+  IfcRootObjectAccessor,
+  IfcTypeObjectAccessor,
+  NamedObjectAccessor,
+  ObjectAccessor,
   Expr,
   IfcExpressionEvaluationException,
   IfcExpressionErrorListener,
   IfcExpressionVisitor,
 };
+
 export type { PrimitiveValueType, LiteralValueAnyArity };
 
 export class IfcExpression {
