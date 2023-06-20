@@ -151,6 +151,7 @@ describe.each([
     ["1+1",new Decimal("2")],
     ["2*3",new Decimal("6")],
     ["6/2",new Decimal("3")],
+    ["6-2",new Decimal("4")],
     ["1/5",new Decimal("0.2")],
     ["2*2+1",new Decimal("5")],
     ["1+2*2",new Decimal("5")],
@@ -201,6 +202,7 @@ describe.each( [
     ["elem.Bewehrungsgrad@name","Bewehrungsgrad", ctxSimple],
     ["elem.Bewehrungsgrad@name + \" \" + prop@value","Bewehrungsgrad 120", ctxSimple],
     ["prop.pset@name + \": \" + elem.Bewehrungsgrad@name + \" \" + prop@value","PSet_Betonbau: Bewehrungsgrad 120", ctxSimple],
+    ["elem.Sichtbeton@value",true, ctxSimple],
 
 ])("ifcExpression (with 'simple' context)", (input:string, result: any, context:any) => {
     it (`evaluate("${input}", ctx) = ${result}`, () => {

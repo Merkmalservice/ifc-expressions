@@ -61,6 +61,6 @@ RESERVED_ATTRIBUTE_NAME : 'value'|'guid'|'name'|'description'|'ifcClass' ;
 RESERVED_RELATION_NAME: 'type' | 'pset' ;
 QUOTED_STRING : '"' .*? '"' ;
 BRACKETED_STRING: '{' .+? '}' ;
-IDENTIFIER : [a-zA-Z0-9_\-$&]+ ;
+IDENTIFIER : [a-zA-Z_][a-zA-Z0-9_\-$&]* ;
 WS : [ \t]+ -> skip ;
 NEWLINE : [\r\n]+ -> skip;
