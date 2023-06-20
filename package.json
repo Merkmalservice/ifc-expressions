@@ -1,16 +1,16 @@
 {
   "name": "ifc-expressions",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Parsing and evaluation of IFC expressions",
-  "main": "dist/cjs/ifcExpressions.js",
-  "module": "dist/mjs/ifcExpressions.js",
+  "main": "dist/cjs/ifcExpression.js",
+  "module": "dist/mjs/ifcExpression.js",
   "exports": {
     ".": {
-      "import": "./dist/mjs/ifcExpressions.js",
-      "require": "./dist/cjs/ifcExpressions.js"
+      "import": "./dist/mjs/ifcExpression.js",
+      "require": "./dist/cjs/ifcExpression.js"
     }
   },
-  "types": "./dist/ifcExpressions.d.ts",
+  "types": "./dist/ifcExpression.d.ts",
   "files": [
     "./dist/*"
   ],

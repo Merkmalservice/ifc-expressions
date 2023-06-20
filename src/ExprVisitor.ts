@@ -32,7 +32,7 @@ import {StringValue} from "./context/value/StringValue";
 import {StringLiteralExpr} from "./expression/string/StringLiteralExpr";
 import {StringConcatExpr} from "./expression/string/StringConcatExpr";
 
-export class Visitor extends IfcExpressionVisitor<Expr<any>> {
+export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
 
   constructor() {
     super();
