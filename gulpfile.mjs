@@ -42,12 +42,12 @@ gulp.task("writePackageJsons", function (callback) {
 });
 gulp.task("copyDTS", function () {
   return gulp
-    .src(["./dist/mjs/*.d.ts", "./dist/mjs/*.d.ts.map"])
+    .src(["./dist/mjs/**/*.d.ts", "./dist/mjs/**/*.d.ts.map"])
     .pipe(gulp.dest("./dist/"));
 });
 
 gulp.task("deleteDuplicateDTS", function () {
-  return deleteAsync(["./dist/mjs/*.d.ts*", "./dist/cjs/*.d.ts*"]);
+  return deleteAsync(["./dist/mjs/**/*.d.ts*", "./dist/cjs/**/*.d.ts*"]);
 });
 gulp.task(
   "build",

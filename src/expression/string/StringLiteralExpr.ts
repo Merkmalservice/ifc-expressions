@@ -1,15 +1,16 @@
 import {Expr1} from "../Expr1";
 import {MmsExpressionContext} from "../../context/MmsExpressionContext";
 import {NumericValue} from "../../context/value/NumericValue";
+import {StringValue} from "../../context/value/StringValue";
 
-export class NumericLiteralExpr extends Expr1<NumericValue, NumericValue> {
+export class StringLiteralExpr extends Expr1<StringValue, StringValue> {
 
-    constructor(value: NumericValue) {
+    constructor(value: StringValue) {
         super(value);
     }
 
 
-    evaluate(ctx: MmsExpressionContext): NumericValue {
+    evaluate(ctx: MmsExpressionContext): StringValue {
         return this.value;
     }
 }

@@ -11,7 +11,7 @@ import {
   NumLiteralContext,
   NumMulDivContext,
   NumParensContext,
-  ObjectRefContext,
+  ObjectRefContext, StringAttributeRefContext, StringConcatContext, StringFunCallContext, StringLiteralContext,
 } from "../generated/parser/MmsExpressionParser";
 import { Expr } from "./expression/Expr";
 import {notNullish, nullish} from "./utils";
@@ -28,6 +28,9 @@ import {ElemObjectReferenceExpr} from "./expression/reference/ElemObjectReferenc
 import {NestedObjectChainExpr} from "./expression/reference/NestedObjectChainExpr";
 import {NestedObjectChainEndExpr} from "./expression/reference/NestedObjectChainEndExpr";
 import {NumericValue} from "./context/value/NumericValue";
+import {StringValue} from "./context/value/StringValue";
+import {StringLiteralExpr} from "./expression/string/StringLiteralExpr";
+import {StringConcatExpr} from "./expression/string/StringConcatExpr";
 
 export class Visitor extends MmsExpressionVisitor<Expr<any>> {
   private head: Expr<any> = undefined;
@@ -76,6 +79,28 @@ export class Visitor extends MmsExpressionVisitor<Expr<any>> {
     return name;
   }
 
+  /*================================================
+   * StringExpr
+   *===============================================*/
+
+
+  visitStringLiteral: (ctx: StringLiteralContext) => Expr<any> = ctx => {
+    const quotedString =ctx.QUOTED_STRING().getText();
+    const text = quotedString.substring(1, quotedString.length-1);
+    return new StringLiteralExpr(new StringValue(text));
+  }
+
+
+  visitStringAttributeRef: (ctx: StringAttributeRefContext) => Expr<any> = ctx => {
+    return this.visit(ctx.getChild(0));
+  }
+
+
+  visitStringConcat: (ctx: StringConcatContext) => Expr<any> = ctx => {
+    return new StringConcatExpr(
+        this.visit(ctx._left),
+        this.visit(ctx._right));
+  };
 
   /*================================================
    * NumExpr
@@ -147,6 +172,8 @@ export class Visitor extends MmsExpressionVisitor<Expr<any>> {
   visitNumLit: (ctx: NumLitContext) => Expr<any> = (ctx) => {
     return this.visit(ctx.getChild(0));
   };
+
+
 
   private failNode(ctx: ParserRuleContext) {
     throw new Error(`Cannot parse (sub)expression ${ctx.getText()}`);

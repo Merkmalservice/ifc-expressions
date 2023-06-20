@@ -7,6 +7,7 @@ import {MmsErrorListener} from "./MmsErrorListener";
 import {notNullish} from "./utils";
 import {MmsExpressionContext} from "./context/MmsExpressionContext";
 import {LiteralValueAnyArity} from "./context/value/LiteralValueAnyArity";
+import {Expr} from "./expression/Expr";
 
 export class MmsExpression {
     public static parse(input:string, errorListener?: ErrorListener<Token>): ExprContext {
@@ -27,8 +28,13 @@ export class MmsExpression {
         if (errorListener.isErrorOccurred()) {
             throw errorListener.getException();
         }
+        const parsedExpression = this.extractExprTree(tree);
+        return parsedExpression.evaluate(context);
+    }
+
+    private static extractExprTree(tree: ExprContext): Expr<any> {
         const visitor = new Visitor();
         const parsedExpression = visitor.visit(tree);
-        return parsedExpression.evaluate(context);
+        return parsedExpression;
     }
 }

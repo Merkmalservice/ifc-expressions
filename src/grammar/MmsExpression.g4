@@ -23,13 +23,11 @@ numLiteral:
     ;
 
 stringExpr :
-    | stringLiteral
-    | stringExpr '+' stringExpr
-    | functionCall
-    | attributeRef
+    QUOTED_STRING                      # stringLiteral
+    | left=stringExpr '+' right=stringExpr        # stringConcat
+    | functionCall                     # stringFunCall
+    | attributeRef                     # stringAttributeRef
     ;
-
-stringLiteral : QUOTED_STRING ;
 
 objectRef : PROP | ELEM ;
 
