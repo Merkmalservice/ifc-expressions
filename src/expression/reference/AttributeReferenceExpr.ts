@@ -1,10 +1,10 @@
 import {
-    MmsExpressionContext
-} from "../../context/MmsExpressionContext";
+    IfcExpressionContext
+} from "../../context/IfcExpressionContext";
 import {Expr2} from "../Expr2";
 import {NestedObjectChainExpr} from "./NestedObjectChainExpr";
 import {ObjectReferenceExpr} from "./ObjectReferenceExpr";
-import {MmsExpressionEvaluationException} from "../MmsExpressionEvaluationException";
+import {IfcExpressionEvaluationException} from "../IfcExpressionEvaluationException";
 import {LiteralValueAnyArity} from "../../context/value/LiteralValueAnyArity";
 import {ObjectAccessor} from "../../context/accessor/ObjectAccessor";
 
@@ -15,7 +15,7 @@ export class AttributeReferenceExpr extends Expr2<ObjectReferenceExpr, NestedObj
         super(left, right);
     }
 
-    evaluate(ctx: MmsExpressionContext): LiteralValueAnyArity {
+    evaluate(ctx: IfcExpressionContext): LiteralValueAnyArity {
         const oa: ObjectAccessor = this.left.evaluate(ctx);
         const valueAccessor =  this.right.evaluate(ctx);
         return valueAccessor(oa);

@@ -1,4 +1,4 @@
-export class MmsExpressionEvaluationException  extends Error {
+export class IfcExpressionEvaluationException extends Error {
 
     constructor(message: string) {
         super(message);

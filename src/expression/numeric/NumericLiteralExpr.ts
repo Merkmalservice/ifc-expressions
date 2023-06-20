@@ -1,5 +1,5 @@
 import {Expr1} from "../Expr1";
-import {MmsExpressionContext} from "../../context/MmsExpressionContext";
+import {IfcExpressionContext} from "../../context/IfcExpressionContext";
 import {NumericValue} from "../../context/value/NumericValue";
 
 export class NumericLiteralExpr extends Expr1<NumericValue, NumericValue> {
@@ -9,7 +9,7 @@ export class NumericLiteralExpr extends Expr1<NumericValue, NumericValue> {
     }
 
 
-    evaluate(ctx: MmsExpressionContext): NumericValue {
+    evaluate(ctx: IfcExpressionContext): NumericValue {
         return this.value;
     }
 }

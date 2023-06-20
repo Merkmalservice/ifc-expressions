@@ -1,5 +1,5 @@
 import {Expr} from "./Expr";
-import {MmsExpressionContext} from "../context/MmsExpressionContext";
+import {IfcExpressionContext} from "../context/IfcExpressionContext";
 
 export abstract class Expr2<L,R, E> implements Expr<E>{
     readonly left: L;
@@ -10,5 +10,5 @@ export abstract class Expr2<L,R, E> implements Expr<E>{
         this.right = right;
     }
 
-    abstract evaluate(ctx: MmsExpressionContext): E;
+    abstract evaluate(ctx: IfcExpressionContext): E;
 }

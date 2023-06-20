@@ -1,8 +1,8 @@
-import {MmsExpression} from "../src/MmsExpression";
+import {IfcExpression} from "../src/IfcExpression";
 import Decimal from "decimal.js";
 import {
-    MmsExpressionContext
-} from "../src/context/MmsExpressionContext";
+    IfcExpressionContext
+} from "../src/context/IfcExpressionContext";
 import {NumericValue} from "../src/context/value/NumericValue";
 import {ObjectAccessor} from "../src/context/accessor/ObjectAccessor";
 import {IfcElementAccessor} from "../src/context/accessor/IfcElementAccessor";
@@ -158,9 +158,9 @@ describe.each([
     ["(1+(2)*2)",new Decimal("5")],
 
 ])
-("mmsExpression (numeric, no context)", (input: string, result:any) => {
+("ifcExpression (numeric, no context)", (input: string, result:any) => {
     it(`evaluate("${input}") = ${result}`, () => {
-        const actualResult = MmsExpression.evaluate(input, {} as unknown as MmsExpressionContext);
+        const actualResult = IfcExpression.evaluate(input, {} as unknown as IfcExpressionContext);
         expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
     } );
 })
@@ -170,24 +170,24 @@ describe.each( [
             resolvePropRef: () => ({
                 getAttribute :  (s) => new NumericValue(new Decimal(1))
             }) as unknown as ObjectAccessor
-        } as unknown as MmsExpressionContext],
+        } as unknown as IfcExpressionContext],
     ["elem.myProp1@value",new Decimal(1), {
         resolveElemRef: () => ({
             getNestedObjectAccessor: (s) => ({
                 getAttribute: (s) => new NumericValue(new Decimal(1))
             }) as unknown as ObjectAccessor
         }) as unknown as ObjectAccessor
-    } as unknown as MmsExpressionContext],
+    } as unknown as IfcExpressionContext],
     ["(elem.myProp1@value + 1) * 3",new Decimal(6), {
         resolveElemRef: () => ({
             getNestedObjectAccessor: (s) => ({
                 getAttribute: (s) => new NumericValue(new Decimal(1))
             }) as unknown as ObjectAccessor
         }) as unknown as ObjectAccessor
-    } as unknown as MmsExpressionContext],
-    ])("mmsExpression (with context)", (input:string, result: any, context:any) => {
+    } as unknown as IfcExpressionContext],
+    ])("ifcExpression (with context)", (input:string, result: any, context:any) => {
     it (`evaluate("${input}", ctx) = ${result}`, () => {
-        const actualResult = MmsExpression.evaluate(input, context);
+        const actualResult = IfcExpression.evaluate(input, context);
         expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
     })
 })
@@ -202,18 +202,18 @@ describe.each( [
     ["elem.Bewehrungsgrad@name + \" \" + prop@value","Bewehrungsgrad 120", ctxSimple],
     ["prop.pset@name + \": \" + elem.Bewehrungsgrad@name + \" \" + prop@value","PSet_Betonbau: Bewehrungsgrad 120", ctxSimple],
 
-])("mmsExpression (with 'simple' context)", (input:string, result: any, context:any) => {
+])("ifcExpression (with 'simple' context)", (input:string, result: any, context:any) => {
     it (`evaluate("${input}", ctx) = ${result}`, () => {
-        const actualResult = MmsExpression.evaluate(input, context);
+        const actualResult = IfcExpression.evaluate(input, context);
         expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
     })
 })
 
-describe("mmsExpression", () => {
+describe("ifcExpression", () => {
     it(".evaluate(ctx) throws SyntaxErrorException", () => {
-       expect(() => MmsExpression.evaluate("1+", {} as unknown as MmsExpressionContext)).toThrow();
+       expect(() => IfcExpression.evaluate("1+", {} as unknown as IfcExpressionContext)).toThrow();
     })
     it(".parse() does not throw SyntaxErrorException", () => {
-        expect(() => MmsExpression.parse("1+")).not.toThrow();
+        expect(() => IfcExpression.parse("1+")).not.toThrow();
     })
 })

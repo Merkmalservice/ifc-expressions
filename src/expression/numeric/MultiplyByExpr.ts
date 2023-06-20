@@ -1,6 +1,6 @@
 import {Expr2} from "../Expr2";
 import {Expr} from "../Expr";
-import {MmsExpressionContext} from "../../context/MmsExpressionContext";
+import {IfcExpressionContext} from "../../context/IfcExpressionContext";
 import {NumericValue} from "../../context/value/NumericValue";
 
 export class PlusExpr extends Expr2<Expr<NumericValue>, Expr<NumericValue>, NumericValue> {
@@ -8,7 +8,7 @@ export class PlusExpr extends Expr2<Expr<NumericValue>, Expr<NumericValue>, Nume
         super(left,right);
     }
 
-    evaluate(ctx: MmsExpressionContext): NumericValue {
+    evaluate(ctx: IfcExpressionContext): NumericValue {
         return NumericValue.of(this.left.evaluate(ctx).getValue().mul(this.right.evaluate(ctx).getValue()));
     }
 

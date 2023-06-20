@@ -1,16 +1,16 @@
 {
-  "name": "mms-expressions",
+  "name": "ifc-expressions",
   "version": "1.0.0",
-  "description": "Evaluation of MMS expressions",
-  "main": "dist/cjs/mmsExpressions.js",
-  "module": "dist/mjs/mmsExpressions.js",
+  "description": "Parsing and evaluation of IFC expressions",
+  "main": "dist/cjs/ifcExpressions.js",
+  "module": "dist/mjs/ifcExpressions.js",
   "exports": {
     ".": {
-      "import": "./dist/mjs/mmsExpressions.js",
-      "require": "./dist/cjs/mmsExpressions.js"
+      "import": "./dist/mjs/ifcExpressions.js",
+      "require": "./dist/cjs/ifcExpressions.js"
     }
   },
-  "types": "./dist/mmsExpressions.d.ts",
+  "types": "./dist/ifcExpressions.d.ts",
   "files": [
     "./dist/*"
   ],
@@ -20,7 +20,7 @@
   "scripts": {
     "build": "npm run clean && npm run make-parser && npm run transpile",
     "clean": "gulp clean",
-    "make-parser": "java -jar ./antlr4/antlr-4.13.0-complete.jar -Dlanguage=TypeScript -visitor src/grammar/MmsExpression.g4 -o ./generated/parser",
+    "make-parser": "java -jar ./antlr4/antlr-4.13.0-complete.jar -Dlanguage=TypeScript -visitor src/grammar/IfcExpression.g4 -o ./generated/parser",
     "transpile": "gulp build",
     "test": "jest --coverage"
   },

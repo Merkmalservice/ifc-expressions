@@ -1,6 +1,6 @@
 import {
-    MmsExpressionContext
-} from "../../context/MmsExpressionContext";
+    IfcExpressionContext
+} from "../../context/IfcExpressionContext";
 import {Expr2} from "../Expr2";
 import {Expr1} from "../Expr1";
 import {ObjectAccessor} from "../../context/accessor/ObjectAccessor";
@@ -12,7 +12,7 @@ export class NestedObjectChainEndExpr extends Expr1<string, (oa: ObjectAccessor)
         super(value);
     }
 
-    evaluate(ctx: MmsExpressionContext): (oa: ObjectAccessor) => LiteralValueAnyArity {
+    evaluate(ctx: IfcExpressionContext): (oa: ObjectAccessor) => LiteralValueAnyArity {
         return (oa: ObjectAccessor) => oa.getAttribute(this.value);
     }
 

@@ -1,10 +1,10 @@
 import {Expr} from "./Expr";
-import {MmsExpressionContext} from "../context/MmsExpressionContext";
+import {IfcExpressionContext} from "../context/IfcExpressionContext";
 
 export abstract class Expr0<E> implements Expr<E>{
 
     protected constructor() {
     }
 
-    abstract evaluate(ctx: MmsExpressionContext): E;
+    abstract evaluate(ctx: IfcExpressionContext): E;
 }

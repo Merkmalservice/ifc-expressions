@@ -1,4 +1,4 @@
-import MmsExpressionVisitor from "../generated/parser/MmsExpressionVisitor";
+import IfcExpressionVisitor from "../generated/parser/IfcExpressionVisitor";
 import { NumericLiteralExpr } from "./expression/numeric/NumericLiteralExpr";
 import {
   AttributeRefContext,
@@ -12,7 +12,7 @@ import {
   NumMulDivContext,
   NumParensContext,
   ObjectRefContext, StringAttributeRefContext, StringConcatContext, StringFunCallContext, StringLiteralContext,
-} from "../generated/parser/MmsExpressionParser";
+} from "../generated/parser/IfcExpressionParser";
 import { Expr } from "./expression/Expr";
 import {notNullish, nullish} from "./utils";
 import Decimal from "decimal.js";
@@ -32,7 +32,7 @@ import {StringValue} from "./context/value/StringValue";
 import {StringLiteralExpr} from "./expression/string/StringLiteralExpr";
 import {StringConcatExpr} from "./expression/string/StringConcatExpr";
 
-export class Visitor extends MmsExpressionVisitor<Expr<any>> {
+export class Visitor extends IfcExpressionVisitor<Expr<any>> {
   private head: Expr<any> = undefined;
 
   constructor() {

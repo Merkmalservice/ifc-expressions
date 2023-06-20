@@ -1,4 +1,4 @@
-grammar MmsExpression;
+grammar IfcExpression;
 
 expr :
     attributeRef

@@ -1,6 +1,6 @@
-import {MmsExpressionContext} from "../context/MmsExpressionContext";
+import {IfcExpressionContext} from "../context/IfcExpressionContext";
 
 export interface Expr<T> {
-    evaluate(ctx: MmsExpressionContext): T
+    evaluate(ctx: IfcExpressionContext): T
 
 }

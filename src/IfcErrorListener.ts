@@ -3,7 +3,7 @@ import {notNullish} from "./utils";
 import {SyntaxErrorException} from "./SyntaxErrorException";
 
 
-export class MmsErrorListener extends ErrorListener<Token> {
+export class IfcErrorListener extends ErrorListener<Token> {
     private exception: SyntaxErrorException = null;
 
     syntaxError(recognizer: Recognizer<Token>, offendingSymbol: Token, line: number, column: number, msg: string, e: RecognitionException | undefined) {

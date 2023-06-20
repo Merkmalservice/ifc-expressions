@@ -1,4 +1,4 @@
-import {MmsExpressionContext} from "../../context/MmsExpressionContext";
+import {IfcExpressionContext} from "../../context/IfcExpressionContext";
 import {Expr1} from "../Expr1";
 import {Expr0} from "../Expr0";
 import {ObjectReferenceExpr} from "./ObjectReferenceExpr";
@@ -10,7 +10,7 @@ export class PropObjectReferenceExpr extends Expr0<ObjectAccessor> implements Ob
         super();
     }
 
-    evaluate(ctx: MmsExpressionContext ): ObjectAccessor {
+    evaluate(ctx: IfcExpressionContext ): ObjectAccessor {
         return ctx.resolvePropRef();
     }
 

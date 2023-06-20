@@ -1,20 +1,20 @@
 
 import {CharStream, CommonTokenStream, ErrorListener, Token} from 'antlr4';
-import MmsExpressionParser, {ExprContext} from "../generated/parser/MmsExpressionParser";
-import MmsExpressionLexer from "../generated/parser/MmsExpressionLexer";
 import {Visitor} from "./Visitor";
-import {MmsErrorListener} from "./MmsErrorListener";
+import {IfcErrorListener} from "./IfcErrorListener";
 import {notNullish} from "./utils";
-import {MmsExpressionContext} from "./context/MmsExpressionContext";
+import {IfcExpressionContext} from "./context/IfcExpressionContext";
 import {LiteralValueAnyArity} from "./context/value/LiteralValueAnyArity";
 import {Expr} from "./expression/Expr";
+import IfcExpressionParser, {ExprContext} from "../generated/parser/IfcExpressionParser";
+import IfcExpressionLexer from "../generated/parser/IfcExpressionLexer";
 
-export class MmsExpression {
+export class IfcExpression {
     public static parse(input:string, errorListener?: ErrorListener<Token>): ExprContext {
         const chars = new CharStream(input); // replace this with a FileStream as required
-        const lexer = new MmsExpressionLexer(chars);
+        const lexer = new IfcExpressionLexer(chars);
         const tokens = new CommonTokenStream(lexer);
-        const parser = new MmsExpressionParser(tokens);
+        const parser = new IfcExpressionParser(tokens);
         if (notNullish(errorListener)) {
             parser.removeErrorListeners();
             parser.addErrorListener(errorListener);
@@ -22,9 +22,9 @@ export class MmsExpression {
         return parser.expr();
     }
 
-    public static evaluate(expression: string, context: MmsExpressionContext): LiteralValueAnyArity {
-        const errorListener = new MmsErrorListener();
-        const tree:ExprContext = MmsExpression.parse(expression, errorListener);
+    public static evaluate(expression: string, context: IfcExpressionContext): LiteralValueAnyArity {
+        const errorListener = new IfcErrorListener();
+        const tree:ExprContext = IfcExpression.parse(expression, errorListener);
         if (errorListener.isErrorOccurred()) {
             throw errorListener.getException();
         }
