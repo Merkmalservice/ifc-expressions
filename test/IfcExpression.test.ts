@@ -1,15 +1,15 @@
 import { IfcExpression } from "../src/IfcExpression";
 import Decimal from "decimal.js";
 import { IfcExpressionContext } from "../src/context/IfcExpressionContext";
-import { NumericValue } from "../src/context/value/NumericValue";
-import { ObjectAccessor } from "../src/context/accessor/ObjectAccessor";
-import { IfcElementAccessor } from "../src/context/accessor/IfcElementAccessor";
-import { IfcPropertyAccessor } from "../src/context/accessor/IfcPropertyAccessor";
-import { IfcPropertySetAccessor } from "../src/context/accessor/IfcPropertySetAccessor";
-import { LiteralValueAnyArity } from "../src/context/value/LiteralValueAnyArity";
-import { StringValue } from "../src/context/value/StringValue";
-import { IfcTypeObjectAccessor } from "../src/context/accessor/IfcTypeObjectAccessor";
-import { BooleanValue } from "../src/context/value/BooleanValue";
+import { NumericValue } from "../src/value/NumericValue";
+import { LiteralValueAnyArity } from "../src/value/LiteralValueAnyArity";
+import { StringValue } from "../src/value/StringValue";
+import { BooleanValue } from "../src/value/BooleanValue";
+import { ObjectAccessor } from "../src/context/ObjectAccessor";
+import { IfcElementAccessor } from "../src/context/IfcElementAccessor";
+import { IfcPropertyAccessor } from "../src/context/IfcPropertyAccessor";
+import { IfcPropertySetAccessor } from "../src/context/IfcPropertySetAccessor";
+import { IfcTypeObjectAccessor } from "../src/context/IfcTypeObjectAccessor";
 
 const ctxSimple: any = {
   psetBetonbau: new (class extends IfcPropertySetAccessor {

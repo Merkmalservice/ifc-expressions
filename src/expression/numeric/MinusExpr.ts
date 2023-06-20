@@ -1,7 +1,7 @@
 import { Expr2 } from "../Expr2";
 import { Expr } from "../Expr";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { NumericValue } from "../../context/value/NumericValue";
+import { NumericValue } from "../../value/NumericValue";
 
 export class MinusExpr extends Expr2<
   Expr<NumericValue>,

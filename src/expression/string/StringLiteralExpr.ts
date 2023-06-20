@@ -1,6 +1,6 @@
 import { Expr1 } from "../Expr1";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { StringValue } from "../../context/value/StringValue";
+import { StringValue } from "../../value/StringValue";
 
 export class StringLiteralExpr extends Expr1<StringValue, StringValue> {
   constructor(value: StringValue) {

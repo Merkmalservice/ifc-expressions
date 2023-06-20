@@ -1,7 +1,7 @@
 import { IfcExpressionContext } from "../../context/IfcExpressionContext";
 import { Expr1 } from "../Expr1";
-import { ObjectAccessor } from "../../context/accessor/ObjectAccessor";
-import { LiteralValueAnyArity } from "../../context/value/LiteralValueAnyArity";
+import { ObjectAccessor } from "../../context/ObjectAccessor";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity";
 
 export class NestedObjectChainEndExpr extends Expr1<
   string,

@@ -1,6 +1,6 @@
 import { Expr1 } from "../Expr1";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { NumericValue } from "../../context/value/NumericValue";
+import { NumericValue } from "../../value/NumericValue";
 
 export class NumericLiteralExpr extends Expr1<NumericValue, NumericValue> {
   constructor(value: NumericValue) {

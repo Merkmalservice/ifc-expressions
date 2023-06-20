@@ -1,7 +1,7 @@
 import { Expr1 } from "../Expr1";
 import { Expr } from "../Expr";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { NumericValue } from "../../context/value/NumericValue";
+import { NumericValue } from "../../value/NumericValue";
 
 export class NumParenthesisExpr extends Expr1<
   Expr<NumericValue>,

@@ -1,7 +1,7 @@
 import { Expr2 } from "../Expr2";
 import { Expr } from "../Expr";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { StringValue } from "../../context/value/StringValue";
+import { StringValue } from "../../value/StringValue";
 
 export class StringConcatExpr extends Expr2<
   Expr<StringValue>,

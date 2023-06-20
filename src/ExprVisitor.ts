@@ -30,8 +30,8 @@ import { PropObjectReferenceExpr } from "./expression/reference/PropObjectRefere
 import { ElemObjectReferenceExpr } from "./expression/reference/ElemObjectReferenceExpr";
 import { NestedObjectChainExpr } from "./expression/reference/NestedObjectChainExpr";
 import { NestedObjectChainEndExpr } from "./expression/reference/NestedObjectChainEndExpr";
-import { NumericValue } from "./context/value/NumericValue";
-import { StringValue } from "./context/value/StringValue";
+import { NumericValue } from "./value/NumericValue";
+import { StringValue } from "./value/StringValue";
 import { StringLiteralExpr } from "./expression/string/StringLiteralExpr";
 import { StringConcatExpr } from "./expression/string/StringConcatExpr";
 

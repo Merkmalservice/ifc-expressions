@@ -2,7 +2,7 @@ import { ErrorListener, RecognitionException, Recognizer, Token } from "antlr4";
 import { notNullish } from "./utils";
 import { SyntaxErrorException } from "./SyntaxErrorException";
 
-export class IfcErrorListener extends ErrorListener<Token> {
+export class IfcExpressionErrorListener extends ErrorListener<Token> {
   private exception: SyntaxErrorException = null;
 
   syntaxError(

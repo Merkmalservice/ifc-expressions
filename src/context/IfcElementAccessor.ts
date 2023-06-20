@@ -4,7 +4,7 @@ import { IfcTypeObjectAccessor } from "./IfcTypeObjectAccessor";
 import { IfcPropertyAccessor } from "./IfcPropertyAccessor";
 import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity";
 import { StringValue } from "../value/StringValue";
-import { notNullish } from "../../utils";
+import { notNullish } from "../utils";
 import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor";
 
 export abstract class IfcElementAccessor extends IfcRootObjectAccessor {

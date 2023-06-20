@@ -1,7 +1,7 @@
 import { ObjectAccessor } from "./ObjectAccessor";
 import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor";
 import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor";
-import { notNullish } from "../../utils";
+import { notNullish } from "../utils";
 import { IfcPropertyAccessor } from "./IfcPropertyAccessor";
 
 export abstract class IfcTypeObjectAccessor extends IfcRootObjectAccessor {

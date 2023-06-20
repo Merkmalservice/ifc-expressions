@@ -2,8 +2,8 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext";
 import { Expr2 } from "../Expr2";
 import { NestedObjectChainExpr } from "./NestedObjectChainExpr";
 import { ObjectReferenceExpr } from "./ObjectReferenceExpr";
-import { LiteralValueAnyArity } from "../../context/value/LiteralValueAnyArity";
-import { ObjectAccessor } from "../../context/accessor/ObjectAccessor";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity";
+import { ObjectAccessor } from "../../context/ObjectAccessor";
 
 export class AttributeReferenceExpr extends Expr2<
   ObjectReferenceExpr,
