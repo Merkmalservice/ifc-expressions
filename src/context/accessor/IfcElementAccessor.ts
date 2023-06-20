@@ -21,10 +21,9 @@ export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
 
     getAttribute(name: string): LiteralValueAnyArity | undefined {
         switch (name) {
-            case 'ifcClass' : new StringValue(this.getIfcClass());
+            case 'ifcClass' : return new StringValue(this.getIfcClass());
             default: return super.getAttribute(name);
         }
-        return super.getAttribute(name);
     }
 
     abstract getIfcClass(): string;

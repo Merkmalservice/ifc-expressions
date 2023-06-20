@@ -1,6 +1,6 @@
 import gulp from "gulp";
 import ts from "gulp-typescript";
-import { deleteAsync, deleteSync } from "del";
+import { deleteAsync } from "del";
 import uglify from "gulp-uglify";
 import fs from "fs";
 

@@ -203,6 +203,7 @@ describe.each( [
     ["elem.Bewehrungsgrad@name + \" \" + prop@value","Bewehrungsgrad 120", ctxSimple],
     ["prop.pset@name + \": \" + elem.Bewehrungsgrad@name + \" \" + prop@value","PSet_Betonbau: Bewehrungsgrad 120", ctxSimple],
     ["elem.Sichtbeton@value",true, ctxSimple],
+    ["elem@ifcClass","IfcSlab", ctxSimple],
 
 ])("ifcExpression (with 'simple' context)", (input:string, result: any, context:any) => {
     it (`evaluate("${input}", ctx) = ${result}`, () => {

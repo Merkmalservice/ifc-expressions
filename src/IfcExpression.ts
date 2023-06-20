@@ -1,4 +1,3 @@
-
 import {CharStream, CommonTokenStream, ErrorListener, Token} from 'antlr4';
 import {Visitor} from "./Visitor";
 import {IfcErrorListener} from "./IfcErrorListener";
@@ -34,7 +33,6 @@ export class IfcExpression {
 
     private static extractExprTree(tree: ExprContext): Expr<any> {
         const visitor = new Visitor();
-        const parsedExpression = visitor.visit(tree);
-        return parsedExpression;
+        return visitor.visit(tree);
     }
 }

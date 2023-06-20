@@ -11,10 +11,10 @@ import {
   NumLiteralContext,
   NumMulDivContext,
   NumParensContext,
-  ObjectRefContext, StringAttributeRefContext, StringConcatContext, StringFunCallContext, StringLiteralContext,
+  ObjectRefContext, StringAttributeRefContext, StringConcatContext,  StringLiteralContext,
 } from "../generated/parser/IfcExpressionParser";
 import { Expr } from "./expression/Expr";
-import {notNullish, nullish} from "./utils";
+import {notNullish} from "./utils";
 import Decimal from "decimal.js";
 import { PlusExpr } from "./expression/numeric/PlusExpr";
 import { MinusExpr } from "./expression/numeric/MinusExpr";
@@ -33,7 +33,6 @@ import {StringLiteralExpr} from "./expression/string/StringLiteralExpr";
 import {StringConcatExpr} from "./expression/string/StringConcatExpr";
 
 export class Visitor extends IfcExpressionVisitor<Expr<any>> {
-  private head: Expr<any> = undefined;
 
   constructor() {
     super();

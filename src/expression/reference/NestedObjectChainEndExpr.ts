@@ -1,7 +1,6 @@
 import {
     IfcExpressionContext
 } from "../../context/IfcExpressionContext";
-import {Expr2} from "../Expr2";
 import {Expr1} from "../Expr1";
 import {ObjectAccessor} from "../../context/accessor/ObjectAccessor";
 import {LiteralValueAnyArity} from "../../context/value/LiteralValueAnyArity";

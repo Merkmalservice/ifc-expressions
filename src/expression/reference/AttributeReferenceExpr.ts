@@ -4,7 +4,6 @@ import {
 import {Expr2} from "../Expr2";
 import {NestedObjectChainExpr} from "./NestedObjectChainExpr";
 import {ObjectReferenceExpr} from "./ObjectReferenceExpr";
-import {IfcExpressionEvaluationException} from "../IfcExpressionEvaluationException";
 import {LiteralValueAnyArity} from "../../context/value/LiteralValueAnyArity";
 import {ObjectAccessor} from "../../context/accessor/ObjectAccessor";
 
