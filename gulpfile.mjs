@@ -22,7 +22,7 @@ gulp.task("compress", function () {
 });
 gulp.task("transpile-mjs", function () {
   return gulp
-    .src(["src/**/*.ts","generated/**/*.ts"], { sourcemaps: true })
+    .src(["src/**/*.ts", "generated/**/*.ts"], { sourcemaps: true })
     .pipe(mjsProject())
     .pipe(
       gulp.dest("dist/mjs/", {
@@ -32,7 +32,7 @@ gulp.task("transpile-mjs", function () {
 });
 gulp.task("transpile-cjs", function () {
   return gulp
-    .src(["src/**/*.ts","generated/**/*.ts"], { sourcemaps: true })
+    .src(["src/**/*.ts", "generated/**/*.ts"], { sourcemaps: true })
     .pipe(cjsProject())
     .pipe(gulp.dest("dist/cjs/", { sourcemaps: "." }));
 });

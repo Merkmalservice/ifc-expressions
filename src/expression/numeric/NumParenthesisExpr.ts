@@ -1,16 +1,17 @@
-import {Expr1} from "../Expr1";
-import {Expr} from "../Expr";
-import {IfcExpressionContext} from "../../context/IfcExpressionContext";
-import {NumericValue} from "../../context/value/NumericValue";
+import { Expr1 } from "../Expr1";
+import { Expr } from "../Expr";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext";
+import { NumericValue } from "../../context/value/NumericValue";
 
-export class NumParenthesisExpr extends Expr1<Expr<NumericValue>, NumericValue> {
+export class NumParenthesisExpr extends Expr1<
+  Expr<NumericValue>,
+  NumericValue
+> {
+  constructor(expression: Expr<NumericValue>) {
+    super(expression);
+  }
 
-    constructor(expression: Expr<NumericValue>) {
-        super(expression);
-    }
-
-    evaluate(ctx: IfcExpressionContext): NumericValue {
-        return this.value.evaluate(ctx);
-    }
-
+  evaluate(ctx: IfcExpressionContext): NumericValue {
+    return this.value.evaluate(ctx);
+  }
 }

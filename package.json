@@ -23,7 +23,11 @@
     "clean": "gulp clean",
     "make-parser": "java -jar ./antlr4/antlr-4.13.0-complete.jar -Dlanguage=TypeScript -visitor src/grammar/IfcExpression.g4 -o ./generated/parser",
     "transpile": "gulp build",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "format-apply": "prettier --write .",
+    "lint": "eslint .",
+    "format-check": "prettier --check .",
+    "check": "npm run format-check && npm run lint"
   },
   "keywords": [
     "MMS",
@@ -38,7 +42,12 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.2",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
     "del": "^7.0.0",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "gulp": "^4.0.2",
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-uglify": "^3.0.2",

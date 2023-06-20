@@ -1,222 +1,261 @@
-import {IfcExpression} from "../src/IfcExpression";
+import { IfcExpression } from "../src/IfcExpression";
 import Decimal from "decimal.js";
-import {
-    IfcExpressionContext
-} from "../src/context/IfcExpressionContext";
-import {NumericValue} from "../src/context/value/NumericValue";
-import {ObjectAccessor} from "../src/context/accessor/ObjectAccessor";
-import {IfcElementAccessor} from "../src/context/accessor/IfcElementAccessor";
-import {IfcPropertyAccessor} from "../src/context/accessor/IfcPropertyAccessor";
-import {IfcPropertySetAccessor} from "../src/context/accessor/IfcPropertySetAccessor";
-import {LiteralValueAnyArity} from "../src/context/value/LiteralValueAnyArity";
-import {StringValue} from "../src/context/value/StringValue";
-import {IfcTypeObjectAccessor} from "../src/context/accessor/IfcTypeObjectAccessor";
-import {BooleanValue} from "../src/context/value/BooleanValue";
+import { IfcExpressionContext } from "../src/context/IfcExpressionContext";
+import { NumericValue } from "../src/context/value/NumericValue";
+import { ObjectAccessor } from "../src/context/accessor/ObjectAccessor";
+import { IfcElementAccessor } from "../src/context/accessor/IfcElementAccessor";
+import { IfcPropertyAccessor } from "../src/context/accessor/IfcPropertyAccessor";
+import { IfcPropertySetAccessor } from "../src/context/accessor/IfcPropertySetAccessor";
+import { LiteralValueAnyArity } from "../src/context/value/LiteralValueAnyArity";
+import { StringValue } from "../src/context/value/StringValue";
+import { IfcTypeObjectAccessor } from "../src/context/accessor/IfcTypeObjectAccessor";
+import { BooleanValue } from "../src/context/value/BooleanValue";
 
+const ctxSimple: any = {
+  psetBetonbau: new (class extends IfcPropertySetAccessor {
+    getDescription(): string {
+      return "Properties describing the concrete";
+    }
 
-const ctxSimple:any = {
+    getGuid(): string {
+      return "1dkoXLAXj0B8O8L2CFQKAH";
+    }
 
-    psetBetonbau: new class extends IfcPropertySetAccessor {
-        getDescription(): string {
-            return "Properties describing the concrete";
-        }
+    protected getIfcPropertyAccessor(
+      name: string
+    ): IfcPropertyAccessor | undefined {
+      switch (name) {
+        case "Betonguete":
+          return ctxSimple.propBetonguete;
+        case "Bewehrungsgrad":
+          return ctxSimple.propBewehrungsgrad;
+        case "Sichtbeton":
+          return ctxSimple.propSichtbeton;
+      }
+      return undefined;
+    }
 
-        getGuid(): string {
-            return "1dkoXLAXj0B8O8L2CFQKAH";
-        }
+    getName(): string {
+      return "PSet_Betonbau";
+    }
 
-        protected getIfcPropertyAccessor(name: string): IfcPropertyAccessor | undefined {
-            switch(name) {
-                case "Betonguete": return ctxSimple.propBetonguete;
-                case "Bewehrungsgrad": return ctxSimple.propBewehrungsgrad;
-                case "Sichtbeton": return ctxSimple.propSichtbeton;
-            }
-            return undefined;
-        }
+    protected listIfcProperties(): Array<string> {
+      return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
+    }
+  })(),
+  propBetonguete: new (class extends IfcPropertyAccessor {
+    getDescription(): string {
+      return "The quality of concrete";
+    }
 
-        getName(): string {
-            return "PSet_Betonbau";
-        }
+    getName(): string {
+      return "Betonguete";
+    }
 
-        protected listIfcProperties(): Array<string> {
-            return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
-        }
+    protected getPropertySetAccessor(): IfcPropertySetAccessor {
+      return ctxSimple.psetBetonbau;
+    }
 
-    }(),
-    propBetonguete:  new class extends IfcPropertyAccessor {
-        getDescription(): string {
-            return "The quality of concrete";
-        }
+    protected getValue(): LiteralValueAnyArity {
+      return new StringValue("C25/30");
+    }
+  })(),
 
-        getName(): string {
-            return "Betonguete";
-        }
+  propBewehrungsgrad: new (class extends IfcPropertyAccessor {
+    getDescription(): string {
+      return "The reinforcement ratio of concrete";
+    }
 
-        protected getPropertySetAccessor(): IfcPropertySetAccessor {
-            return ctxSimple.psetBetonbau;
-        }
+    getName(): string {
+      return "Bewehrungsgrad";
+    }
 
-        protected getValue(): LiteralValueAnyArity {
-            return new StringValue("C25/30");
-        }
-    }(),
+    protected getPropertySetAccessor(): IfcPropertySetAccessor {
+      return ctxSimple.psetBetonbau;
+    }
 
-    propBewehrungsgrad:  new class extends IfcPropertyAccessor {
-        getDescription(): string {
-            return "The reinforcement ratio of concrete";
-        }
+    protected getValue(): LiteralValueAnyArity {
+      return new NumericValue(120);
+    }
+  })(),
 
-        getName(): string {
-            return "Bewehrungsgrad";
-        }
+  propSichtbeton: new (class extends IfcPropertyAccessor {
+    getDescription(): string {
+      return "Indicates whether the concrete is left uncovered";
+    }
 
-        protected getPropertySetAccessor(): IfcPropertySetAccessor {
-            return ctxSimple.psetBetonbau;
-        }
+    getName(): string {
+      return "Sichtbeton";
+    }
 
-        protected getValue(): LiteralValueAnyArity {
-            return new NumericValue(120);
-        }
-    }(),
+    protected getPropertySetAccessor(): IfcPropertySetAccessor {
+      return ctxSimple.psetBetonbau;
+    }
 
-    propSichtbeton:  new class extends IfcPropertyAccessor {
-        getDescription(): string {
-            return "Indicates whether the concrete is left uncovered";
-        }
+    protected getValue(): LiteralValueAnyArity {
+      return new BooleanValue(true);
+    }
+  })(),
 
-        getName(): string {
-            return "Sichtbeton";
-        }
+  slabGeschossdecke: new (class extends IfcElementAccessor {
+    getDescription(): string {
+      return "An IFC element for testing";
+    }
 
-        protected getPropertySetAccessor(): IfcPropertySetAccessor {
-            return ctxSimple.psetBetonbau;
-        }
+    getGuid(): string {
+      return "25lDy1lKL0189KIclXWspu";
+    }
 
-        protected getValue(): LiteralValueAnyArity {
-            return new BooleanValue(true);
-        }
-    }(),
+    getIfcClass(): string {
+      return "IfcSlab";
+    }
 
-    slabGeschossdecke:   new class extends IfcElementAccessor {
-        getDescription(): string {
-            return "An IFC element for testing";
-        }
+    getIfcPropertyAccessor(
+      propertyName: string
+    ): IfcPropertyAccessor | undefined {
+      switch (propertyName) {
+        case "Betonguete":
+          return ctxSimple.propBetonguete;
+        case "Bewehrungsgrad":
+          return ctxSimple.propBewehrungsgrad;
+        case "Sichtbeton":
+          return ctxSimple.propSichtbeton;
+      }
+    }
 
-        getGuid(): string {
-            return "25lDy1lKL0189KIclXWspu";
-        }
+    getIfcPropertySetAccessor(
+      name: string
+    ): IfcPropertySetAccessor | undefined {
+      return ctxSimple().psetBetonbau;
+    }
 
-        getIfcClass(): string {
-            return "IfcSlab";
-        }
+    getName(): string {
+      return "Geschossdecke:DE_STB - 20,0 cm:2309081";
+    }
 
-        getIfcPropertyAccessor(propertyName: string): IfcPropertyAccessor | undefined {
-            switch (propertyName) {
-                case "Betonguete" : return ctxSimple.propBetonguete;
-                case "Bewehrungsgrad" : return ctxSimple.propBewehrungsgrad;
-                case "Sichtbeton": return ctxSimple.propSichtbeton;
-            }
-        }
+    getTypeObjectAccessor(): IfcTypeObjectAccessor | undefined {
+      return undefined;
+    }
 
-        getIfcPropertySetAccessor(name: string): IfcPropertySetAccessor | undefined {
-            return ctxSimple().psetBetonbau;
-        }
+    listIfcProperties(): Array<string> {
+      return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
+    }
 
-        getName(): string {
-            return "Geschossdecke:DE_STB - 20,0 cm:2309081";
-        }
+    listIfcPropertySets(): Array<string> {
+      return ["PSet_Betonbau", "PSet_5D"];
+    }
+  })(),
 
-        getTypeObjectAccessor(): IfcTypeObjectAccessor | undefined {
-            return undefined;
-        }
+  resolveElemRef: () => ctxSimple.slabGeschossdecke,
 
-        listIfcProperties(): Array<string> {
-            return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
-        }
-
-        listIfcPropertySets(): Array<string> {
-            return ["PSet_Betonbau", "PSet_5D"];
-        }
-    }(),
-
-    resolveElemRef: () => ctxSimple.slabGeschossdecke,
-
-
-    resolvePropRef: () => ctxSimple.propBewehrungsgrad,
-}
+  resolvePropRef: () => ctxSimple.propBewehrungsgrad,
+};
 
 describe.each([
-    ["1",  new Decimal("1")],
-    ["1.5",new Decimal("1.5")],
-    ["1+1",new Decimal("2")],
-    ["2*3",new Decimal("6")],
-    ["6/2",new Decimal("3")],
-    ["6-2",new Decimal("4")],
-    ["1/5",new Decimal("0.2")],
-    ["2*2+1",new Decimal("5")],
-    ["1+2*2",new Decimal("5")],
-    ["(1+2)*2",new Decimal("6")],
-    ["(1+(2)*2)",new Decimal("5")],
+  ["1", new Decimal("1")],
+  ["1.5", new Decimal("1.5")],
+  ["1+1", new Decimal("2")],
+  ["2*3", new Decimal("6")],
+  ["6/2", new Decimal("3")],
+  ["6-2", new Decimal("4")],
+  ["1/5", new Decimal("0.2")],
+  ["2*2+1", new Decimal("5")],
+  ["1+2*2", new Decimal("5")],
+  ["(1+2)*2", new Decimal("6")],
+  ["(1+(2)*2)", new Decimal("5")],
+])("ifcExpression (numeric, no context)", (input: string, result: any) => {
+  it(`evaluate("${input}") = ${result}`, () => {
+    const actualResult = IfcExpression.evaluate(
+      input,
+      {} as unknown as IfcExpressionContext
+    );
+    expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
+  });
+});
 
-])
-("ifcExpression (numeric, no context)", (input: string, result:any) => {
-    it(`evaluate("${input}") = ${result}`, () => {
-        const actualResult = IfcExpression.evaluate(input, {} as unknown as IfcExpressionContext);
-        expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
-    } );
-})
+describe.each([
+  [
+    "prop@value",
+    new Decimal(1),
+    {
+      resolvePropRef: () =>
+        ({
+          getAttribute: (s) => new NumericValue(new Decimal(1)),
+        } as unknown as ObjectAccessor),
+    } as unknown as IfcExpressionContext,
+  ],
+  [
+    "elem.myProp1@value",
+    new Decimal(1),
+    {
+      resolveElemRef: () =>
+        ({
+          getNestedObjectAccessor: (s) =>
+            ({
+              getAttribute: (s) => new NumericValue(new Decimal(1)),
+            } as unknown as ObjectAccessor),
+        } as unknown as ObjectAccessor),
+    } as unknown as IfcExpressionContext,
+  ],
+  [
+    "(elem.myProp1@value + 1) * 3",
+    new Decimal(6),
+    {
+      resolveElemRef: () =>
+        ({
+          getNestedObjectAccessor: (s) =>
+            ({
+              getAttribute: (s) => new NumericValue(new Decimal(1)),
+            } as unknown as ObjectAccessor),
+        } as unknown as ObjectAccessor),
+    } as unknown as IfcExpressionContext,
+  ],
+])(
+  "ifcExpression (with context)",
+  (input: string, result: any, context: any) => {
+    it(`evaluate("${input}", ctx) = ${result}`, () => {
+      const actualResult = IfcExpression.evaluate(input, context);
+      expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
+    });
+  }
+);
 
-describe.each( [
-        ["prop@value",new Decimal(1), {
-            resolvePropRef: () => ({
-                getAttribute :  (s) => new NumericValue(new Decimal(1))
-            }) as unknown as ObjectAccessor
-        } as unknown as IfcExpressionContext],
-    ["elem.myProp1@value",new Decimal(1), {
-        resolveElemRef: () => ({
-            getNestedObjectAccessor: (s) => ({
-                getAttribute: (s) => new NumericValue(new Decimal(1))
-            }) as unknown as ObjectAccessor
-        }) as unknown as ObjectAccessor
-    } as unknown as IfcExpressionContext],
-    ["(elem.myProp1@value + 1) * 3",new Decimal(6), {
-        resolveElemRef: () => ({
-            getNestedObjectAccessor: (s) => ({
-                getAttribute: (s) => new NumericValue(new Decimal(1))
-            }) as unknown as ObjectAccessor
-        }) as unknown as ObjectAccessor
-    } as unknown as IfcExpressionContext],
-    ])("ifcExpression (with context)", (input:string, result: any, context:any) => {
-    it (`evaluate("${input}", ctx) = ${result}`, () => {
-        const actualResult = IfcExpression.evaluate(input, context);
-        expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
-    })
-})
-
-describe.each( [
-    ["prop@value",new Decimal(120), ctxSimple],
-    ["prop@value / 12",new Decimal(10), ctxSimple],
-    ["prop@name","Bewehrungsgrad", ctxSimple],
-    ["elem@name","Geschossdecke:DE_STB - 20,0 cm:2309081", ctxSimple],
-    ["elem.Bewehrungsgrad@value",new Decimal(120), ctxSimple],
-    ["elem.Bewehrungsgrad@name","Bewehrungsgrad", ctxSimple],
-    ["elem.Bewehrungsgrad@name + \" \" + prop@value","Bewehrungsgrad 120", ctxSimple],
-    ["prop.pset@name + \": \" + elem.Bewehrungsgrad@name + \" \" + prop@value","PSet_Betonbau: Bewehrungsgrad 120", ctxSimple],
-    ["elem.Sichtbeton@value",true, ctxSimple],
-    ["elem@ifcClass","IfcSlab", ctxSimple],
-
-])("ifcExpression (with 'simple' context)", (input:string, result: any, context:any) => {
-    it (`evaluate("${input}", ctx) = ${result}`, () => {
-        const actualResult = IfcExpression.evaluate(input, context);
-        expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
-    })
-})
+describe.each([
+  ["prop@value", new Decimal(120), ctxSimple],
+  ["prop@value / 12", new Decimal(10), ctxSimple],
+  ["prop@name", "Bewehrungsgrad", ctxSimple],
+  ["elem@name", "Geschossdecke:DE_STB - 20,0 cm:2309081", ctxSimple],
+  ["elem.Bewehrungsgrad@value", new Decimal(120), ctxSimple],
+  ["elem.Bewehrungsgrad@name", "Bewehrungsgrad", ctxSimple],
+  [
+    'elem.Bewehrungsgrad@name + " " + prop@value',
+    "Bewehrungsgrad 120",
+    ctxSimple,
+  ],
+  [
+    'prop.pset@name + ": " + elem.Bewehrungsgrad@name + " " + prop@value',
+    "PSet_Betonbau: Bewehrungsgrad 120",
+    ctxSimple,
+  ],
+  ["elem.Sichtbeton@value", true, ctxSimple],
+  ["elem@ifcClass", "IfcSlab", ctxSimple],
+])(
+  "ifcExpression (with 'simple' context)",
+  (input: string, result: any, context: any) => {
+    it(`evaluate("${input}", ctx) = ${result}`, () => {
+      const actualResult = IfcExpression.evaluate(input, context);
+      expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
+    });
+  }
+);
 
 describe("ifcExpression", () => {
-    it(".evaluate(ctx) throws SyntaxErrorException", () => {
-       expect(() => IfcExpression.evaluate("1+", {} as unknown as IfcExpressionContext)).toThrow();
-    })
-    it(".parse() does not throw SyntaxErrorException", () => {
-        expect(() => IfcExpression.parse("1+")).not.toThrow();
-    })
-})
+  it(".evaluate(ctx) throws SyntaxErrorException", () => {
+    expect(() =>
+      IfcExpression.evaluate("1+", {} as unknown as IfcExpressionContext)
+    ).toThrow();
+  });
+  it(".parse() does not throw SyntaxErrorException", () => {
+    expect(() => IfcExpression.parse("1+")).not.toThrow();
+  });
+});

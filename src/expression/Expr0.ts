@@ -1,10 +1,8 @@
-import {Expr} from "./Expr";
-import {IfcExpressionContext} from "../context/IfcExpressionContext";
+import { Expr } from "./Expr";
+import { IfcExpressionContext } from "../context/IfcExpressionContext";
 
-export abstract class Expr0<E> implements Expr<E>{
+export abstract class Expr0<E> implements Expr<E> {
+  protected constructor() {}
 
-    protected constructor() {
-    }
-
-    abstract evaluate(ctx: IfcExpressionContext): E;
+  abstract evaluate(ctx: IfcExpressionContext): E;
 }

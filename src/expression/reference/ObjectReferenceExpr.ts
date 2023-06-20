@@ -1,6 +1,4 @@
-import {Expr} from "../Expr";
-import {ObjectAccessor} from "../../context/accessor/ObjectAccessor";
+import { Expr } from "../Expr";
+import { ObjectAccessor } from "../../context/accessor/ObjectAccessor";
 
-export interface ObjectReferenceExpr extends Expr<ObjectAccessor>{
-
-}
+export interface ObjectReferenceExpr extends Expr<ObjectAccessor> {}

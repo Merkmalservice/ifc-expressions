@@ -1,16 +1,17 @@
-import {IfcExpressionContext} from "../../context/IfcExpressionContext";
-import {Expr0} from "../Expr0";
-import {ObjectReferenceExpr} from "./ObjectReferenceExpr";
-import {ObjectAccessor} from "../../context/accessor/ObjectAccessor";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext";
+import { Expr0 } from "../Expr0";
+import { ObjectReferenceExpr } from "./ObjectReferenceExpr";
+import { ObjectAccessor } from "../../context/accessor/ObjectAccessor";
 
-export class PropObjectReferenceExpr extends Expr0<ObjectAccessor> implements ObjectReferenceExpr{
+export class PropObjectReferenceExpr
+  extends Expr0<ObjectAccessor>
+  implements ObjectReferenceExpr
+{
+  constructor() {
+    super();
+  }
 
-    constructor() {
-        super();
-    }
-
-    evaluate(ctx: IfcExpressionContext ): ObjectAccessor {
-        return ctx.resolvePropRef();
-    }
-
+  evaluate(ctx: IfcExpressionContext): ObjectAccessor {
+    return ctx.resolvePropRef();
+  }
 }

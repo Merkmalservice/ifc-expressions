@@ -11,10 +11,13 @@ import {
   NumLiteralContext,
   NumMulDivContext,
   NumParensContext,
-  ObjectRefContext, StringAttributeRefContext, StringConcatContext,  StringLiteralContext,
+  ObjectRefContext,
+  StringAttributeRefContext,
+  StringConcatContext,
+  StringLiteralContext,
 } from "../generated/parser/IfcExpressionParser";
 import { Expr } from "./expression/Expr";
-import {notNullish} from "./utils";
+import { notNullish } from "./utils";
 import Decimal from "decimal.js";
 import { PlusExpr } from "./expression/numeric/PlusExpr";
 import { MinusExpr } from "./expression/numeric/MinusExpr";
@@ -22,18 +25,17 @@ import { ParserRuleContext } from "antlr4";
 import { MultiplyExpr } from "./expression/numeric/MultiplyExpr";
 import { DivideExpr } from "./expression/numeric/DivideExpr";
 import { NumParenthesisExpr } from "./expression/numeric/NumParenthesisExpr";
-import {AttributeReferenceExpr} from "./expression/reference/AttributeReferenceExpr";
-import {PropObjectReferenceExpr} from "./expression/reference/PropObjectReferenceExpr";
-import {ElemObjectReferenceExpr} from "./expression/reference/ElemObjectReferenceExpr";
-import {NestedObjectChainExpr} from "./expression/reference/NestedObjectChainExpr";
-import {NestedObjectChainEndExpr} from "./expression/reference/NestedObjectChainEndExpr";
-import {NumericValue} from "./context/value/NumericValue";
-import {StringValue} from "./context/value/StringValue";
-import {StringLiteralExpr} from "./expression/string/StringLiteralExpr";
-import {StringConcatExpr} from "./expression/string/StringConcatExpr";
+import { AttributeReferenceExpr } from "./expression/reference/AttributeReferenceExpr";
+import { PropObjectReferenceExpr } from "./expression/reference/PropObjectReferenceExpr";
+import { ElemObjectReferenceExpr } from "./expression/reference/ElemObjectReferenceExpr";
+import { NestedObjectChainExpr } from "./expression/reference/NestedObjectChainExpr";
+import { NestedObjectChainEndExpr } from "./expression/reference/NestedObjectChainEndExpr";
+import { NumericValue } from "./context/value/NumericValue";
+import { StringValue } from "./context/value/StringValue";
+import { StringLiteralExpr } from "./expression/string/StringLiteralExpr";
+import { StringConcatExpr } from "./expression/string/StringConcatExpr";
 
 export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
-
   constructor() {
     super();
   }
@@ -42,37 +44,44 @@ export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
    * AttributeRef
    *==============================================*/
 
-
-
   visitAttributeRef: (ctx: AttributeRefContext) => Expr<any> = (ctx) => {
     const objectRefExpr = this.visit(ctx.objectRef());
     const nestedObjectChainExpr = this.visit(ctx.nestedObjectChain());
-    return new AttributeReferenceExpr(objectRefExpr, nestedObjectChainExpr as NestedObjectChainExpr);
-  }
+    return new AttributeReferenceExpr(
+      objectRefExpr,
+      nestedObjectChainExpr as NestedObjectChainExpr
+    );
+  };
 
-  visitObjectRef: (ctx: ObjectRefContext) => Expr<any> = ctx => {
-    if (notNullish(ctx.PROP())){
+  visitObjectRef: (ctx: ObjectRefContext) => Expr<any> = (ctx) => {
+    if (notNullish(ctx.PROP())) {
       return new PropObjectReferenceExpr();
-    } else if (notNullish(ctx.ELEM())){
+    } else if (notNullish(ctx.ELEM())) {
       return new ElemObjectReferenceExpr();
     }
     this.failNode(ctx);
-  }
-
-
-  visitNestedObjectChainInner: (ctx: NestedObjectChainInnerContext) => Expr<any> = ctx => {
-    let name = ctx.namedRef().getChild(0).getText();
-    name = this.stripBrackets(name);
-    return new NestedObjectChainExpr(name, this.visit(ctx.nestedObjectChain()) as NestedObjectChainExpr);
   };
 
-  visitNestedObjectChainEnd: (ctx: NestedObjectChainEndContext) => Expr<any> = ctx => {
+  visitNestedObjectChainInner: (
+    ctx: NestedObjectChainInnerContext
+  ) => Expr<any> = (ctx) => {
+    let name = ctx.namedRef().getChild(0).getText();
+    name = this.stripBrackets(name);
+    return new NestedObjectChainExpr(
+      name,
+      this.visit(ctx.nestedObjectChain()) as NestedObjectChainExpr
+    );
+  };
+
+  visitNestedObjectChainEnd: (ctx: NestedObjectChainEndContext) => Expr<any> = (
+    ctx
+  ) => {
     let name = ctx.RESERVED_ATTRIBUTE_NAME().getText();
     return new NestedObjectChainEndExpr(name);
   };
 
   private stripBrackets(name: string) {
-    if (name.startsWith('{')) {
+    if (name.startsWith("{")) {
       return name.substring(1, name.length - 1);
     }
     return name;
@@ -82,33 +91,29 @@ export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
    * StringExpr
    *===============================================*/
 
-
-  visitStringLiteral: (ctx: StringLiteralContext) => Expr<any> = ctx => {
-    const quotedString =ctx.QUOTED_STRING().getText();
-    const text = quotedString.substring(1, quotedString.length-1);
+  visitStringLiteral: (ctx: StringLiteralContext) => Expr<any> = (ctx) => {
+    const quotedString = ctx.QUOTED_STRING().getText();
+    const text = quotedString.substring(1, quotedString.length - 1);
     return new StringLiteralExpr(new StringValue(text));
-  }
+  };
 
-
-  visitStringAttributeRef: (ctx: StringAttributeRefContext) => Expr<any> = ctx => {
+  visitStringAttributeRef: (ctx: StringAttributeRefContext) => Expr<any> = (
+    ctx
+  ) => {
     return this.visit(ctx.getChild(0));
-  }
+  };
 
-
-  visitStringConcat: (ctx: StringConcatContext) => Expr<any> = ctx => {
-    return new StringConcatExpr(
-        this.visit(ctx._left),
-        this.visit(ctx._right));
+  visitStringConcat: (ctx: StringConcatContext) => Expr<any> = (ctx) => {
+    return new StringConcatExpr(this.visit(ctx._left), this.visit(ctx._right));
   };
 
   /*================================================
    * NumExpr
    *===============================================*/
 
-  visitNumAttributeRef: (ctx: NumAttributeRefContext) => Expr<any> = ctx => {
+  visitNumAttributeRef: (ctx: NumAttributeRefContext) => Expr<any> = (ctx) => {
     return this.visit(ctx.getChild(0));
   };
-
 
   visitNumLiteral: (ctx: NumLiteralContext) => Expr<any> = (ctx) => {
     let val = ctx.INT();
@@ -171,8 +176,6 @@ export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
   visitNumLit: (ctx: NumLitContext) => Expr<any> = (ctx) => {
     return this.visit(ctx.getChild(0));
   };
-
-
 
   private failNode(ctx: ParserRuleContext) {
     throw new Error(`Cannot parse (sub)expression ${ctx.getText()}`);

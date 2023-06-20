@@ -1,12 +1,8 @@
-import {IfcPropertyAccessor} from "./accessor/IfcPropertyAccessor";
-import {IfcElementAccessor} from "./accessor/IfcElementAccessor";
+import { IfcPropertyAccessor } from "./accessor/IfcPropertyAccessor";
+import { IfcElementAccessor } from "./accessor/IfcElementAccessor";
 
 export interface IfcExpressionContext {
-     resolvePropRef(): IfcPropertyAccessor;
+  resolvePropRef(): IfcPropertyAccessor;
 
-     resolveElemRef(): IfcElementAccessor;
+  resolveElemRef(): IfcElementAccessor;
 }
-
-
-
-
