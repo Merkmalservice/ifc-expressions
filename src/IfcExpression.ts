@@ -44,6 +44,7 @@ export {
   NamedObjectAccessor,
   ObjectAccessor,
   Expr,
+  ExprVisitor,
   IfcExpressionEvaluationException,
   IfcExpressionErrorListener,
   IfcExpressionVisitor,
