@@ -12,7 +12,7 @@
   },
   "types": "./dist/ifcExpression.d.ts",
   "files": [
-    "./dist/*"
+    "./dist/**/*"
   ],
   "engines": {
     "node": ">=14.16"
