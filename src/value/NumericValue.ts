@@ -1,4 +1,4 @@
-import { Value } from "./Value";
+import { Value } from "./Value.js";
 import Decimal from "decimal.js";
 
 export class NumericValue extends Value<Decimal> {

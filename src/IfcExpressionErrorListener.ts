@@ -1,6 +1,6 @@
 import { ErrorListener, RecognitionException, Recognizer, Token } from "antlr4";
-import { notNullish } from "./utils";
-import { SyntaxErrorException } from "./SyntaxErrorException";
+import { isPresent } from "./IfcExpressionUtils.js";
+import { SyntaxErrorException } from "./SyntaxErrorException.js";
 
 export class IfcExpressionErrorListener extends ErrorListener<Token> {
   private exception: SyntaxErrorException = null;
@@ -22,7 +22,7 @@ export class IfcExpressionErrorListener extends ErrorListener<Token> {
   }
 
   public isErrorOccurred(): boolean {
-    return notNullish(this.exception);
+    return isPresent(this.exception);
   }
 
   public getException(): SyntaxErrorException {

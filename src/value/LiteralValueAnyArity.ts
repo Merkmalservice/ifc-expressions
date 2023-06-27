@@ -1,4 +1,4 @@
-import { LiteralValue } from "./LiteralValue";
+import { LiteralValue } from "./LiteralValue.js";
 
 export type LiteralValueAnyArity =
   | LiteralValue

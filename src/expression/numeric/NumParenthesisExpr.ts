@@ -1,7 +1,7 @@
-import { Expr1 } from "../Expr1";
-import { Expr } from "../Expr";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { NumericValue } from "../../value/NumericValue";
+import { Expr1 } from "../Expr1.js";
+import { Expr } from "../Expr.js";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
+import { NumericValue } from "../../value/NumericValue.js";
 
 export class NumParenthesisExpr extends Expr1<
   Expr<NumericValue>,

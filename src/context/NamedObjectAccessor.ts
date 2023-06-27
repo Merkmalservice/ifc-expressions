@@ -1,6 +1,6 @@
-import { ObjectAccessor } from "./ObjectAccessor";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity";
-import { StringValue } from "../value/StringValue";
+import { ObjectAccessor } from "./ObjectAccessor.js";
+import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { StringValue } from "../value/StringValue.js";
 
 export abstract class NamedObjectAccessor implements ObjectAccessor {
   abstract getName(): string;

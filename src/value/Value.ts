@@ -1,4 +1,4 @@
-import { PrimitiveValueType } from "./PrimitiveValueType";
+import { PrimitiveValueType } from "./PrimitiveValueType.js";
 
 export class Value<T extends PrimitiveValueType> {
   private readonly value: T;

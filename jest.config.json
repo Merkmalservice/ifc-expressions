@@ -5,7 +5,7 @@
   "cacheDirectory": "tmp/jest/cache",
   "coverageDirectory": "tmp/jest/coverage",
   "moduleNameMapper": {
-    "^(\\.\\/.+)\\.js$": "$1"
+    "^(\\.\\.?\\/.+)\\.jsx?$": "$1"
   },
   "transform": {},
   "extensionsToTreatAsEsm": [".ts"]

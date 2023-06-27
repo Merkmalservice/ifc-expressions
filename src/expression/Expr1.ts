@@ -1,5 +1,5 @@
-import { Expr } from "./Expr";
-import { IfcExpressionContext } from "../context/IfcExpressionContext";
+import { Expr } from "./Expr.js";
+import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
 
 export abstract class Expr1<V, E> implements Expr<E> {
   readonly value: V;

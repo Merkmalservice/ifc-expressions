@@ -1,8 +1,8 @@
-import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { Expr2 } from "../Expr2";
-import { NestedObjectChainEndExpr } from "./NestedObjectChainEndExpr";
-import { ObjectAccessor } from "../../context/ObjectAccessor";
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
+import { Expr2 } from "../Expr2.js";
+import { NestedObjectChainEndExpr } from "./NestedObjectChainEndExpr.js";
+import { ObjectAccessor } from "../../context/ObjectAccessor.js";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
 
 export class NestedObjectChainExpr extends Expr2<
   string,

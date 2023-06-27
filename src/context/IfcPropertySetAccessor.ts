@@ -1,7 +1,7 @@
-import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity";
-import { IfcPropertyAccessor } from "./IfcPropertyAccessor";
-import { ObjectAccessor } from "./ObjectAccessor";
+import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor.js";
+import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { IfcPropertyAccessor } from "./IfcPropertyAccessor.js";
+import { ObjectAccessor } from "./ObjectAccessor.js";
 
 export abstract class IfcPropertySetAccessor extends IfcRootObjectAccessor {
   listAttributes(): Array<string> {

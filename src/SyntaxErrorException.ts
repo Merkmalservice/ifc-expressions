@@ -1,5 +1,5 @@
 import { Token } from "antlr4";
-import { notNullish } from "./utils";
+import { isPresent } from "./IfcExpressionUtils.js";
 
 export class SyntaxErrorException extends Error {
   private readonly _offendingSymbol: Token;
@@ -14,7 +14,7 @@ export class SyntaxErrorException extends Error {
   ) {
     super(
       `Syntax Error in line ${line}, column ${column}` +
-        (notNullish(msg) ? `: ${msg}` : "")
+        (isPresent(msg) ? `: ${msg}` : "")
     );
     this._offendingSymbol = offendingSymbol;
     this._line = line;

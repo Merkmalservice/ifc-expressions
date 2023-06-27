@@ -1,4 +1,4 @@
-import { Value } from "./Value";
+import { Value } from "./Value.js";
 
 export class ReferenceValue extends Value<string> {
   constructor(value: string) {

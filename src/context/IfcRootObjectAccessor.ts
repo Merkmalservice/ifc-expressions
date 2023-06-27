@@ -1,6 +1,6 @@
-import { NamedObjectAccessor } from "./NamedObjectAccessor";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity";
-import { StringValue } from "../value/StringValue";
+import { NamedObjectAccessor } from "./NamedObjectAccessor.js";
+import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { StringValue } from "../value/StringValue.js";
 
 export abstract class IfcRootObjectAccessor extends NamedObjectAccessor {
   getAttribute(name: string): LiteralValueAnyArity | undefined {

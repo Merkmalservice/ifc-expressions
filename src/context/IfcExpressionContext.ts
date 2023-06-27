@@ -1,5 +1,5 @@
-import { IfcPropertyAccessor } from "./IfcPropertyAccessor";
-import { IfcElementAccessor } from "./IfcElementAccessor";
+import { IfcPropertyAccessor } from "./IfcPropertyAccessor.js";
+import { IfcElementAccessor } from "./IfcElementAccessor.js";
 
 export interface IfcExpressionContext {
   resolvePropRef(): IfcPropertyAccessor;

@@ -22,7 +22,7 @@
     "build-complete": "npm run format-apply && npm run build && npm run test",
     "build": "npm run clean && npm run make-parser && npm run transpile",
     "clean": "gulp clean",
-    "make-parser": "cd src/grammar && java -jar ../../antlr4/antlr-4.13.0-complete.jar -Werror -Dlanguage=TypeScript -visitor IfcExpression.g4 -o ../../generated/parser",
+    "make-parser": "cd src/grammar && java -jar ../../antlr4/antlr-4.13.0-complete.jar -Werror -Dlanguage=TypeScript -visitor IfcExpression.g4 -o ../gen/parser",
     "transpile": "gulp build",
     "test": "jest --coverage",
     "format-apply": "prettier --write .",

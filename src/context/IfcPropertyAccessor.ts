@@ -1,7 +1,7 @@
-import { ObjectAccessor } from "./ObjectAccessor";
-import { NamedObjectAccessor } from "./NamedObjectAccessor";
-import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity";
+import { ObjectAccessor } from "./ObjectAccessor.js";
+import { NamedObjectAccessor } from "./NamedObjectAccessor.js";
+import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
+import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
 
 export abstract class IfcPropertyAccessor extends NamedObjectAccessor {
   getNestedObjectAccessor(name: string): ObjectAccessor | undefined {

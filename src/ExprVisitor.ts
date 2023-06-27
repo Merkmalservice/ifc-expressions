@@ -1,5 +1,5 @@
-import IfcExpressionVisitor from "../generated/parser/IfcExpressionVisitor";
-import { NumericLiteralExpr } from "./expression/numeric/NumericLiteralExpr";
+import IfcExpressionVisitor from "./gen/parser/IfcExpressionVisitor.js";
+import { NumericLiteralExpr } from "./expression/numeric/NumericLiteralExpr.js";
 import {
   AttributeRefContext,
   ExprContext,
@@ -15,25 +15,25 @@ import {
   StringAttributeRefContext,
   StringConcatContext,
   StringLiteralContext,
-} from "../generated/parser/IfcExpressionParser";
-import { Expr } from "./expression/Expr";
-import { notNullish } from "./utils";
+} from "./gen/parser/IfcExpressionParser.js";
+import { Expr } from "./expression/Expr.js";
+import { isPresent } from "./IfcExpressionUtils.js";
 import Decimal from "decimal.js";
-import { PlusExpr } from "./expression/numeric/PlusExpr";
-import { MinusExpr } from "./expression/numeric/MinusExpr";
+import { PlusExpr } from "./expression/numeric/PlusExpr.js";
+import { MinusExpr } from "./expression/numeric/MinusExpr.js";
 import { ParserRuleContext } from "antlr4";
-import { MultiplyExpr } from "./expression/numeric/MultiplyExpr";
-import { DivideExpr } from "./expression/numeric/DivideExpr";
-import { NumParenthesisExpr } from "./expression/numeric/NumParenthesisExpr";
-import { AttributeReferenceExpr } from "./expression/reference/AttributeReferenceExpr";
-import { PropObjectReferenceExpr } from "./expression/reference/PropObjectReferenceExpr";
-import { ElemObjectReferenceExpr } from "./expression/reference/ElemObjectReferenceExpr";
-import { NestedObjectChainExpr } from "./expression/reference/NestedObjectChainExpr";
-import { NestedObjectChainEndExpr } from "./expression/reference/NestedObjectChainEndExpr";
-import { NumericValue } from "./value/NumericValue";
-import { StringValue } from "./value/StringValue";
-import { StringLiteralExpr } from "./expression/string/StringLiteralExpr";
-import { StringConcatExpr } from "./expression/string/StringConcatExpr";
+import { MultiplyExpr } from "./expression/numeric/MultiplyExpr.js";
+import { DivideExpr } from "./expression/numeric/DivideExpr.js";
+import { NumParenthesisExpr } from "./expression/numeric/NumParenthesisExpr.js";
+import { AttributeReferenceExpr } from "./expression/reference/AttributeReferenceExpr.js";
+import { PropObjectReferenceExpr } from "./expression/reference/PropObjectReferenceExpr.js";
+import { ElemObjectReferenceExpr } from "./expression/reference/ElemObjectReferenceExpr.js";
+import { NestedObjectChainExpr } from "./expression/reference/NestedObjectChainExpr.js";
+import { NestedObjectChainEndExpr } from "./expression/reference/NestedObjectChainEndExpr.js";
+import { NumericValue } from "./value/NumericValue.js";
+import { StringValue } from "./value/StringValue.js";
+import { StringLiteralExpr } from "./expression/string/StringLiteralExpr.js";
+import { StringConcatExpr } from "./expression/string/StringConcatExpr.js";
 
 export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
   constructor() {
@@ -54,9 +54,9 @@ export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
   };
 
   visitObjectRef: (ctx: ObjectRefContext) => Expr<any> = (ctx) => {
-    if (notNullish(ctx.PROP())) {
+    if (isPresent(ctx.PROP())) {
       return new PropObjectReferenceExpr();
-    } else if (notNullish(ctx.ELEM())) {
+    } else if (isPresent(ctx.ELEM())) {
       return new ElemObjectReferenceExpr();
     }
     this.failNode(ctx);
@@ -117,13 +117,13 @@ export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
 
   visitNumLiteral: (ctx: NumLiteralContext) => Expr<any> = (ctx) => {
     let val = ctx.INT();
-    if (notNullish(val)) {
+    if (isPresent(val)) {
       return new NumericLiteralExpr(
         new NumericValue(new Decimal(val.symbol.text))
       );
     }
     val = ctx.FLOAT();
-    if (notNullish(val)) {
+    if (isPresent(val)) {
       return new NumericLiteralExpr(
         new NumericValue(new Decimal(val.symbol.text))
       );

@@ -1,4 +1,4 @@
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity";
+import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
 
 export interface ObjectAccessor {
   /**

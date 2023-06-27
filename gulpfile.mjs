@@ -8,7 +8,7 @@ const mjsProject = ts.createProject("tsconfig.json");
 const cjsProject = ts.createProject("tsconfig-cjs.json");
 
 gulp.task("clean", function () {
-  return deleteAsync(["./dist", "./tmp", "./generated"]);
+  return deleteAsync(["./dist", "./tmp", "./src/gen"]);
 });
 gulp.task("compress", function () {
   return gulp

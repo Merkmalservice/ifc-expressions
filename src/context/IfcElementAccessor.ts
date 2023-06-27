@@ -1,11 +1,11 @@
-import { ObjectAccessor } from "./ObjectAccessor";
-import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor";
-import { IfcTypeObjectAccessor } from "./IfcTypeObjectAccessor";
-import { IfcPropertyAccessor } from "./IfcPropertyAccessor";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity";
-import { StringValue } from "../value/StringValue";
-import { notNullish } from "../utils";
-import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor";
+import { ObjectAccessor } from "./ObjectAccessor.js";
+import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor.js";
+import { IfcTypeObjectAccessor } from "./IfcTypeObjectAccessor.js";
+import { IfcPropertyAccessor } from "./IfcPropertyAccessor.js";
+import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { StringValue } from "../value/StringValue.js";
+import { isPresent } from "../IfcExpressionUtils.js";
+import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
 
 export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
   getNestedObjectAccessor(name: string): ObjectAccessor | undefined {
@@ -13,7 +13,7 @@ export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
       return this.getTypeObjectAccessor();
     }
     let val = this.getIfcPropertyAccessor(name);
-    if (notNullish(val)) {
+    if (isPresent(val)) {
       return val;
     }
     return this.getIfcPropertySetAccessor(name);

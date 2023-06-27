@@ -1,7 +1,7 @@
-import { Expr2 } from "../Expr2";
-import { Expr } from "../Expr";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { NumericValue } from "../../value/NumericValue";
+import { Expr2 } from "../Expr2.js";
+import { Expr } from "../Expr.js";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
+import { NumericValue } from "../../value/NumericValue.js";
 
 export class DivideExpr extends Expr2<
   Expr<NumericValue>,
