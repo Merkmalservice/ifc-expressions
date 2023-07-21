@@ -1,15 +1,22 @@
-import { IfcExpression } from "../src/IfcExpression";
+import {IfcExpression} from "../src/IfcExpression";
 import Decimal from "decimal.js";
-import { IfcExpressionContext } from "../src/context/IfcExpressionContext";
-import { NumericValue } from "../src/value/NumericValue";
-import { LiteralValueAnyArity } from "../src/value/LiteralValueAnyArity";
-import { StringValue } from "../src/value/StringValue";
-import { BooleanValue } from "../src/value/BooleanValue";
-import { ObjectAccessor } from "../src/context/ObjectAccessor";
-import { IfcElementAccessor } from "../src/context/IfcElementAccessor";
-import { IfcPropertyAccessor } from "../src/context/IfcPropertyAccessor";
-import { IfcPropertySetAccessor } from "../src/context/IfcPropertySetAccessor";
-import { IfcTypeObjectAccessor } from "../src/context/IfcTypeObjectAccessor";
+import {IfcExpressionContext} from "../src/context/IfcExpressionContext";
+import {NumericValue} from "../src/value/NumericValue";
+import {LiteralValueAnyArity} from "../src/value/LiteralValueAnyArity";
+import {StringValue} from "../src/value/StringValue";
+import {BooleanValue} from "../src/value/BooleanValue";
+import {ObjectAccessor} from "../src/context/ObjectAccessor";
+import {IfcElementAccessor} from "../src/context/IfcElementAccessor";
+import {IfcPropertyAccessor} from "../src/context/IfcPropertyAccessor";
+import {IfcPropertySetAccessor} from "../src/context/IfcPropertySetAccessor";
+import {IfcTypeObjectAccessor} from "../src/context/IfcTypeObjectAccessor";
+import {
+  ExprEvalRefChainErrorObj,
+  ExprEvalStatus,
+  ExprEvalSuccess,
+  ExprEvalSuccessObj,
+} from "../src/expression/ExprEvalResult";
+import {ExprKind} from "../src/expression/ExprKind";
 
 const ctxSimple: any = {
   psetBetonbau: new (class extends IfcPropertySetAccessor {
@@ -126,7 +133,10 @@ const ctxSimple: any = {
     getIfcPropertySetAccessor(
       name: string
     ): IfcPropertySetAccessor | undefined {
-      return ctxSimple().psetBetonbau;
+      if (name === "PSet_Betonbau") {
+        return ctxSimple.psetBetonbau;
+      }
+      return undefined;
     }
 
     getName(): string {
@@ -142,7 +152,7 @@ const ctxSimple: any = {
     }
 
     listIfcPropertySets(): Array<string> {
-      return ["PSet_Betonbau", "PSet_5D"];
+      return ["PSet_Betonbau"];
     }
   })(),
 
@@ -169,7 +179,9 @@ describe.each([
       input,
       {} as unknown as IfcExpressionContext
     );
-    expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
+    expect(
+      (actualResult as ExprEvalSuccess<any>).result.getValue()
+    ).toStrictEqual(result);
   });
 });
 
@@ -215,36 +227,114 @@ describe.each([
   (input: string, result: any, context: any) => {
     it(`evaluate("${input}", ctx) = ${result}`, () => {
       const actualResult = IfcExpression.evaluate(input, context);
-      expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
+      expect(
+        (actualResult as ExprEvalSuccess<NumericValue>).result.getValue()
+      ).toStrictEqual(result);
     });
   }
 );
 
 describe.each([
-  ["prop@value", new Decimal(120), ctxSimple],
-  ["prop@value / 12", new Decimal(10), ctxSimple],
-  ["prop@name", "Bewehrungsgrad", ctxSimple],
-  ["elem@name", "Geschossdecke:DE_STB - 20,0 cm:2309081", ctxSimple],
-  ["elem.Bewehrungsgrad@value", new Decimal(120), ctxSimple],
-  ["elem.Bewehrungsgrad@name", "Bewehrungsgrad", ctxSimple],
+  ["prop@value", new ExprEvalSuccessObj(NumericValue.of(120)), ctxSimple],
+  ["prop@value / 12", new ExprEvalSuccessObj(NumericValue.of(10)), ctxSimple],
+  [
+    "prop@name",
+    new ExprEvalSuccessObj(StringValue.of("Bewehrungsgrad")),
+    ctxSimple,
+  ],
+  [
+    "elem@name",
+    new ExprEvalSuccessObj(
+      StringValue.of("Geschossdecke:DE_STB - 20,0 cm:2309081")
+    ),
+    ctxSimple,
+  ],
+  [
+    "elem.Bewehrungsgrad@value",
+    new ExprEvalSuccessObj(NumericValue.of(120)),
+    ctxSimple,
+  ],
+  [
+    "elem.Bewehrungsgrad@name",
+    new ExprEvalSuccessObj(StringValue.of("Bewehrungsgrad")),
+    ctxSimple,
+  ],
   [
     'elem.Bewehrungsgrad@name + " " + prop@value',
-    "Bewehrungsgrad 120",
+    new ExprEvalSuccessObj(StringValue.of("Bewehrungsgrad 120")),
     ctxSimple,
   ],
   [
     'prop.pset@name + ": " + elem.Bewehrungsgrad@name + " " + prop@value',
-    "PSet_Betonbau: Bewehrungsgrad 120",
+    new ExprEvalSuccessObj(StringValue.of("PSet_Betonbau: Bewehrungsgrad 120")),
     ctxSimple,
   ],
-  ["elem.Sichtbeton@value", true, ctxSimple],
-  ["elem@ifcClass", "IfcSlab", ctxSimple],
+  [
+    "elem.Sichtbeton@value",
+    new ExprEvalSuccessObj(BooleanValue.of(true)),
+    ctxSimple,
+  ],
+  [
+    "elem@ifcClass",
+    new ExprEvalSuccessObj(StringValue.of("IfcSlab")),
+    ctxSimple,
+  ],
+  [
+    "elem.dontFindThisProperty@value",
+    ExprEvalRefChainErrorObj.bubbleUp(
+      new ExprEvalRefChainErrorObj(
+        ExprKind.REF_NESTED_OBJECT_CHAIN,
+        ExprEvalStatus.REFERENCE_ERROR,
+        "dontFindThisProperty",
+        "No such nested object: 'dontFindThisProperty'"
+      ),
+      "REF_ELEMENT"
+    ),
+    ctxSimple,
+  ],
+  [
+    "elem.PSet_Betonbau.dontFindThisProperty@value",
+    ExprEvalRefChainErrorObj.bubbleUp(
+      ExprEvalRefChainErrorObj.bubbleUp(
+        new ExprEvalRefChainErrorObj(
+          ExprKind.REF_NESTED_OBJECT_CHAIN,
+          ExprEvalStatus.REFERENCE_ERROR,
+          "dontFindThisProperty",
+          "No such nested object: 'dontFindThisProperty'"
+        ),
+        "PSet_Betonbau"
+      ),
+      "REF_ELEMENT"
+    ),
+    ctxSimple,
+  ],
+  [
+    "prop.pset.dontFindThisProperty@value",
+    ExprEvalRefChainErrorObj.bubbleUp(
+      ExprEvalRefChainErrorObj.bubbleUp(
+        new ExprEvalRefChainErrorObj(
+          ExprKind.REF_NESTED_OBJECT_CHAIN,
+          ExprEvalStatus.REFERENCE_ERROR,
+          "dontFindThisProperty",
+          "No such nested object: 'dontFindThisProperty'"
+        ),
+        "pset"
+      ),
+      "REF_PROPERTY"
+    ),
+    ctxSimple,
+  ],
+  [
+    "elem.PSet_Betonbau.Bewehrungsgrad@value",
+    new ExprEvalSuccessObj(NumericValue.of(120)),
+    ctxSimple,
+  ],
 ])(
   "ifcExpression (with 'simple' context)",
   (input: string, result: any, context: any) => {
     it(`evaluate("${input}", ctx) = ${result}`, () => {
       const actualResult = IfcExpression.evaluate(input, context);
-      expect((actualResult as NumericValue).getValue()).toStrictEqual(result);
+      expect(actualResult).toStrictEqual(result);
     });
   }
 );

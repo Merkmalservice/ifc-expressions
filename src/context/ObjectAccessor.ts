@@ -1,4 +1,4 @@
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import {LiteralValueAnyArity} from "../value/LiteralValueAnyArity.js";
 
 export interface ObjectAccessor {
   /**
@@ -17,4 +17,14 @@ export interface ObjectAccessor {
   listNestedObjects(): Array<string>;
 
   listAttributes(): Array<string>;
+}
+
+export function isObjectAccessor(arg: any): arg is ObjectAccessor {
+  return (
+    typeof arg === "object" &&
+    typeof arg.getNestedObjectAccessor === "function" &&
+    typeof arg.getAttribute === "function" &&
+    typeof arg.listNestedObjects === "function" &&
+    typeof arg.listAttributes === "function"
+  );
 }

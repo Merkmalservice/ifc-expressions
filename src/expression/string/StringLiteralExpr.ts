@@ -1,13 +1,14 @@
-import { Expr1 } from "../Expr1.js";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { StringValue } from "../../value/StringValue.js";
+import {IfcExpressionContext} from "../../context/IfcExpressionContext.js";
+import {StringValue} from "../../value/StringValue.js";
+import {LiteralExpr} from "../LiteralExpr";
+import {ExprKind} from "../ExprKind";
 
-export class StringLiteralExpr extends Expr1<StringValue, StringValue> {
+export class StringLiteralExpr extends LiteralExpr<StringValue, StringValue> {
   constructor(value: StringValue) {
-    super(value);
+    super(ExprKind.STR_LITERAL, value);
   }
 
-  evaluate(ctx: IfcExpressionContext): StringValue {
+  calculateResult(ctx: IfcExpressionContext): StringValue {
     return this.value;
   }
 }

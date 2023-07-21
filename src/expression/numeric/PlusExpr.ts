@@ -1,23 +1,20 @@
-import { Expr2 } from "../Expr2.js";
-import { Expr } from "../Expr.js";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { NumericValue } from "../../value/NumericValue.js";
+import {Expr2} from "../Expr2.js";
+import {Expr} from "../Expr.js";
+import {IfcExpressionContext} from "../../context/IfcExpressionContext.js";
+import {NumericValue} from "../../value/NumericValue.js";
+import {ExprKind} from "../ExprKind";
 
-export class PlusExpr extends Expr2<
-  Expr<NumericValue>,
-  Expr<NumericValue>,
-  NumericValue
-> {
+export class PlusExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
   constructor(left: Expr<NumericValue>, right: Expr<NumericValue>) {
-    super(left, right);
+    super(ExprKind.NUM_PLUS, left, right);
   }
 
-  evaluate(ctx: IfcExpressionContext): NumericValue {
-    return NumericValue.of(
-      this.left
-        .evaluate(ctx)
-        .getValue()
-        .plus(this.right.evaluate(ctx).getValue())
-    );
+  calculateResult(
+    ctx: IfcExpressionContext,
+    localCtx: Map<string, any>,
+    leftResult: NumericValue,
+    rightResult: NumericValue
+  ): NumericValue {
+    return NumericValue.of(leftResult.getValue().plus(rightResult.getValue()));
   }
 }

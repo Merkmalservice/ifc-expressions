@@ -1,23 +1,21 @@
-import { Expr2 } from "../Expr2.js";
-import { Expr } from "../Expr.js";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { NumericValue } from "../../value/NumericValue.js";
+import {Expr2} from "../Expr2.js";
+import {Expr} from "../Expr.js";
+import {IfcExpressionContext} from "../../context/IfcExpressionContext.js";
+import {NumericValue} from "../../value/NumericValue.js";
+import {ExprKind} from "../ExprKind";
+import {ExprEvalError} from "../ExprEvalResult";
 
-export class MinusExpr extends Expr2<
-  Expr<NumericValue>,
-  Expr<NumericValue>,
-  NumericValue
-> {
+export class MinusExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
   constructor(left: Expr<NumericValue>, right: Expr<NumericValue>) {
-    super(left, right);
+    super(ExprKind.NUM_MINUS, left, right);
   }
 
-  evaluate(ctx: IfcExpressionContext): NumericValue {
-    return NumericValue.of(
-      this.left
-        .evaluate(ctx)
-        .getValue()
-        .minus(this.right.evaluate(ctx).getValue())
-    );
+  protected calculateResult(
+    ctx: IfcExpressionContext,
+    localCtx: Map<string, any>,
+    left: NumericValue,
+    right: NumericValue
+  ): NumericValue | ExprEvalError {
+    return NumericValue.of(left.getValue().minus(right.getValue()));
   }
 }

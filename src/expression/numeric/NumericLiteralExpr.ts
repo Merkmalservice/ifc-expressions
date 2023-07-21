@@ -1,13 +1,20 @@
-import { Expr1 } from "../Expr1.js";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { NumericValue } from "../../value/NumericValue.js";
+import {IfcExpressionContext} from "../../context/IfcExpressionContext.js";
+import {NumericValue} from "../../value/NumericValue.js";
+import {ExprEvalError} from "../ExprEvalResult";
+import {ExprKind} from "../ExprKind";
+import {LiteralExpr} from "../LiteralExpr";
 
-export class NumericLiteralExpr extends Expr1<NumericValue, NumericValue> {
+export class NumericLiteralExpr extends LiteralExpr<
+  NumericValue,
+  NumericValue
+> {
   constructor(value: NumericValue) {
-    super(value);
+    super(ExprKind.NUM_LITERAL, value);
   }
 
-  evaluate(ctx: IfcExpressionContext): NumericValue {
+  protected calculateResult(
+    ctx: IfcExpressionContext
+  ): NumericValue | ExprEvalError {
     return this.value;
   }
 }
