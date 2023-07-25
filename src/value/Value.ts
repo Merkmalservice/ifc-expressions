@@ -1,13 +1,10 @@
 import { PrimitiveValueType } from "./PrimitiveValueType.js";
 
-export class Value<T extends PrimitiveValueType> {
-  private readonly value: T;
-
-  constructor(value: T) {
-    this.value = value;
-  }
-
-  public getValue(): T {
-    return this.value;
-  }
+export interface Value<
+  T extends
+    | PrimitiveValueType
+    | Array<Value<PrimitiveValueType | Array<Value<PrimitiveValueType>>>>
+> {
+  getValue(): T;
+  equals(other: Value<any>): boolean;
 }

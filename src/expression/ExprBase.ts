@@ -1,7 +1,12 @@
-import {Expr} from "./Expr";
-import {IfcExpressionContext} from "../context/IfcExpressionContext";
-import {ExprEvalError, ExprEvalResult, ExprEvalSuccessObj, isExprEvalError,} from "./ExprEvalResult";
-import {ExprKind} from "./ExprKind";
+import { Expr } from "./Expr";
+import { IfcExpressionContext } from "../context/IfcExpressionContext";
+import {
+  ExprEvalError,
+  ExprEvalResult,
+  ExprEvalSuccessObj,
+  isExprEvalError,
+} from "./ExprEvalResult";
+import { ExprKind } from "./ExprKind";
 
 export abstract class ExprBase<T> implements Expr<T> {
   private readonly exprKind: ExprKind;

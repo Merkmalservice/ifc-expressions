@@ -1,22 +1,22 @@
-import {IfcExpression} from "../src/IfcExpression";
+import { IfcExpression } from "../src/IfcExpression";
 import Decimal from "decimal.js";
-import {IfcExpressionContext} from "../src/context/IfcExpressionContext";
-import {NumericValue} from "../src/value/NumericValue";
-import {LiteralValueAnyArity} from "../src/value/LiteralValueAnyArity";
-import {StringValue} from "../src/value/StringValue";
-import {BooleanValue} from "../src/value/BooleanValue";
-import {ObjectAccessor} from "../src/context/ObjectAccessor";
-import {IfcElementAccessor} from "../src/context/IfcElementAccessor";
-import {IfcPropertyAccessor} from "../src/context/IfcPropertyAccessor";
-import {IfcPropertySetAccessor} from "../src/context/IfcPropertySetAccessor";
-import {IfcTypeObjectAccessor} from "../src/context/IfcTypeObjectAccessor";
+import { IfcExpressionContext } from "../src/context/IfcExpressionContext";
+import { NumericValue } from "../src/value/NumericValue";
+import { LiteralValueAnyArity } from "../src/value/LiteralValueAnyArity";
+import { StringValue } from "../src/value/StringValue";
+import { BooleanValue } from "../src/value/BooleanValue";
+import { ObjectAccessor } from "../src/context/ObjectAccessor";
+import { IfcElementAccessor } from "../src/context/IfcElementAccessor";
+import { IfcPropertyAccessor } from "../src/context/IfcPropertyAccessor";
+import { IfcPropertySetAccessor } from "../src/context/IfcPropertySetAccessor";
+import { IfcTypeObjectAccessor } from "../src/context/IfcTypeObjectAccessor";
 import {
   ExprEvalRefChainErrorObj,
   ExprEvalStatus,
   ExprEvalSuccess,
   ExprEvalSuccessObj,
 } from "../src/expression/ExprEvalResult";
-import {ExprKind} from "../src/expression/ExprKind";
+import { ExprKind } from "../src/expression/ExprKind";
 
 const ctxSimple: any = {
   psetBetonbau: new (class extends IfcPropertySetAccessor {
@@ -173,6 +173,31 @@ describe.each([
   ["1+2*2", new Decimal("5")],
   ["(1+2)*2", new Decimal("6")],
   ["(1+(2)*2)", new Decimal("5")],
+  ["[1,2,3]", [new NumericValue(1), new NumericValue(2), new NumericValue(3)]],
+  ["ROUND(1.1,0)", new Decimal("1")],
+  ["ROUND(0.5,0)", new Decimal("1")],
+  ["ROUND(-0.5,0)", new Decimal("-1")],
+  ["ROUND(-0.5,1)", new Decimal("-0.5")],
+  ["ROUND(-0.15,1)", new Decimal("-0.2")],
+  ["ROUND(-0.15,0)", new Decimal("-0")],
+  ["ROUND(1.1,1)", new Decimal("1.1")],
+  ["ROUND(1.11,1)", new Decimal("1.1")],
+  ["ROUND(1.149,1)", new Decimal("1.1")],
+  ["ROUND(1.15,1)", new Decimal("1.2")],
+  ['MAP("rot", [["rot", "grün", "blau"], ["red","green", "blue"]])', "red"],
+  ['MAP("grün", [["rot", "grün", "blau"], ["red","green", "blue"]])', "green"],
+  ['MAP("blau", [["rot", "grün", "blau"], ["red","green", "blue"]])', "blue"],
+  ["MAP(1, [[1,2,3], [10,20,30]])", new Decimal(10)],
+  [
+    'MAP("blau", [["rot", "grün", "b" + "l" + "a" + "u"], ["red","green", "blue"]])',
+    "blue",
+  ],
+  [
+    'MAP("yellow", [["rot", "grün", "blau"], ["red","green", "blue"]], "not found")',
+    "not found",
+  ],
+  /*['MAP(ENUM_IRI(prop@value), [["urn:uuid:123123123"],["urn:uuid:789987789"]], "not found")', "not found"],
+  ['MAP(prop@value, LOAD_MATRIX("STRABAG_TO_ASFINAG_STATES"), "not found")', "not found"],*/
 ])("ifcExpression (numeric, no context)", (input: string, result: any) => {
   it(`evaluate("${input}") = ${result}`, () => {
     const actualResult = IfcExpression.evaluate(

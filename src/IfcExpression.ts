@@ -1,31 +1,33 @@
-import {CharStream, CommonTokenStream, ErrorListener, Token} from "antlr4";
-import {ExprVisitor} from "./ExprVisitor.js";
-import {IfcExpressionErrorListener} from "./IfcExpressionErrorListener.js";
-import {isNullish, isPresent} from "./IfcExpressionUtils.js";
-import {IfcExpressionContext} from "./context/IfcExpressionContext.js";
-import {Expr} from "./expression/Expr.js";
+import { CharStream, CommonTokenStream, ErrorListener, Token } from "antlr4";
+import { ExprVisitor } from "./ExprVisitor.js";
+import { IfcExpressionErrorListener } from "./IfcExpressionErrorListener.js";
+import { isNullish, isPresent } from "./IfcExpressionUtils.js";
+import { IfcExpressionContext } from "./context/IfcExpressionContext.js";
+import { Expr } from "./expression/Expr.js";
 
-import {IfcElementAccessor} from "./context/IfcElementAccessor.js";
-import {Value} from "./value/Value.js";
-import {StringValue} from "./value/StringValue.js";
-import {NumericValue} from "./value/NumericValue.js";
-import {BooleanValue} from "./value/BooleanValue.js";
-import {LogicalValue} from "./value/LogicalValue.js";
-import {LiteralValue} from "./value/LiteralValue.js";
-import {ReferenceValue} from "./value/ReferenceValue.js";
-import {IfcPropertySetAccessor} from "./context/IfcPropertySetAccessor.js";
-import {IfcPropertyAccessor} from "./context/IfcPropertyAccessor.js";
-import {IfcRootObjectAccessor} from "./context/IfcRootObjectAccessor.js";
-import {IfcTypeObjectAccessor} from "./context/IfcTypeObjectAccessor.js";
-import {NamedObjectAccessor} from "./context/NamedObjectAccessor.js";
-import IfcExpressionParser, {ExprContext} from "./gen/parser/IfcExpressionParser.js";
+import { IfcElementAccessor } from "./context/IfcElementAccessor.js";
+import { Value } from "./value/Value.js";
+import { StringValue } from "./value/StringValue.js";
+import { NumericValue } from "./value/NumericValue.js";
+import { BooleanValue } from "./value/BooleanValue.js";
+import { LogicalValue } from "./value/LogicalValue.js";
+import { LiteralValue } from "./value/LiteralValue.js";
+import { ReferenceValue } from "./value/ReferenceValue.js";
+import { IfcPropertySetAccessor } from "./context/IfcPropertySetAccessor.js";
+import { IfcPropertyAccessor } from "./context/IfcPropertyAccessor.js";
+import { IfcRootObjectAccessor } from "./context/IfcRootObjectAccessor.js";
+import { IfcTypeObjectAccessor } from "./context/IfcTypeObjectAccessor.js";
+import { NamedObjectAccessor } from "./context/NamedObjectAccessor.js";
+import IfcExpressionParser, {
+  ExprContext,
+} from "./gen/parser/IfcExpressionParser.js";
 import IfcExpressionVisitor from "./gen/parser/IfcExpressionVisitor.js";
 import IfcExpressionLexer from "./gen/parser/IfcExpressionLexer.js";
-import {ObjectAccessor} from "./context/ObjectAccessor.js";
-import {IfcExpressionEvaluationException} from "./expression/IfcExpressionEvaluationException.js";
-import type {LiteralValueAnyArity} from "./value/LiteralValueAnyArity.js";
-import type {PrimitiveValueType} from "./value/PrimitiveValueType.js";
-import {ExprEvalResult} from "./expression/ExprEvalResult";
+import { ObjectAccessor } from "./context/ObjectAccessor.js";
+import { IfcExpressionEvaluationException } from "./expression/IfcExpressionEvaluationException.js";
+import type { LiteralValueAnyArity } from "./value/LiteralValueAnyArity.js";
+import type { PrimitiveValueType } from "./value/PrimitiveValueType.js";
+import { ExprEvalResult } from "./expression/ExprEvalResult";
 
 export {
   IfcElementAccessor,

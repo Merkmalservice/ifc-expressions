@@ -1,17 +1,17 @@
-import {IfcExpressionContext} from "../context/IfcExpressionContext.js";
-import {ExprBase} from "./ExprBase";
-import {ExprKind} from "./ExprKind";
+import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
+import { ExprBase } from "./ExprBase";
+import { ExprKind } from "./ExprKind";
 import {
-    ExprEvalConsequentialError2Obj,
-    ExprEvalError,
-    ExprEvalError2Obj,
-    ExprEvalErrorUndefinedResult,
-    ExprEvalResult,
-    ExprEvalStatus,
-    isExprEvalSuccess,
+  ExprEvalConsequentialError2Obj,
+  ExprEvalError,
+  ExprEvalError2Obj,
+  ExprEvalErrorUndefinedResult,
+  ExprEvalResult,
+  ExprEvalStatus,
+  isExprEvalSuccess,
 } from "./ExprEvalResult";
-import {isNullish} from "../IfcExpressionUtils";
-import {Expr} from "./Expr";
+import { isNullish } from "../IfcExpressionUtils";
+import { Expr } from "./Expr";
 
 export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {
   readonly left: Expr<L>;

@@ -18,8 +18,8 @@ numExpr:
     ;
 
 numLiteral:
-    INT
-    |   FLOAT
+    ('+'|'-')? INT
+    | ('+'|'-')? FLOAT
     ;
 
 stringExpr :
@@ -55,6 +55,7 @@ arrayElementList : expr | expr ',' arrayElementList ;
 
 INT     : [0-9]+ ;
 FLOAT  : [0-9]+ '.' [0-9]+;
+SIGN : '+'|'-';
 PROP : 'prop' | 'PROP' ;
 ELEM : 'elem' | 'ELEM' ;
 RESERVED_ATTRIBUTE_NAME : 'value'|'guid'|'name'|'description'|'ifcClass' ;

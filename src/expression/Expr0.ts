@@ -1,7 +1,12 @@
-import {IfcExpressionContext} from "../context/IfcExpressionContext.js";
-import {ExprKind} from "./ExprKind";
-import {ExprBase} from "./ExprBase";
-import {ExprEvalError, ExprEvalErrorObj, ExprEvalResult, ExprEvalStatus,} from "./ExprEvalResult";
+import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
+import { ExprKind } from "./ExprKind";
+import { ExprBase } from "./ExprBase";
+import {
+  ExprEvalError,
+  ExprEvalErrorObj,
+  ExprEvalResult,
+  ExprEvalStatus,
+} from "./ExprEvalResult";
 
 export abstract class Expr0<E> extends ExprBase<E> {
   protected constructor(kind: ExprKind) {

@@ -1,11 +1,16 @@
-import {IfcExpressionContext} from "../../context/IfcExpressionContext.js";
-import {LiteralValueAnyArity} from "../../value/LiteralValueAnyArity.js";
-import {ExprKind} from "../ExprKind";
-import {ExprEvalError, ExprEvalErrorObj, ExprEvalRefChainErrorObj, ExprEvalStatus,} from "../ExprEvalResult";
-import {isNullish} from "../../IfcExpressionUtils";
-import {Expr0} from "../Expr0";
-import {LocalContextKeys} from "../LocalContextKeys";
-import {ObjectAccessor} from "../../context/ObjectAccessor";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
+import { ExprKind } from "../ExprKind";
+import {
+  ExprEvalError,
+  ExprEvalErrorObj,
+  ExprEvalRefChainErrorObj,
+  ExprEvalStatus,
+} from "../ExprEvalResult";
+import { isNullish } from "../../IfcExpressionUtils";
+import { Expr0 } from "../Expr0";
+import { LocalContextKeys } from "../LocalContextKeys";
+import { ObjectAccessor } from "../../context/ObjectAccessor";
 
 export class NestedObjectChainEndExpr extends Expr0<LiteralValueAnyArity> {
   private readonly attributeName: string;

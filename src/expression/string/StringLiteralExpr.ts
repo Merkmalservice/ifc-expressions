@@ -1,7 +1,7 @@
-import {IfcExpressionContext} from "../../context/IfcExpressionContext.js";
-import {StringValue} from "../../value/StringValue.js";
-import {LiteralExpr} from "../LiteralExpr";
-import {ExprKind} from "../ExprKind";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
+import { StringValue } from "../../value/StringValue.js";
+import { LiteralExpr } from "../LiteralExpr";
+import { ExprKind } from "../ExprKind";
 
 export class StringLiteralExpr extends LiteralExpr<StringValue, StringValue> {
   constructor(value: StringValue) {

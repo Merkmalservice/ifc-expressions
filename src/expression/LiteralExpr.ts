@@ -1,7 +1,12 @@
-import {IfcExpressionContext} from "../context/IfcExpressionContext.js";
-import {ExprKind} from "./ExprKind";
-import {ExprEvalError, ExprEvalErrorObj, ExprEvalResult, ExprEvalStatus,} from "./ExprEvalResult";
-import {ExprBase} from "./ExprBase";
+import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
+import { ExprKind } from "./ExprKind";
+import {
+  ExprEvalError,
+  ExprEvalErrorObj,
+  ExprEvalResult,
+  ExprEvalStatus,
+} from "./ExprEvalResult";
+import { ExprBase } from "./ExprBase";
 
 export abstract class LiteralExpr<V, E> extends ExprBase<E> {
   readonly value: V;

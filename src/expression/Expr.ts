@@ -1,6 +1,6 @@
-import {IfcExpressionContext} from "../context/IfcExpressionContext.js";
-import {ExprKind} from "./ExprKind";
-import {ExprEvalResult} from "./ExprEvalResult";
+import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
+import { ExprKind } from "./ExprKind";
+import { ExprEvalResult } from "./ExprEvalResult";
 
 export interface Expr<T> {
   evaluate(
