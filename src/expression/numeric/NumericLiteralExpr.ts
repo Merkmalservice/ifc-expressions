@@ -1,8 +1,8 @@
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { NumericValue } from "../../value/NumericValue.js";
-import { ExprEvalError } from "../ExprEvalResult";
-import { ExprKind } from "../ExprKind";
-import { LiteralExpr } from "../LiteralExpr";
+import { ExprEvalError } from "../ExprEvalResult.js";
+import { ExprKind } from "../ExprKind.js";
+import { LiteralExpr } from "../LiteralExpr.js";
 
 export class NumericLiteralExpr extends LiteralExpr<
   NumericValue,

@@ -1,12 +1,12 @@
-import { Expr } from "./Expr";
-import { IfcExpressionContext } from "../context/IfcExpressionContext";
+import { Expr } from "./Expr.js";
+import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
 import {
   ExprEvalError,
   ExprEvalResult,
   ExprEvalSuccessObj,
   isExprEvalError,
 } from "./ExprEvalResult";
-import { ExprKind } from "./ExprKind";
+import { ExprKind } from "./ExprKind.js";
 
 export abstract class ExprBase<T> implements Expr<T> {
   private readonly exprKind: ExprKind;

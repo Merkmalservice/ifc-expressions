@@ -1,9 +1,9 @@
-import { Func } from "../Func";
-import { FuncArgInt } from "../arg/FuncArgInt";
-import { NumericValue } from "../../../value/NumericValue";
-import { FuncArgNumeric } from "../arg/FuncArgNumeric";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity";
-import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult";
+import { Func } from "../Func.js";
+import { FuncArgInt } from "../arg/FuncArgInt.js";
+import { NumericValue } from "../../../value/NumericValue.js";
+import { FuncArgNumeric } from "../arg/FuncArgNumeric.js";
+import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
+import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { Decimal } from "decimal.js";
 
 export class ROUND extends Func {

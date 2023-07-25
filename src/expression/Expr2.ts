@@ -1,6 +1,6 @@
 import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
 import { ExprBase } from "./ExprBase";
-import { ExprKind } from "./ExprKind";
+import { ExprKind } from "./ExprKind.js";
 import {
   ExprEvalConsequentialError1Obj,
   ExprEvalConsequentialError2Obj,
@@ -13,7 +13,7 @@ import {
   isExprEvalSuccess,
 } from "./ExprEvalResult";
 import { isNullish } from "../IfcExpressionUtils";
-import { Expr } from "./Expr";
+import { Expr } from "./Expr.js";
 
 export abstract class Expr2<L, R, E> extends ExprBase<E> {
   readonly left: Expr<L>;

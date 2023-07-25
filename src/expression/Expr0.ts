@@ -1,5 +1,5 @@
 import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
-import { ExprKind } from "./ExprKind";
+import { ExprKind } from "./ExprKind.js";
 import { ExprBase } from "./ExprBase";
 import {
   ExprEvalError,

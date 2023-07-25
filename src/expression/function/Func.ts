@@ -1,7 +1,7 @@
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity";
-import { IfcExpressionFunctionConfigException } from "./IfcExpressionFunctionConfigException";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
+import { IfcExpressionFunctionConfigException } from "./IfcExpressionFunctionConfigException.js";
 import { isNullish } from "../../IfcExpressionUtils";
-import { FuncArg } from "./FuncArg";
+import { FuncArg } from "./FuncArg.js";
 import {
   ExprEvalError,
   ExprEvalFunctionEvaluationConsequentialErrorObj,
@@ -10,7 +10,7 @@ import {
   ExprEvalSuccessObj,
   isExprEvalError,
 } from "../ExprEvalResult";
-import { ExprKind } from "../ExprKind";
+import { ExprKind } from "../ExprKind.js";
 
 export abstract class Func {
   protected name: string;

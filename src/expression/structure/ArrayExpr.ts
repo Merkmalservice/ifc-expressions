@@ -1,14 +1,14 @@
-import { IfcExpressionContext } from "../../context/IfcExpressionContext";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import {
   ExprEvalConsequentialError1Obj,
   ExprEvalError,
   isExprEvalError,
 } from "../ExprEvalResult";
-import { Expr } from "../Expr";
-import { ExprKind } from "../ExprKind";
-import { Expr0 } from "../Expr0";
-import { ArrayValue } from "../../value/ArrayValue";
-import { LiteralValue } from "../../value/LiteralValue";
+import { Expr } from "../Expr.js";
+import { ExprKind } from "../ExprKind.js";
+import { Expr0 } from "../Expr0.js";
+import { ArrayValue } from "../../value/ArrayValue.js";
+import { LiteralValue } from "../../value/LiteralValue.js";
 
 export class ArrayExpr extends Expr0<ArrayValue> {
   private elements: Array<Expr<LiteralValue>>;

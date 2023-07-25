@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- importing with '.js' suffix
+
 ## 0.3.0 - 2023-07-25
+
+### Added
+
+- Array Expressions
+- Function Expressions
+- MAP()
+- ROUND()
 
 ## 0.2.3 - 2023-06-27
 

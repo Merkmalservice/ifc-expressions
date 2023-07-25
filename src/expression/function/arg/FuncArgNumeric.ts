@@ -1,12 +1,12 @@
 import { FuncArgBase } from "./FuncArgBase";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity";
+import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
 import {
   ExprEvalResult,
   ExprEvalSuccess,
   ExprEvalTypeErrorObj,
 } from "../../ExprEvalResult";
-import { ExprKind } from "../../ExprKind";
-import { NumericValue } from "../../../value/NumericValue";
+import { ExprKind } from "../../ExprKind.js";
+import { NumericValue } from "../../../value/NumericValue.js";
 import { Decimal } from "decimal.js";
 
 export class FuncArgNumeric extends FuncArgBase<NumericValue> {

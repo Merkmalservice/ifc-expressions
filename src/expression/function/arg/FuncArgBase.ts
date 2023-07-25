@@ -1,11 +1,11 @@
-import { FuncArg } from "../FuncArg";
+import { FuncArg } from "../FuncArg.js";
 import {
   ExprEvalError,
   ExprEvalResult,
   ExprEvalSuccess,
   isExprEvalSuccess,
 } from "../../ExprEvalResult";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity";
+import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
 
 export abstract class FuncArgBase<T> extends FuncArg<T> {
   constructor(required: boolean, name: string, defaultValue?: T) {

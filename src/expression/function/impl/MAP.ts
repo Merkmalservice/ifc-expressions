@@ -1,5 +1,5 @@
-import { Func } from "../Func";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity";
+import { Func } from "../Func.js";
+import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
 import {
   ExprEvalFunctionEvaluationErrorObj,
   ExprEvalResult,
@@ -8,10 +8,10 @@ import {
   ExprEvalTypeErrorObj,
   isExprEvalSuccess,
 } from "../../ExprEvalResult";
-import { isNullish, LiteralValue } from "../../../IfcExpression";
-import { FuncArg } from "../FuncArg";
-import { ExprKind } from "../../ExprKind";
-import { ArrayValue } from "../../../value/ArrayValue";
+import { isNullish, LiteralValue } from "../../../IfcExpression.js";
+import { FuncArg } from "../FuncArg.js";
+import { ExprKind } from "../../ExprKind.js";
+import { ArrayValue } from "../../../value/ArrayValue.js";
 
 export class MAP extends Func {
   private static readonly ARG_NAME_MAPPINGS = "mappings";

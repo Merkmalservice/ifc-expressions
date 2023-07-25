@@ -2,7 +2,7 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { Expr2 } from "../Expr2.js";
 import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
 import { ObjectAccessor } from "../../context/ObjectAccessor.js";
-import { ExprKind } from "../ExprKind";
+import { ExprKind } from "../ExprKind.js";
 import {
   ExprEvalError,
   ExprEvalError2Obj,
@@ -12,7 +12,7 @@ import {
   isExprEvalRefChainError,
   isExprEvalSuccess,
 } from "../ExprEvalResult";
-import { Expr } from "../Expr";
+import { Expr } from "../Expr.js";
 import { LocalContextKeys } from "../LocalContextKeys";
 
 export class AttributeReferenceExpr extends Expr2<

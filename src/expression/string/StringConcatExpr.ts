@@ -2,7 +2,7 @@ import { Expr2 } from "../Expr2.js";
 import { Expr } from "../Expr.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { StringValue } from "../../value/StringValue.js";
-import { ExprKind } from "../ExprKind";
+import { ExprKind } from "../ExprKind.js";
 
 export class StringConcatExpr extends Expr2<
   StringValue,

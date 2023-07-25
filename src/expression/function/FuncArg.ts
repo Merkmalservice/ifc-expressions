@@ -1,5 +1,5 @@
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity";
-import { ExprEvalResult } from "../ExprEvalResult";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
+import { ExprEvalResult } from "../ExprEvalResult.js";
 import { isNullish } from "../../IfcExpressionUtils";
 
 export class FuncArg<T> {

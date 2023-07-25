@@ -1,5 +1,5 @@
-import { Expr } from "./Expr";
-import { ExprKind } from "./ExprKind";
+import { Expr } from "./Expr.js";
+import { ExprKind } from "./ExprKind.js";
 import { isNullish } from "../IfcExpressionUtils";
 
 export enum ExprEvalStatus {

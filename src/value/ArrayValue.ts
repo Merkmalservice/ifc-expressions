@@ -1,4 +1,4 @@
-import { Value } from "./Value";
+import { Value } from "./Value.js";
 
 export class ArrayValue implements Value<Array<Value<any>>> {
   private readonly arrayValue: Array<Value<any>>;

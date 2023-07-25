@@ -1,22 +1,22 @@
-import { IfcExpression } from "../src/IfcExpression";
+import { IfcExpression } from "../src/IfcExpression.js";
 import Decimal from "decimal.js";
-import { IfcExpressionContext } from "../src/context/IfcExpressionContext";
-import { NumericValue } from "../src/value/NumericValue";
-import { LiteralValueAnyArity } from "../src/value/LiteralValueAnyArity";
-import { StringValue } from "../src/value/StringValue";
-import { BooleanValue } from "../src/value/BooleanValue";
-import { ObjectAccessor } from "../src/context/ObjectAccessor";
-import { IfcElementAccessor } from "../src/context/IfcElementAccessor";
-import { IfcPropertyAccessor } from "../src/context/IfcPropertyAccessor";
-import { IfcPropertySetAccessor } from "../src/context/IfcPropertySetAccessor";
-import { IfcTypeObjectAccessor } from "../src/context/IfcTypeObjectAccessor";
+import { IfcExpressionContext } from "../src/context/IfcExpressionContext.js";
+import { NumericValue } from "../src/value/NumericValue.js";
+import { LiteralValueAnyArity } from "../src/value/LiteralValueAnyArity.js";
+import { StringValue } from "../src/value/StringValue.js";
+import { BooleanValue } from "../src/value/BooleanValue.js";
+import { ObjectAccessor } from "../src/context/ObjectAccessor.js";
+import { IfcElementAccessor } from "../src/context/IfcElementAccessor.js";
+import { IfcPropertyAccessor } from "../src/context/IfcPropertyAccessor.js";
+import { IfcPropertySetAccessor } from "../src/context/IfcPropertySetAccessor.js";
+import { IfcTypeObjectAccessor } from "../src/context/IfcTypeObjectAccessor.js";
 import {
   ExprEvalRefChainErrorObj,
   ExprEvalStatus,
   ExprEvalSuccess,
   ExprEvalSuccessObj,
 } from "../src/expression/ExprEvalResult";
-import { ExprKind } from "../src/expression/ExprKind";
+import { ExprKind } from "../src/expression/ExprKind.js";
 
 const ctxSimple: any = {
   psetBetonbau: new (class extends IfcPropertySetAccessor {

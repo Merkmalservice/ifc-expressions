@@ -38,8 +38,8 @@ import { NumericValue } from "./value/NumericValue.js";
 import { StringValue } from "./value/StringValue.js";
 import { StringLiteralExpr } from "./expression/string/StringLiteralExpr.js";
 import { StringConcatExpr } from "./expression/string/StringConcatExpr.js";
-import { ArrayExpr } from "./expression/structure/ArrayExpr";
-import { FunctionExpr } from "./expression/function/FunctionExpr";
+import { ArrayExpr } from "./expression/structure/ArrayExpr.js";
+import { FunctionExpr } from "./expression/function/FunctionExpr.js";
 
 export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
   constructor() {

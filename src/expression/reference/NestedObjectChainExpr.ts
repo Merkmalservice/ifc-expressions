@@ -1,7 +1,7 @@
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ObjectAccessor } from "../../context/ObjectAccessor.js";
 import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
-import { ExprKind } from "../ExprKind";
+import { ExprKind } from "../ExprKind.js";
 import {
   ExprEvalError,
   ExprEvalErrorObj,
@@ -11,7 +11,7 @@ import {
   isExprEvalRefChainError,
   mapErrorObjectToMessage,
 } from "../ExprEvalResult";
-import { Expr1 } from "../Expr1";
+import { Expr1 } from "../Expr1.js";
 import { isNullish } from "../../IfcExpressionUtils";
 import { LocalContextKeys } from "../LocalContextKeys";
 

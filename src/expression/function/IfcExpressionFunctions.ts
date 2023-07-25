@@ -3,12 +3,12 @@ import {
   ExprEvalResult,
   ExprEvalStatus,
 } from "../ExprEvalResult";
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity";
-import { Func } from "./Func";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
+import { Func } from "./Func.js";
 import { isNullish } from "../../IfcExpressionUtils";
-import { ExprKind } from "../ExprKind";
-import { MAP } from "./impl/MAP";
-import { ROUND } from "./impl/ROUND";
+import { ExprKind } from "../ExprKind.js";
+import { MAP } from "./impl/MAP.js";
+import { ROUND } from "./impl/ROUND.js";
 
 const builtinFunctions = Object.freeze(
   new Map<string, Func>([

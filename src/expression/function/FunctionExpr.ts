@@ -1,11 +1,11 @@
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext";
-import { ExprEvalError, isExprEvalSuccess } from "../ExprEvalResult";
-import { Expr } from "../Expr";
-import { ExprKind } from "../ExprKind";
-import { Expr0 } from "../Expr0";
-import { LiteralValue } from "../../value/LiteralValue";
-import { Func } from "./Func";
+import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
+import { ExprEvalError, isExprEvalSuccess } from "../ExprEvalResult.js";
+import { Expr } from "../Expr.js";
+import { ExprKind } from "../ExprKind.js";
+import { Expr0 } from "../Expr0.js";
+import { LiteralValue } from "../../value/LiteralValue.js";
+import { Func } from "./Func.js";
 import { IfcExpressionFunctions } from "./IfcExpressionFunctions";
 import { isNullish } from "../../IfcExpressionUtils";
 

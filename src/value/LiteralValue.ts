@@ -3,7 +3,7 @@ import { StringValue } from "./StringValue.js";
 import { BooleanValue } from "./BooleanValue.js";
 import { LogicalValue } from "./LogicalValue.js";
 import { ReferenceValue } from "./ReferenceValue.js";
-import { ArrayValue } from "./ArrayValue";
+import { ArrayValue } from "./ArrayValue.js";
 
 export type LiteralValue =
   | NumericValue
