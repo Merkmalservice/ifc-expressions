@@ -1,6 +1,6 @@
 {
   "name": "ifc-expressions",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Parsing and evaluation of IFC expressions",
   "main": "dist/cjs/ifcExpression.js",
   "module": "dist/mjs/ifcExpression.js",
