@@ -27,7 +27,14 @@ import { ObjectAccessor } from "./context/ObjectAccessor.js";
 import { IfcExpressionEvaluationException } from "./expression/IfcExpressionEvaluationException.js";
 import type { LiteralValueAnyArity } from "./value/LiteralValueAnyArity.js";
 import type { PrimitiveValueType } from "./value/PrimitiveValueType.js";
-import { ExprEvalResult } from "./expression/ExprEvalResult.js";
+import {
+  ExprEvalResult,
+  isExprEvalSuccess,
+  ExprEvalError,
+  isExprEvalError,
+  ExprEvalStatus,
+} from "./expression/ExprEvalResult.js";
+import { ExprKind } from "./expression/ExprKind.js";
 
 export {
   IfcElementAccessor,
@@ -47,11 +54,16 @@ export {
   ObjectAccessor,
   Expr,
   ExprVisitor,
+  ExprKind,
   IfcExpressionEvaluationException,
   IfcExpressionErrorListener,
   IfcExpressionVisitor,
   isPresent,
   isNullish,
+  ExprEvalResult,
+  ExprEvalError,
+  isExprEvalError,
+  isExprEvalSuccess,
 };
 
 export type { PrimitiveValueType, LiteralValueAnyArity };
