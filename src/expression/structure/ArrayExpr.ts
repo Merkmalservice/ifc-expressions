@@ -3,7 +3,7 @@ import {
   ExprEvalConsequentialError1Obj,
   ExprEvalError,
   isExprEvalError,
-} from "../ExprEvalResult";
+} from "../ExprEvalResult.js";
 import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
 import { Expr0 } from "../Expr0.js";

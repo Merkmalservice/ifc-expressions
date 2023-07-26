@@ -7,7 +7,7 @@ import {
   ExprEvalSuccessObj,
   ExprEvalTypeErrorObj,
   isExprEvalSuccess,
-} from "../../ExprEvalResult";
+} from "../../ExprEvalResult.js";
 import { isNullish, LiteralValue } from "../../../IfcExpression.js";
 import { FuncArg } from "../FuncArg.js";
 import { ExprKind } from "../../ExprKind.js";

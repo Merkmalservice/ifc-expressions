@@ -15,7 +15,7 @@ import {
   ExprEvalStatus,
   ExprEvalSuccess,
   ExprEvalSuccessObj,
-} from "../src/expression/ExprEvalResult";
+} from "../src/expression/ExprEvalResult.js";
 import { ExprKind } from "../src/expression/ExprKind.js";
 
 const ctxSimple: any = {

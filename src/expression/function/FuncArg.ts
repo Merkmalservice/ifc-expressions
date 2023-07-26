@@ -1,6 +1,6 @@
 import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
 import { ExprEvalResult } from "../ExprEvalResult.js";
-import { isNullish } from "../../IfcExpressionUtils";
+import { isNullish } from "../../IfcExpressionUtils.js";
 
 export class FuncArg<T> {
   protected _required: boolean;

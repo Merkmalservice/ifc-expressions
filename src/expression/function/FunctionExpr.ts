@@ -6,8 +6,8 @@ import { ExprKind } from "../ExprKind.js";
 import { Expr0 } from "../Expr0.js";
 import { LiteralValue } from "../../value/LiteralValue.js";
 import { Func } from "./Func.js";
-import { IfcExpressionFunctions } from "./IfcExpressionFunctions";
-import { isNullish } from "../../IfcExpressionUtils";
+import { IfcExpressionFunctions } from "./IfcExpressionFunctions.js";
+import { isNullish } from "../../IfcExpressionUtils.js";
 
 export class FunctionExpr extends Expr0<LiteralValueAnyArity> {
   private name: string;

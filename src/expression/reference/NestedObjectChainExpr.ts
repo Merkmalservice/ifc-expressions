@@ -10,10 +10,10 @@ import {
   ExprEvalStatus,
   isExprEvalRefChainError,
   mapErrorObjectToMessage,
-} from "../ExprEvalResult";
+} from "../ExprEvalResult.js";
 import { Expr1 } from "../Expr1.js";
-import { isNullish } from "../../IfcExpressionUtils";
-import { LocalContextKeys } from "../LocalContextKeys";
+import { isNullish } from "../../IfcExpressionUtils.js";
+import { LocalContextKeys } from "../LocalContextKeys.js";
 
 export class NestedObjectChainExpr extends Expr1<
   LiteralValueAnyArity,

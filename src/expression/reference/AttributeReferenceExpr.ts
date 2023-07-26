@@ -11,9 +11,9 @@ import {
   ExprEvalStatus,
   isExprEvalRefChainError,
   isExprEvalSuccess,
-} from "../ExprEvalResult";
+} from "../ExprEvalResult.js";
 import { Expr } from "../Expr.js";
-import { LocalContextKeys } from "../LocalContextKeys";
+import { LocalContextKeys } from "../LocalContextKeys.js";
 
 export class AttributeReferenceExpr extends Expr2<
   ObjectAccessor,

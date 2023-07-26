@@ -8,7 +8,7 @@ import {
   ExprEvalError2Obj,
   ExprEvalResult,
   ExprEvalStatus,
-} from "../ExprEvalResult";
+} from "../ExprEvalResult.js";
 
 export class DivideExpr extends Expr2<
   NumericValue,

@@ -5,7 +5,7 @@ import {
   ExprEvalResult,
   ExprEvalSuccessObj,
   isExprEvalError,
-} from "./ExprEvalResult";
+} from "./ExprEvalResult.js";
 import { ExprKind } from "./ExprKind.js";
 
 export abstract class ExprBase<T> implements Expr<T> {

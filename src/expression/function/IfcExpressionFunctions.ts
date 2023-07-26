@@ -2,10 +2,10 @@ import {
   ExprEvalFunctionEvaluationErrorObj,
   ExprEvalResult,
   ExprEvalStatus,
-} from "../ExprEvalResult";
+} from "../ExprEvalResult.js";
 import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
 import { Func } from "./Func.js";
-import { isNullish } from "../../IfcExpressionUtils";
+import { isNullish } from "../../IfcExpressionUtils.js";
 import { ExprKind } from "../ExprKind.js";
 import { MAP } from "./impl/MAP.js";
 import { ROUND } from "./impl/ROUND.js";

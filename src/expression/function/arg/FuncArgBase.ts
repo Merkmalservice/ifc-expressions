@@ -4,7 +4,7 @@ import {
   ExprEvalResult,
   ExprEvalSuccess,
   isExprEvalSuccess,
-} from "../../ExprEvalResult";
+} from "../../ExprEvalResult.js";
 import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
 
 export abstract class FuncArgBase<T> extends FuncArg<T> {

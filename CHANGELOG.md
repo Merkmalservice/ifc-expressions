@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- add missed '.js' suffixes in imports
+
 ## 0.3.1 - 2023-07-25
 
 ### Added

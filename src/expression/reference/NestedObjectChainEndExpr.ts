@@ -6,10 +6,10 @@ import {
   ExprEvalErrorObj,
   ExprEvalRefChainErrorObj,
   ExprEvalStatus,
-} from "../ExprEvalResult";
-import { isNullish } from "../../IfcExpressionUtils";
+} from "../ExprEvalResult.js";
+import { isNullish } from "../../IfcExpressionUtils.js";
 import { Expr0 } from "../Expr0.js";
-import { LocalContextKeys } from "../LocalContextKeys";
+import { LocalContextKeys } from "../LocalContextKeys.js";
 import { ObjectAccessor } from "../../context/ObjectAccessor.js";
 
 export class NestedObjectChainEndExpr extends Expr0<LiteralValueAnyArity> {

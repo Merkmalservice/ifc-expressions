@@ -1,10 +1,10 @@
-import { FuncArgBase } from "./FuncArgBase";
+import { FuncArgBase } from "./FuncArgBase.js";
 import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
 import {
   ExprEvalResult,
   ExprEvalSuccess,
   ExprEvalTypeErrorObj,
-} from "../../ExprEvalResult";
+} from "../../ExprEvalResult.js";
 import { ExprKind } from "../../ExprKind.js";
 import { NumericValue } from "../../../value/NumericValue.js";
 import { Decimal } from "decimal.js";

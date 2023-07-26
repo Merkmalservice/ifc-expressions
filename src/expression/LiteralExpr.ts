@@ -5,8 +5,8 @@ import {
   ExprEvalErrorObj,
   ExprEvalResult,
   ExprEvalStatus,
-} from "./ExprEvalResult";
-import { ExprBase } from "./ExprBase";
+} from "./ExprEvalResult.js";
+import { ExprBase } from "./ExprBase.js";
 
 export abstract class LiteralExpr<V, E> extends ExprBase<E> {
   readonly value: V;

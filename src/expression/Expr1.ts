@@ -8,10 +8,10 @@ import {
   ExprEvalResult,
   ExprEvalStatus,
   isExprEvalError,
-} from "./ExprEvalResult";
-import { ExprBase } from "./ExprBase";
+} from "./ExprEvalResult.js";
+import { ExprBase } from "./ExprBase.js";
 import { Expr } from "./Expr.js";
-import { isNullish } from "../IfcExpressionUtils";
+import { isNullish } from "../IfcExpressionUtils.js";
 
 export abstract class Expr1<V, E> extends ExprBase<E> {
   readonly value: Expr<V>;

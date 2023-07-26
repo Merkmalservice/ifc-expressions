@@ -1,5 +1,5 @@
 import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
-import { ExprBase } from "./ExprBase";
+import { ExprBase } from "./ExprBase.js";
 import { ExprKind } from "./ExprKind.js";
 import {
   ExprEvalConsequentialError2Obj,
@@ -9,8 +9,8 @@ import {
   ExprEvalResult,
   ExprEvalStatus,
   isExprEvalSuccess,
-} from "./ExprEvalResult";
-import { isNullish } from "../IfcExpressionUtils";
+} from "./ExprEvalResult.js";
+import { isNullish } from "../IfcExpressionUtils.js";
 import { Expr } from "./Expr.js";
 
 export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {

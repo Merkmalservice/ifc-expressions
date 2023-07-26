@@ -1,6 +1,6 @@
 import { Expr } from "./Expr.js";
 import { ExprKind } from "./ExprKind.js";
-import { isNullish } from "../IfcExpressionUtils";
+import { isNullish } from "../IfcExpressionUtils.js";
 
 export enum ExprEvalStatus {
   SUCCESS = 1000,
