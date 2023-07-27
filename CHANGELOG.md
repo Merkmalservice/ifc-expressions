@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed 
+
+- fix captalization typo in package.json (referencing 'ifcExpression.js' instead of 'IfcExpression.js')
+
 ## 0.3.3 - 2023-07-26
 
 ### Fixed
