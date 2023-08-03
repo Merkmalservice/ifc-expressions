@@ -1,4 +1,4 @@
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../value/ExpressionValue.js";
 
 export interface ObjectAccessor {
   /**
@@ -12,7 +12,7 @@ export interface ObjectAccessor {
    * If the object has the attribute of the specified name, return it as (an array of (array of)) LiteralValue.
    * @param name
    */
-  getAttribute(name: string): LiteralValueAnyArity | undefined;
+  getAttribute(name: string): ExpressionValue | undefined;
 
   listNestedObjects(): Array<string>;
 

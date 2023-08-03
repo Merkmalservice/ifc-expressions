@@ -8,12 +8,12 @@ import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
 import { Expr0 } from "../Expr0.js";
 import { ArrayValue } from "../../value/ArrayValue.js";
-import { LiteralValue } from "../../value/LiteralValue.js";
+import { ExpressionValue } from "../../value/ExpressionValue.js";
 
 export class ArrayExpr extends Expr0<ArrayValue> {
-  private elements: Array<Expr<LiteralValue>>;
+  private elements: Array<Expr<ExpressionValue>>;
 
-  constructor(elements: Array<Expr<LiteralValue>>) {
+  constructor(elements: Array<Expr<ExpressionValue>>) {
     super(ExprKind.ARRAY);
     this.elements = elements;
   }
@@ -36,4 +36,8 @@ export class ArrayExpr extends Expr0<ArrayValue> {
     }
     return new ArrayValue(evaluatedResult);
   }
+  toExprString(): string {
+    return `[${this.elements.map(elem => elem.toExprString()).join(",")}]`;
+  }
+
 }

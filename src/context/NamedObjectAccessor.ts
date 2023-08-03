@@ -1,5 +1,5 @@
 import { ObjectAccessor } from "./ObjectAccessor.js";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../value/ExpressionValue.js";
 import { StringValue } from "../value/StringValue.js";
 
 export abstract class NamedObjectAccessor implements ObjectAccessor {
@@ -7,7 +7,7 @@ export abstract class NamedObjectAccessor implements ObjectAccessor {
 
   abstract getDescription(): string;
 
-  getAttribute(name: string): LiteralValueAnyArity | undefined {
+  getAttribute(name: string): ExpressionValue | undefined {
     switch (name) {
       case "name":
         return new StringValue(this.getName());

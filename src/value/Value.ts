@@ -1,9 +1,9 @@
-import { PrimitiveValueType } from "./PrimitiveValueType.js";
+import { BoxedValueTypes } from "./BoxedValueTypes.js";
 
 export interface Value<
   T extends
-    | PrimitiveValueType
-    | Array<Value<PrimitiveValueType | Array<Value<PrimitiveValueType>>>>
+    | BoxedValueTypes
+    | Array<Value<BoxedValueTypes | Array<Value<BoxedValueTypes>>>>
 > {
   getValue(): T;
   equals(other: Value<any>): boolean;

@@ -1,13 +1,14 @@
-import { ObjectAccessor } from "./ObjectAccessor.js";
+import { isObjectAccessor, ObjectAccessor } from "./ObjectAccessor.js";
 import { NamedObjectAccessor } from "./NamedObjectAccessor.js";
 import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../value/ExpressionValue.js";
+import { IfcElementAccessor } from "./IfcElementAccessor.js";
 
 export abstract class IfcPropertyAccessor extends NamedObjectAccessor {
   getNestedObjectAccessor(name: string): ObjectAccessor | undefined {
     switch (name) {
       case "pset":
-        return this.getPropertySetAccessor();
+        return this.getIfcPropertySetAccessor();
     }
     return undefined;
   }
@@ -20,7 +21,7 @@ export abstract class IfcPropertyAccessor extends NamedObjectAccessor {
     return ["value", ...super.listAttributes()];
   }
 
-  getAttribute(name: string): LiteralValueAnyArity | undefined {
+  getAttribute(name: string): ExpressionValue | undefined {
     switch (name) {
       case "value":
         return this.getValue();
@@ -28,6 +29,19 @@ export abstract class IfcPropertyAccessor extends NamedObjectAccessor {
     return super.getAttribute(name);
   }
 
-  protected abstract getValue(): LiteralValueAnyArity;
-  protected abstract getPropertySetAccessor(): IfcPropertySetAccessor;
+  abstract getValue(): ExpressionValue;
+  abstract getIfcPropertySetAccessor(): IfcPropertySetAccessor;
+}
+
+export function isIfcPropertyAccessor(arg: any): arg is IfcPropertyAccessor {
+  return (
+    typeof arg.getGuid === "undefined" &&
+    typeof arg.getName === "function" &&
+    typeof arg.getDescription === "function" &&
+    typeof arg.getIfcClass === "undefined" &&
+    typeof arg.getIfcPropertySetAccessor === "function" &&
+    typeof arg.getIfcPropertyAccessor === "undefined" &&
+    typeof arg.getIfcTypeObjectAccessor === "undefined" &&
+    isObjectAccessor(arg)
+  );
 }

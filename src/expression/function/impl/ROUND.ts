@@ -2,7 +2,7 @@ import { Func } from "../Func.js";
 import { FuncArgInt } from "../arg/FuncArgInt.js";
 import { NumericValue } from "../../../value/NumericValue.js";
 import { FuncArgNumeric } from "../arg/FuncArgNumeric.js";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { Decimal } from "decimal.js";
 
@@ -18,8 +18,8 @@ export class ROUND extends Func {
   }
 
   protected calculateResult(
-    evaluatedArguments: Map<string, LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    evaluatedArguments: Map<string, ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
     const input = evaluatedArguments.get(ROUND.KEY_INPUT) as NumericValue;
     const numDecimals = evaluatedArguments.get(
       ROUND.KEY_NUM_DECMIALS

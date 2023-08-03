@@ -17,4 +17,9 @@ export class PlusExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
   ): NumericValue {
     return NumericValue.of(leftResult.getValue().plus(rightResult.getValue()));
   }
+
+  toExprString(): string {
+    return `${this.left.toExprString()} + ${this.right.toExprString()}`;
+  }
+
 }

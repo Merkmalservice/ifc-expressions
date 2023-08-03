@@ -32,4 +32,7 @@ export abstract class ExprBase<T> implements Expr<T> {
     }
     return new ExprEvalSuccessObj(result);
   }
+
+  abstract toExprString(): string;
+
 }

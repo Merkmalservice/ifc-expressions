@@ -1,23 +1,22 @@
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprEvalError, isExprEvalSuccess } from "../ExprEvalResult.js";
 import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
 import { Expr0 } from "../Expr0.js";
-import { LiteralValue } from "../../value/LiteralValue.js";
 import { Func } from "./Func.js";
 import { IfcExpressionFunctions } from "./IfcExpressionFunctions.js";
 import { isNullish } from "../../IfcExpressionUtils.js";
 
-export class FunctionExpr extends Expr0<LiteralValueAnyArity> {
+export class FunctionExpr extends Expr0<ExpressionValue> {
   private name: string;
-  private elements: Array<Expr<LiteralValue>>;
+  private arguments: Array<Expr<ExpressionValue>>;
   private functionImplementation: Func;
 
-  constructor(name: string, elements: Array<Expr<LiteralValue>>) {
-    super(ExprKind.ARRAY);
+  constructor(name: string, functionArguments: Array<Expr<ExpressionValue>>) {
+    super(ExprKind.FUNCTION);
     this.name = name;
-    this.elements = elements;
+    this.arguments = functionArguments;
     this.functionImplementation = IfcExpressionFunctions.getFunction(this.name);
     if (isNullish(this.functionImplementation)) {
       throw new Error(`No such function: ${this.name}`);
@@ -27,10 +26,10 @@ export class FunctionExpr extends Expr0<LiteralValueAnyArity> {
   protected doEvaluate(
     ctx: IfcExpressionContext,
     localCtx: Map<string, any>
-  ): ExprEvalError | LiteralValueAnyArity {
+  ): ExprEvalError | ExpressionValue {
     const functionArguments = [];
-    for (let i = 0; i < this.elements.length; i++) {
-      const evalResult = this.elements[i].evaluate(ctx, localCtx);
+    for (let i = 0; i < this.arguments.length; i++) {
+      const evalResult = this.arguments[i].evaluate(ctx, localCtx);
       functionArguments.push(evalResult);
     }
     const evaluationResult = IfcExpressionFunctions.applyFunction(
@@ -42,4 +41,9 @@ export class FunctionExpr extends Expr0<LiteralValueAnyArity> {
     }
     return evaluationResult;
   }
+
+  toExprString(): string {
+    return `${this.functionImplementation.getName()}(${this.arguments.map(arg => arg.toExprString()).join(",")})`;
+  }
+
 }

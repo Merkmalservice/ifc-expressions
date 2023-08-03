@@ -8,4 +8,5 @@ export interface Expr<T> {
     localCtx: Map<string, any>
   ): ExprEvalResult<T>;
   getKind(): ExprKind;
+  toExprString(): string;
 }

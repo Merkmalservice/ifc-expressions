@@ -22,4 +22,10 @@ export class MultiplyExpr extends Expr2<
   ): NumericValue | ExprEvalError {
     return NumericValue.of(left.getValue().mul(right.getValue()));
   }
+
+  toExprString(): string {
+    return `${this.left.toExprString()} * ${this.right.toExprString()}`;
+  }
+
+
 }

@@ -1,3 +1,4 @@
+import { Decimal } from "decimal.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { NumericValue } from "../../value/NumericValue.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
@@ -8,8 +9,8 @@ export class NumericLiteralExpr extends LiteralExpr<
   NumericValue,
   NumericValue
 > {
-  constructor(value: NumericValue) {
-    super(ExprKind.NUM_LITERAL, value);
+  constructor(value: number | string | Decimal) {
+    super(ExprKind.NUM_LITERAL, new NumericValue(value));
   }
 
   protected calculateResult(
@@ -17,4 +18,9 @@ export class NumericLiteralExpr extends LiteralExpr<
   ): NumericValue | ExprEvalError {
     return this.value;
   }
+
+  toExprString(): string {
+    return `${this.value.getValue().toString()}`;
+  }
+
 }

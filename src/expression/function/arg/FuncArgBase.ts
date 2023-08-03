@@ -5,7 +5,7 @@ import {
   ExprEvalSuccess,
   isExprEvalSuccess,
 } from "../../ExprEvalResult.js";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
 
 export abstract class FuncArgBase<T> extends FuncArg<T> {
   constructor(required: boolean, name: string, defaultValue?: T) {
@@ -13,8 +13,8 @@ export abstract class FuncArgBase<T> extends FuncArg<T> {
   }
 
   transformValue(
-    invocationValue: ExprEvalResult<LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    invocationValue: ExprEvalResult<ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
     if (isExprEvalSuccess(invocationValue)) {
       return this.transformForTypeCheck(invocationValue);
     }
@@ -27,8 +27,8 @@ export abstract class FuncArgBase<T> extends FuncArg<T> {
    * @protected
    */
   protected transformForTypeCheck(
-    invocationValue: ExprEvalSuccess<LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    invocationValue: ExprEvalSuccess<ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
     return invocationValue;
   }
 
@@ -39,7 +39,7 @@ export abstract class FuncArgBase<T> extends FuncArg<T> {
    */
   protected transformForError(
     invocationValue: ExprEvalError
-  ): ExprEvalResult<LiteralValueAnyArity> {
+  ): ExprEvalResult<ExpressionValue> {
     return invocationValue;
   }
 }

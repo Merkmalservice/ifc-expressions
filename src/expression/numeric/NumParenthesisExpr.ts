@@ -16,4 +16,8 @@ export class NumParenthesisExpr extends Expr1<NumericValue, NumericValue> {
   ): NumericValue {
     return subExpressionValue;
   }
+  toExprString(): string {
+    return `(${this.value.toExprString()})`;
+  }
+
 }

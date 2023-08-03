@@ -21,4 +21,9 @@ export class StringConcatExpr extends Expr2<
   ): StringValue {
     return StringValue.of(left.getValue() + right.getValue());
   }
+
+  toExprString(): string {
+    return `${this.left.toExprString()} + ${this.right.toExprString()}`;
+  }
+
 }

@@ -1,17 +1,16 @@
-import { Func } from "../Func.js";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
+import {Func} from "../Func.js";
+import {ExpressionValue} from "../../../value/ExpressionValue.js";
 import {
   ExprEvalFunctionEvaluationErrorObj,
   ExprEvalResult,
   ExprEvalStatus,
   ExprEvalSuccessObj,
-  ExprEvalTypeErrorObj,
-  isExprEvalSuccess,
 } from "../../ExprEvalResult.js";
-import { isNullish, LiteralValue } from "../../../IfcExpression.js";
-import { FuncArg } from "../FuncArg.js";
-import { ExprKind } from "../../ExprKind.js";
-import { ArrayValue } from "../../../value/ArrayValue.js";
+import {FuncArg} from "../FuncArg.js";
+import {ExprKind} from "../../ExprKind.js";
+import {ArrayValue} from "../../../value/ArrayValue.js";
+import {isNullish} from "../../../IfcExpressionUtils.js";
+import {FuncArgMappings} from "../arg/FuncArgMappings";
 
 export class MAP extends Func {
   private static readonly ARG_NAME_MAPPINGS = "mappings";
@@ -21,102 +20,44 @@ export class MAP extends Func {
   constructor() {
     super("MAP", [
       new FuncArg(true, MAP.ARG_NAME_MAPPING_INPUT),
-      new MappingsArg(true, MAP.ARG_NAME_MAPPINGS),
+      new FuncArgMappings(true, MAP.ARG_NAME_MAPPINGS),
       new FuncArg(false, MAP.ARG_NAME_DEFAULT_VALUE),
     ]);
   }
 
   protected calculateResult(
-    evaluatedArguments: Map<string, LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    evaluatedArguments: Map<string, ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
     const mappings = evaluatedArguments.get(
       MAP.ARG_NAME_MAPPINGS
     ) as unknown as ArrayValue;
     const input = evaluatedArguments.get(
       MAP.ARG_NAME_MAPPING_INPUT
-    ) as unknown as LiteralValueAnyArity;
+    ) as unknown as ExpressionValue;
     const defaultValue = evaluatedArguments.get(
       MAP.ARG_NAME_DEFAULT_VALUE
-    ) as unknown as LiteralValue;
-    let matchIndex = -1;
-    const leftColumn = (
-      mappings.getValue()[0] as unknown as ArrayValue
-    ).getValue();
-    const rightColumn = (
-      mappings.getValue()[1] as unknown as ArrayValue
-    ).getValue();
-    const numMappings = leftColumn.length;
+    ) as unknown as ExpressionValue;
+    const outerArray = mappings.getValue() as unknown as Array<ArrayValue>;
+    const numMappings = outerArray.length;
     for (let i = 0; i < numMappings; i++) {
-      if (leftColumn[i].equals(input)) {
-        matchIndex = i;
-        break;
+      const error= FuncArgMappings.checkSingleMapping(outerArray, i);
+      if (!isNullish(error)){
+        return error;
+      }
+      const pair = (outerArray[i] as unknown as ArrayValue).getValue();
+      if (pair[0].equals(input)) {
+        return new ExprEvalSuccessObj(pair[1] as ExpressionValue);
       }
     }
-    if (matchIndex === -1) {
-      if (isNullish(defaultValue)) {
+    if (isNullish(defaultValue)) {
         return new ExprEvalFunctionEvaluationErrorObj(
           ExprKind.FUNCTION,
           ExprEvalStatus.UNDEFINED_RESULT,
           "Input value not found in left column. No default return value specified, therefore the result of MAP() is undefined ",
           this.name
         );
-      } else {
-        return new ExprEvalSuccessObj(defaultValue);
       }
-    }
-    return new ExprEvalSuccessObj(
-      rightColumn[matchIndex] as LiteralValueAnyArity
-    );
+    return new ExprEvalSuccessObj(defaultValue);
   }
 }
 
-class MappingsArg extends FuncArg<any> {
-  constructor(required: boolean, name: string) {
-    super(required, name);
-  }
-
-  transformValue(
-    invocationValue: ExprEvalResult<LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
-    if (isExprEvalSuccess(invocationValue)) {
-      const mappings = invocationValue.result as ArrayValue;
-      if (!Array.isArray(mappings.getValue())) {
-        return this.makeError(mappings, "The value is not an array");
-      }
-      if (mappings.getValue().length !== 2) {
-        return this.makeError(mappings, "The array is not of length 2");
-      }
-      const firstElement = mappings.getValue()[0] as unknown as ArrayValue;
-      if (!Array.isArray(firstElement.getValue())) {
-        return this.makeError(
-          mappings,
-          "The first element of the array is not itself an array"
-        );
-      }
-      const secondElement = mappings.getValue()[1] as unknown as ArrayValue;
-      if (!Array.isArray(secondElement.getValue())) {
-        return this.makeError(
-          mappings,
-          "The second element of the array is not itself an array"
-        );
-      }
-      if (firstElement.getValue().length !== secondElement.getValue().length) {
-        return this.makeError(
-          mappings,
-          `The first element of the array and the second differ in length ${
-            firstElement.getValue().length
-          } and ${secondElement.getValue().length}`
-        );
-      }
-    }
-    return invocationValue;
-  }
-
-  private makeError(mappings: LiteralValueAnyArity, problem: string) {
-    return new ExprEvalTypeErrorObj(
-      ExprKind.FUNCTION_ARGUMENTS,
-      `Argument ${this.name} must be an array containing two arrays of the same length (i.e., a 2xn matrix: 2 rows, N columns). Problem: ${problem}.`,
-      mappings
-    );
-  }
-}

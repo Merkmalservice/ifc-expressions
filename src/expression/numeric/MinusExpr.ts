@@ -18,4 +18,9 @@ export class MinusExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
   ): NumericValue | ExprEvalError {
     return NumericValue.of(left.getValue().minus(right.getValue()));
   }
+
+  toExprString(): string {
+    return `${this.left.toExprString()} - ${this.right.toExprString()}`;
+  }
+
 }

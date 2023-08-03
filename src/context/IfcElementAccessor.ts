@@ -1,8 +1,8 @@
-import { ObjectAccessor } from "./ObjectAccessor.js";
+import { isObjectAccessor, ObjectAccessor } from "./ObjectAccessor.js";
 import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor.js";
 import { IfcTypeObjectAccessor } from "./IfcTypeObjectAccessor.js";
 import { IfcPropertyAccessor } from "./IfcPropertyAccessor.js";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../value/ExpressionValue.js";
 import { StringValue } from "../value/StringValue.js";
 import { isPresent } from "../IfcExpressionUtils.js";
 import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
@@ -10,7 +10,7 @@ import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
 export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
   getNestedObjectAccessor(name: string): ObjectAccessor | undefined {
     if (name === "type") {
-      return this.getTypeObjectAccessor();
+      return this.getIfcTypeObjectAccessor();
     }
     let val = this.getIfcPropertySetAccessor(name);
     if (isPresent(val)) {
@@ -19,7 +19,7 @@ export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
     return this.getIfcPropertyAccessor(name);
   }
 
-  getAttribute(name: string): LiteralValueAnyArity | undefined {
+  getAttribute(name: string): ExpressionValue | undefined {
     switch (name) {
       case "ifcClass":
         return new StringValue(this.getIfcClass());
@@ -31,18 +31,18 @@ export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
   abstract getIfcClass(): string;
 
   listNestedObjects(): Array<string> {
-    return ["type", ...this.listIfcProperties(), ...this.listIfcPropertySets()];
+    return ["type", ...this.listIfcPropertyNames(), ...this.listIfcPropertySetNames()];
   }
 
   listAttributes(): Array<string> {
     return ["ifcClass", ...super.listAttributes()];
   }
 
-  abstract listIfcProperties(): Array<string>;
+  abstract listIfcPropertyNames(): Array<string>;
 
-  abstract listIfcPropertySets(): Array<string>;
+  abstract listIfcPropertySetNames(): Array<string>;
 
-  abstract getTypeObjectAccessor(): IfcTypeObjectAccessor | undefined;
+  abstract getIfcTypeObjectAccessor(): IfcTypeObjectAccessor | undefined;
   abstract getIfcPropertyAccessor(
     propertyName: string
   ): IfcPropertyAccessor | undefined;
@@ -50,4 +50,17 @@ export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
   abstract getIfcPropertySetAccessor(
     name: string
   ): IfcPropertySetAccessor | undefined;
+}
+
+export function isIfcElementAccessor(arg: any): arg is IfcElementAccessor {
+  return (
+    typeof arg.getGuid === "function" &&
+    typeof arg.getName === "function" &&
+    typeof arg.getDescription === "function" &&
+    typeof arg.getIfcClass === "function" &&
+    typeof arg.getIfcPropertySetAccessor === "function" &&
+    typeof arg.getIfcPropertyAccessor === "function" &&
+    typeof arg.getIfcTypeObjectAccessor === "function" &&
+    isObjectAccessor(arg)
+  );
 }

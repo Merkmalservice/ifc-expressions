@@ -13,6 +13,10 @@ export enum ExprEvalStatus {
   CONSEQUENTIAL_ERROR = 2020,
   MATH_ERROR = 2030,
   TYPE_ERROR = 2040,
+  NOT_FOUND = 2050,
+  IFC_PROPERTY_NOT_FOUND = 2051,
+  IFC_PROPERTY_SET_NOT_FOUND = 2052,
+  IFC_TYPE_OBJECT_NOT_FOUND = 2053,
 }
 
 export function isExprEvalStatus(candidate: number): boolean {
@@ -267,6 +271,21 @@ export class ExprEvalFunctionEvaluationErrorObj extends ExprEvalErrorObj {
   ) {
     super(exprKind, status, message);
     this.functionName = functionName;
+  }
+}
+
+export class ExprEvalFunctionEvaluationObjectNotFoundErrorObj extends ExprEvalFunctionEvaluationErrorObj {
+  public readonly offendingKey: string;
+
+  constructor(
+    exprKind: ExprKind,
+    status: ExprEvalStatus,
+    message: any,
+    functionName: string,
+    objectKey: string
+  ) {
+    super(exprKind, status, message, functionName);
+    this.offendingKey = objectKey;
   }
 }
 

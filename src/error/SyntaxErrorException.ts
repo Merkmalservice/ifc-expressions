@@ -1,13 +1,13 @@
 import { Token } from "antlr4";
-import { isPresent } from "./IfcExpressionUtils.js";
+import { isPresent } from "../IfcExpressionUtils.js";
 
 export class SyntaxErrorException extends Error {
-  private readonly _offendingSymbol: Token;
+  private readonly _offendingSymbol: string | number;
   private readonly _line: number;
   private readonly _column: number;
 
   constructor(
-    offendingSymbol: Token,
+    offendingSymbol: string | number,
     line: number,
     column: number,
     msg: string
@@ -21,7 +21,7 @@ export class SyntaxErrorException extends Error {
     this._column = column;
   }
 
-  get offendingSymbol(): Token {
+  get offendingSymbol(): string | number {
     return this._offendingSymbol;
   }
 

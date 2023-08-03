@@ -1,5 +1,5 @@
 import { FuncArgBase } from "./FuncArgBase.js";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import {
   ExprEvalResult,
   ExprEvalSuccess,
@@ -15,8 +15,8 @@ export class FuncArgNumeric extends FuncArgBase<NumericValue> {
   }
 
   protected transformForTypeCheck(
-    invocationValue: ExprEvalSuccess<LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    invocationValue: ExprEvalSuccess<ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
     const result = invocationValue.result;
     const value = result.getValue();
     if (Decimal.isDecimal(value)) {

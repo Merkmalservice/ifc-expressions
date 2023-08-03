@@ -41,4 +41,9 @@ export class DivideExpr extends Expr2<
       error
     );
   }
+
+  toExprString(): string {
+    return `${this.left.toExprString()} / ${this.right.toExprString()}`;
+  }
+
 }

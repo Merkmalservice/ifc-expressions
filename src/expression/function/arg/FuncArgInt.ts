@@ -1,5 +1,5 @@
 import { FuncArgBase } from "./FuncArgBase.js";
-import { LiteralValueAnyArity } from "../../../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import {
   ExprEvalResult,
   ExprEvalSuccess,
@@ -14,8 +14,8 @@ export class FuncArgInt extends FuncArgBase<NumericValue> {
   }
 
   protected transformForTypeCheck(
-    invocationValue: ExprEvalSuccess<LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    invocationValue: ExprEvalSuccess<ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
     const result = invocationValue.result;
     if (!NumericValue.isNumericValueType(result)) {
       return new ExprEvalTypeErrorObj(

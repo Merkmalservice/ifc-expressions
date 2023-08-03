@@ -1,5 +1,5 @@
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
-import { IfcExpressionFunctionConfigException } from "./IfcExpressionFunctionConfigException.js";
+import { ExpressionValue } from "../../value/ExpressionValue.js";
+import { IfcExpressionFunctionConfigException } from "../../error/IfcExpressionFunctionConfigException.js";
 import { isNullish } from "../../IfcExpressionUtils.js";
 import { FuncArg } from "./FuncArg.js";
 import {
@@ -27,14 +27,18 @@ export abstract class Func {
     this.checkArgs(args);
   }
 
+  public getName(): string {
+    return this.name;
+  }
+
   public evaluate(
-    funcArgs: Array<ExprEvalResult<LiteralValueAnyArity>>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    funcArgs: Array<ExprEvalResult<ExpressionValue>>
+  ): ExprEvalResult<ExpressionValue> {
     const evaluatedArguments = this.getArgumentValues(funcArgs);
     if (isExprEvalError(evaluatedArguments)) {
       return evaluatedArguments;
     }
-    const argumentsReadyForUse = new Map<string, LiteralValueAnyArity>();
+    const argumentsReadyForUse = new Map<string, ExpressionValue>();
     for (const [argName, argValue] of evaluatedArguments.entries()) {
       if (isExprEvalError(argValue)) {
         return new ExprEvalFunctionEvaluationConsequentialErrorObj(
@@ -54,8 +58,8 @@ export abstract class Func {
    * @protected
    */
   protected abstract calculateResult(
-    evaluatedArguments: Map<string, LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity>;
+    evaluatedArguments: Map<string, ExpressionValue>
+  ): ExprEvalResult<ExpressionValue>;
 
   /**
    * Override to transform individual arguments if needed. After this step, if any of the ExprEvalResult objects in the
@@ -64,8 +68,8 @@ export abstract class Func {
    * @protected
    */
   protected transformArguments(
-    evaluatedArguments: Map<string, ExprEvalResult<LiteralValueAnyArity>>
-  ): Map<string, ExprEvalResult<LiteralValueAnyArity>> {
+    evaluatedArguments: Map<string, ExprEvalResult<ExpressionValue>>
+  ): Map<string, ExprEvalResult<ExpressionValue>> {
     return evaluatedArguments;
   }
 
@@ -76,9 +80,9 @@ export abstract class Func {
    * @protected
    */
   protected getArgumentValues(
-    provided: Array<ExprEvalResult<LiteralValueAnyArity>>
-  ): Map<string, ExprEvalResult<LiteralValueAnyArity>> | ExprEvalError {
-    const result = new Map<string, ExprEvalResult<LiteralValueAnyArity>>();
+    provided: Array<ExprEvalResult<ExpressionValue>>
+  ): Map<string, ExprEvalResult<ExpressionValue>> | ExprEvalError {
+    const result = new Map<string, ExprEvalResult<ExpressionValue>>();
     const numProvided = provided.length;
     if (!isNullish(this.formalArguments)) {
       let j = 0;
@@ -90,9 +94,7 @@ export abstract class Func {
           if (currentArg.hasDefaultValue()) {
             result.set(
               currentArg.name,
-              new ExprEvalSuccessObj(
-                currentArg.defaultValue as LiteralValueAnyArity
-              )
+              new ExprEvalSuccessObj(currentArg.defaultValue as ExpressionValue)
             );
           }
           if (currentArg.required) {

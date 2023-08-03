@@ -1,67 +1,103 @@
 grammar IfcExpression;
 
-expr :
-    attributeRef
-    | functionCall
-    | numExpr
-    | array
-    | stringExpr
+expr : singleExpr EOF ;
+
+singleExpr:
+    variableRef                                         # singleExprVariableRef
+    | singleExpr CMP_OP singleExpr                      # singleExprComparison
+    | functionCall                                      # singleExprFunctionCall
+    | numExpr                                           # singleExprNumExpr
+    | booleanExpr                                       # singleExprBooleanExpr
+    | arrayExpr                                         # singleExprArrayExpr
+    | stringExpr                                        # singleExprStringExpr
+    | singleExpr methodCallChain                        # singleExprMethodCall
     ;
+
 
 numExpr:
-    numExpr op=('*'|'/') numExpr      # numMulDiv
-    | numExpr op=('+'|'-') numExpr    # numAddSub
-    | numLiteral                      # numLit
-    | '(' numExpr ')'                 # numParens
-    | functionCall                 # numFunCall
-    | attributeRef                    # numAttributeRef
+    numericMethodCall                                   # numMethodCall
+    | <assoc=right> '--' numExpr                        # numUnaryMultipleMinus
+    | <assoc=right> '-' numExpr                         # numUnaryMinus
+    | <assoc=right> numExpr op='^' numExpr              # numPow
+    | numExpr op=('*'|'/') numExpr                      # numMulDiv
+    | numExpr op=('+'|'-') numExpr                      # numAddSub
+    | '(' numExpr ')'                                   # numParens
+    | numLiteral                                        # numLit
+    | functionCall                                      # numFunCall
+    | variableRef                                       # numVariableRef
     ;
 
+numericMethodCall:
+     numLiteral methodCallChain
+     | functionCall methodCallChain
+     | '(' numExpr ')' methodCallChain
+     | variableRef methodCallChain
+;
+
 numLiteral:
-    ('+'|'-')? INT
-    | ('+'|'-')? FLOAT
+    INT
+    | FLOAT
     ;
 
 stringExpr :
-    QUOTED_STRING                      # stringLiteral
-    | left=stringExpr '+' right=stringExpr        # stringConcat
-    | functionCall                     # stringFunCall
-    | attributeRef                     # stringAttributeRef
+    stringMethodCall                            # SEStringMethodCall
+    | left=stringExpr '+' right=stringExpr      # SEConcat
+    | QUOTED_STRING                             # SELiteral
+    | '(' stringExpr ')'                        # SEParens
+    | functionCall                              # SEFunCall
+    | variableRef                               # SEVariableRef
     ;
 
-objectRef : PROP | ELEM ;
-
-attributeRef :  objectRef nestedObjectChain ;
-
-nestedObjectChain :
-    '.' namedRef nestedObjectChain              #nestedObjectChainInner
-    | '@' name=RESERVED_ATTRIBUTE_NAME          #nestedObjectChainEnd
+stringMethodCall:
+    QUOTED_STRING methodCallChain
+    | '(' stringExpr ')' methodCallChain
+    | functionCall methodCallChain
+    | variableRef methodCallChain
     ;
 
-namedRef:
-    name=RESERVED_RELATION_NAME
-    | name=BRACKETED_STRING
-    | name=IDENTIFIER
+booleanExpr :
+    BOOLEAN                                             #BooleanExprLiteral
+    | booleanMethodCall                                 #BooleanExprMethodCall
+    | <assoc=right> '!'  booleanExpr                    #BooleanExprNot
+    | booleanExpr op=('&&'|'||'|'^') booleanExpr        #BooleanExprBinaryOp
+    | '(' booleanExpr ')'                               #BooleanExprParens
+    | functionCall                                      #BooleanExprFunctionCall
+    | variableRef                                       #BooleanExprVariableRef
+;
+
+booleanMethodCall:
+    BOOLEAN methodCallChain
+    | '(' booleanExpr ')' methodCallChain
+    | functionCall methodCallChain
+    | variableRef methodCallChain
     ;
 
-functionCall : name=IDENTIFIER '(' exprList ')' ;
 
-exprList : expr | expr ',' exprList ;
+variableRef:
+    '$' IDENTIFIER
+;
+methodCallChain:
+    DOT functionCall methodCallChain    # methodCallChainInner
+    | DOT functionCall                  # methodCallChainEnd
+    ;
 
-array : '[' arrayElementList ']' ;
+functionCall :
+    IDENTIFIER '(' exprList ? ')'
+;
 
-arrayElementList : expr | expr ',' arrayElementList ;
+exprList : singleExpr | singleExpr ',' exprList ;
+
+arrayExpr : '[' arrayElementList? ']' ;
+
+arrayElementList : singleExpr | singleExpr ',' arrayElementList ;
 
 
 INT     : [0-9]+ ;
 FLOAT  : [0-9]+ '.' [0-9]+;
-SIGN : '+'|'-';
-PROP : 'prop' | 'PROP' ;
-ELEM : 'elem' | 'ELEM' ;
-RESERVED_ATTRIBUTE_NAME : 'value'|'guid'|'name'|'description'|'ifcClass' ;
-RESERVED_RELATION_NAME: 'type' | 'pset' ;
-QUOTED_STRING : '"' .*? '"' ;
-BRACKETED_STRING: '{' .+? '}' ;
+BOOLEAN : [Tt][Rr][Uu][Ee] | [Ff][Aa][Ll][Ss][Ee] ;
+DOT : '.';
+QUOTED_STRING : ('"' .*? '"') | ('\'' .*? '\'' );
 IDENTIFIER : [a-zA-Z_][a-zA-Z0-9_\-$&]* ;
 WS : [ \t]+ -> skip ;
 NEWLINE : [\r\n]+ -> skip;
+CMP_OP: ('=='|'<'|'>'|'>='|'<='|'!=');

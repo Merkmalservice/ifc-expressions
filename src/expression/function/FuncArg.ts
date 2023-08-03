@@ -1,4 +1,4 @@
-import { LiteralValueAnyArity } from "../../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprEvalResult } from "../ExprEvalResult.js";
 import { isNullish } from "../../IfcExpressionUtils.js";
 
@@ -19,8 +19,8 @@ export class FuncArg<T> {
    * @param invocationValue
    */
   public transformValue(
-    invocationValue: ExprEvalResult<LiteralValueAnyArity>
-  ): ExprEvalResult<LiteralValueAnyArity> {
+    invocationValue: ExprEvalResult<ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
     return invocationValue;
   }
 

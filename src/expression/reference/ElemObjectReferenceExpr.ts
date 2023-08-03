@@ -1,18 +1,19 @@
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { ObjectReferenceExpr } from "./ObjectReferenceExpr.js";
-import { ObjectAccessor } from "../../context/ObjectAccessor.js";
 import { Expr0 } from "../Expr0.js";
 import { ExprKind } from "../ExprKind.js";
+import { ObjectAccessorValue } from "../../value/ObjectAccessorValue.js";
 
-export class ElemObjectReferenceExpr
-  extends Expr0<ObjectAccessor>
-  implements ObjectReferenceExpr
-{
+export class ElemObjectReferenceExpr extends Expr0<ObjectAccessorValue> {
   constructor() {
     super(ExprKind.REF_ELEMENT);
   }
 
-  doEvaluate(ctx: IfcExpressionContext): ObjectAccessor {
-    return ctx.resolveElemRef();
+  doEvaluate(ctx: IfcExpressionContext): ObjectAccessorValue {
+    return ObjectAccessorValue.of(ctx.resolveElemRef());
   }
+
+  toExprString(): string {
+    return `$element`;
+  }
+
 }

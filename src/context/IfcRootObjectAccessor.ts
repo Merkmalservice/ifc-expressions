@@ -1,9 +1,9 @@
 import { NamedObjectAccessor } from "./NamedObjectAccessor.js";
-import { LiteralValueAnyArity } from "../value/LiteralValueAnyArity.js";
+import { ExpressionValue } from "../value/ExpressionValue.js";
 import { StringValue } from "../value/StringValue.js";
 
 export abstract class IfcRootObjectAccessor extends NamedObjectAccessor {
-  getAttribute(name: string): LiteralValueAnyArity | undefined {
+  getAttribute(name: string): ExpressionValue | undefined {
     switch (name) {
       case "guid":
         return new StringValue(this.getGuid());

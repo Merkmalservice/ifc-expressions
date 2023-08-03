@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Allow for method-style function invocation, such as `"abc ".trim()` (given a trim function exists that takes a string).
+- Clean up the syntax a bit, so that there are fewer secrets that one needs to know
+- Accessing property, property set, and type is now done using functions. Those who like spreadsheet formulae will appreciate that they can now write `VALUE(PROPERTY(PROPERTYSET($element,'PSet_WallCommon'),'width'))`. All others will cheer for `$element.propertySet('PSet_WallCommon').property('width').value()`, which is equivalent, as is any combination of the two styles.
+
+### Added
+
+- power function, e.g. `2^4`
+- boolean expressions
+
+### Fixed
+
+- Fix a few quirks around associativity. You don't want to know.
+
 ## 0.3.4 - 2023-07-27
 
 ### Fixed
