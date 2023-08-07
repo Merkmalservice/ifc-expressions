@@ -22,6 +22,10 @@ export class ReferenceValue implements Value<string> {
     );
   }
 
+  toString(): string {
+    return this.referenceValue;
+  }
+
   static isReferenceValueType(arg: any): arg is ReferenceValueType {
     return typeof arg.referenceValue === "string";
   }

@@ -22,9 +22,20 @@ export class ArrayValue implements Value<Array<Value<any>>> {
     );
   }
 
+  toString(): string {
+    return "["+this.arrayValue.map(e => {
+      if (typeof e["toString"] === "function"){
+        return e.toString();
+      } else {
+        return ''+e;
+      }
+    }).join(", ") + "]";
+  }
+
   public static isArrayValueType(arg: any): arg is ArrayValueType {
     return Array.isArray(arg.arrayValue);
   }
+
 }
 
 export type ArrayValueType = {

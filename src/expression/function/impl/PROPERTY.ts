@@ -15,6 +15,7 @@ import { ExprKind } from "../../ExprKind.js";
 import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { isNullish } from "../../../IfcExpressionUtils.js";
+import {Type} from "../../../parse/Types";
 
 export class PROPERTY extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
@@ -25,6 +26,10 @@ export class PROPERTY extends Func {
       new FuncArgObjectAccessor(true, PROPERTY.KEY_OBJECT_REF),
       new FuncArg<string>(false, PROPERTY.KEY_PROPERTY_NAME),
     ]);
+  }
+
+  getReturnType(): Type {
+    return Type.IFC_OBJECT_REF;
   }
 
   protected calculateResult(

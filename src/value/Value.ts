@@ -7,4 +7,5 @@ export interface Value<
 > {
   getValue(): T;
   equals(other: Value<any>): boolean;
+  toString();
 }

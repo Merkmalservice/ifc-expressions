@@ -1,7 +1,9 @@
 import { Value } from "./Value.js";
+import {Comparable} from "./Comparable";
 
-export class StringValue implements Value<string> {
+export class StringValue implements Value<string>, Comparable<StringValue>{
   private readonly stringValue: string;
+  private static collator = new Intl.Collator();
 
   constructor(value: string) {
     this.stringValue = value;
@@ -15,12 +17,22 @@ export class StringValue implements Value<string> {
     return this.stringValue;
   }
 
+  toString(): string {
+    return this.stringValue;
+  }
+
   equals(other: Value<any>): boolean {
     return (
       StringValue.isStringValueType(other) &&
       other.stringValue === this.stringValue
     );
   }
+
+  compareTo(other: StringValue): number {
+    return StringValue.collator.compare(this.stringValue, other.stringValue);
+  }
+
+
 
   static isStringValueType(arg: any): arg is StringValueType {
     return typeof arg.stringValue === "string";

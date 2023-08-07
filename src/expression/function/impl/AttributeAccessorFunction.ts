@@ -9,16 +9,24 @@ import {
 import { ObjectAccessor } from "../../../context/ObjectAccessor.js";
 import { ExprKind } from "../../ExprKind.js";
 import { ObjectAccessorValue } from "../../../value/ObjectAccessorValue.js";
+import {Type} from "../../../parse/Types";
 
 export class AttributeAccessorFunction extends Func {
   private readonly attributeName;
   static readonly KEY_OBJECT_REF = "objectRef";
+  private returnType: Type;
 
-  constructor(attributeName: string) {
+  constructor(attributeName: string, returnType: Type) {
     super(attributeName.toUpperCase(), [
       new FuncArg<string>(true, AttributeAccessorFunction.KEY_OBJECT_REF),
     ]);
     this.attributeName = attributeName;
+    this.returnType = returnType;
+  }
+
+
+  getReturnType(): Type {
+    return this.returnType;
   }
 
   protected calculateResult(

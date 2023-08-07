@@ -21,6 +21,10 @@ export class ObjectAccessorValue implements Value<ObjectAccessor> {
     return this.objectAccessorValue === other?.getValue();
   }
 
+  toString(): string {
+    return "[Accessor for something in an IFC model]";
+  }
+
   static isObjectAccessorValueType(arg: any): arg is ObjectAccessorValue {
     return (
       !isNullish(arg) &&

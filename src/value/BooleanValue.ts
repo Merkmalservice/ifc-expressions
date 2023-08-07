@@ -1,6 +1,7 @@
 import { Value } from "./Value.js";
+import {Comparable} from "./Comparable";
 
-export class BooleanValue implements Value<boolean> {
+export class BooleanValue implements Value<boolean>, Comparable<BooleanValue> {
   private readonly booleanValue: boolean;
 
   constructor(value: boolean) {
@@ -20,6 +21,14 @@ export class BooleanValue implements Value<boolean> {
       BooleanValue.isBooleanValueType(other) &&
       other.booleanValue === this.booleanValue
     );
+  }
+
+  compareTo(other: BooleanValue): number {
+    return this.booleanValue ? other.booleanValue ? 0 : 1 : -1;
+  }
+
+  toString(): string {
+    return this.booleanValue ? "TRUE" : "FALSE";
   }
 
   static isBooleanValueType(arg: any): arg is BooleanValueType {

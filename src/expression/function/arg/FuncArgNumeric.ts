@@ -8,10 +8,16 @@ import {
 import { ExprKind } from "../../ExprKind.js";
 import { NumericValue } from "../../../value/NumericValue.js";
 import { Decimal } from "decimal.js";
+import {Type} from "../../../parse/Types";
 
 export class FuncArgNumeric extends FuncArgBase<NumericValue> {
   constructor(required: boolean, name: string, defaultValue?: NumericValue) {
     super(required, name, defaultValue);
+  }
+
+
+  getType(): Type {
+    return Type.NUMERIC;
   }
 
   protected transformForTypeCheck(

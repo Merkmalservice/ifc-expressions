@@ -3,10 +3,15 @@ import {ExprEvalError, ExprEvalResult, ExprEvalTypeErrorObj, isExprEvalSuccess} 
 import {ExpressionValue} from "../../../value/ExpressionValue";
 import {ArrayValue} from "../../../value/ArrayValue";
 import {ExprKind} from "../../ExprKind";
+import {Type} from "../../../parse/Types";
 
 export class FuncArgMappings extends FuncArg<any> {
     constructor(required: boolean, name: string) {
         super(required, name);
+    }
+
+    getType(): Type {
+        return Type.ARRAY;
     }
 
     transformValue(

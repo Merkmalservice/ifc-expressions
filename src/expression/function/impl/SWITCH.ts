@@ -26,6 +26,8 @@ export class SWITCH extends Func {
     ]);
   }
 
+
+
   protected calculateResult(
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {

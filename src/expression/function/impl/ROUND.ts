@@ -5,6 +5,7 @@ import { FuncArgNumeric } from "../arg/FuncArgNumeric.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { Decimal } from "decimal.js";
+import {Type} from "../../../parse/Types";
 
 export class ROUND extends Func {
   private static KEY_INPUT = "input";
@@ -15,6 +16,10 @@ export class ROUND extends Func {
       new FuncArgNumeric(true, ROUND.KEY_INPUT),
       new FuncArgInt(false, ROUND.KEY_NUM_DECMIALS, new NumericValue(0)),
     ]);
+  }
+
+  getReturnType(): Type {
+    return Type.NUMERIC;
   }
 
   protected calculateResult(

@@ -1,6 +1,7 @@
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprEvalResult } from "../ExprEvalResult.js";
 import { isNullish } from "../../IfcExpressionUtils.js";
+import {Type} from "../../parse/Types";
 
 export class FuncArg<T> {
   protected _required: boolean;
@@ -11,6 +12,11 @@ export class FuncArg<T> {
     this._required = required;
     this._name = name;
     this._defaultValue = defaultValue;
+  }
+
+
+  public getType(): Type {
+    return Type.ANY;
   }
 
   /**

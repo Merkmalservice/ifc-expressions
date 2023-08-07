@@ -11,6 +11,11 @@ import {
   isExprEvalError,
 } from "../ExprEvalResult.js";
 import { ExprKind } from "../ExprKind.js";
+import {Type, Types} from "../../parse/Types";
+import {ExpressionTypeError} from "../../error/ExpressionTypeError";
+import {MissingFunctionArgumentException} from "../../error/MissingFunctionArgumentException";
+import { ParserRuleContext } from "antlr4";
+import {WrongFunctionArgumentTypeException} from "../../error/WrongFunctionArgumentTypeException";
 
 export abstract class Func {
   protected name: string;
@@ -25,6 +30,39 @@ export abstract class Func {
     }
     this.formalArguments = args;
     this.checkArgs(args);
+  }
+
+  public getReturnType(): Type{
+    return Type.UNKNOWN;
+  }
+
+  public checkArgumentTypes(providedArgumentTypes: Array<Type>, ctx: ParserRuleContext): void {
+    const numProvided = providedArgumentTypes.length;
+    if (!isNullish(this.formalArguments)) {
+      let j = 0;
+      for (let i = 0; i < this.formalArguments.length; i++) {
+        const currentArg: FuncArg<unknown> = this.formalArguments[i];
+        if (numProvided > i) {
+          Types.requireExactTypeOrUnknown(
+              providedArgumentTypes[i],
+              this.formalArguments[i].getType(),
+              () => new WrongFunctionArgumentTypeException(
+                  this.name,
+                  this.formalArguments[i].name,
+                  this.formalArguments[i].getType(),
+                  providedArgumentTypes[i],
+                  i,
+                  ctx));
+        } else {
+          if (currentArg.hasDefaultValue()) {
+                //should be fine.
+          }
+          if (currentArg.required) {
+            throw new MissingFunctionArgumentException(this.name, currentArg.name, i, ctx);
+          }
+        }
+      }
+    }
   }
 
   public getName(): string {

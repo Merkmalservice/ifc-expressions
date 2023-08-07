@@ -22,6 +22,7 @@ import {
 import { isIfcTypeObjectAccessor } from "../../../context/IfcTypeObjectAccessor.js";
 import { isNullish } from "../../../IfcExpressionUtils.js";
 import { IfcPropertySetAccessor } from "../../../context/IfcPropertySetAccessor.js";
+import {Type} from "../../../parse/Types";
 
 export class PROPERTYSET extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
@@ -32,6 +33,11 @@ export class PROPERTYSET extends Func {
       new FuncArgObjectAccessor(true, PROPERTYSET.KEY_OBJECT_REF),
       new FuncArg<string>(false, PROPERTYSET.KEY_PSET_NAME),
     ]);
+  }
+
+
+  getReturnType(): Type {
+    return Type.IFC_OBJECT_REF;
   }
 
   protected calculateResult(

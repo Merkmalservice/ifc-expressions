@@ -75,11 +75,29 @@ export {
 
 export type { BoxedValueTypes };
 
+export class IfcExpressionParseResult {
+  private readonly _typeManager;
+  private readonly _parseTree;
+
+  constructor(typeManager, exprContext) {
+    this._typeManager = typeManager;
+    this._parseTree = exprContext;
+  }
+
+  get typeManager() {
+    return this._typeManager;
+  }
+
+  get parseTree() {
+    return this._parseTree;
+  }
+}
+
 export class IfcExpression {
   public static parse(
     input: string,
     errorListener?: ErrorListener<Token | number>
-  ): ExprContext {
+  ): IfcExpressionParseResult {
     const chars = new CharStream(input); // replace this with a FileStream as required
     const lexer = new IfcExpressionLexer(chars);
     const tokens = new CommonTokenStream(lexer);
@@ -94,10 +112,11 @@ export class IfcExpression {
     lexer.addErrorListener(myErrorListener);
     parser.addErrorListener(myErrorListener);
     const expr = parser.expr();
+    const validationListener = new IfcExpressionValidationListener();
     if (!myErrorListener.isErrorOccurred()) {
       const walker = new ParseTreeWalker();
       try {
-        walker.walk(new IfcExpressionValidationListener(), expr);
+        walker.walk(validationListener, expr);
       } catch (e) {
         if (e instanceof ValidationException) {
           if (errorListener instanceof IfcExpressionErrorListener) {
@@ -107,24 +126,24 @@ export class IfcExpression {
         }
       }
     }
-    return expr;
+    return new IfcExpressionParseResult(validationListener.getTypeManager(), expr);
   }
 
   public static evaluate(
     expression: string,
     context: IfcExpressionContext
-  ): ExprEvalResult<any> {
+  ): ExprEvalResult<ExpressionValue> {
     const errorListener = new IfcExpressionErrorListener();
-    const tree: ExprContext = IfcExpression.parse(expression, errorListener);
+    const parseResult = IfcExpression.parse(expression, errorListener);
     if (errorListener.isErrorOccurred()) {
       throw errorListener.getException();
     }
-    const parsedExpression = this.extractExprTree(tree);
+    const parsedExpression = this.extractExprTree(parseResult);
     return parsedExpression.evaluate(context, new Map<string, any>());
   }
 
-  private static extractExprTree(tree: ExprContext): Expr<ExpressionValue> {
-    const visitor = new ExprVisitor();
-    return visitor.visit(tree);
+  private static extractExprTree(parseResult: IfcExpressionParseResult): Expr<ExpressionValue> {
+    const visitor = new ExprVisitor(parseResult.typeManager);
+    return visitor.visit(parseResult.parseTree);
   }
 }

@@ -11,6 +11,7 @@ import { Decimal } from "decimal.js";
 import { ObjectAccessorValue } from "../../../value/ObjectAccessorValue.js";
 import { ObjectAccessor } from "../../../IfcExpression.js";
 import { isObjectAccessor } from "../../../context/ObjectAccessor.js";
+import {Type} from "../../../parse/Types";
 
 export class FuncArgObjectAccessor extends FuncArgBase<ObjectAccessorValue> {
   constructor(
@@ -19,6 +20,11 @@ export class FuncArgObjectAccessor extends FuncArgBase<ObjectAccessorValue> {
     defaultValue?: ObjectAccessorValue
   ) {
     super(required, name, defaultValue);
+  }
+
+
+  getType(): Type {
+    return Type.IFC_OBJECT_REF;
   }
 
   protected transformForTypeCheck(

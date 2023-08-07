@@ -1,13 +1,13 @@
 import {FuncArgRegex} from "./FuncArgRegex";
 import {StringValue} from "../../../value/StringValue";
 import {ExprEvalResult, ExprEvalSuccessObj} from "../../ExprEvalResult";
+import {Type} from "../../../parse/Types";
 
 export class FuncArgSimpleRegex extends FuncArgRegex {
 
     constructor(required: boolean, name: string, defaultValue?: StringValue) {
         super(required, name, defaultValue);
     }
-
 
     protected toRegexString(patternString: StringValue): ExprEvalResult<StringValue> {
         const pattern = patternString.getValue();

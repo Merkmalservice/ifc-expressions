@@ -2,10 +2,9 @@ import { ParserRuleContext } from "antlr4";
 import { ValidationException } from "./ValidationException.js";
 
 export class InvalidSyntaxException extends ValidationException {
-  private offendingInput: string;
-
-  constructor(offendingInput: string, ctx) {
-    super("Invalid Syntax: " + offendingInput);
+  readonly offendingInput: string;
+  constructor(offendingInput: string, ctx: ParserRuleContext) {
+    super(`Invalid syntax: ${offendingInput}`, ctx);
     this.offendingInput = offendingInput;
   }
 }

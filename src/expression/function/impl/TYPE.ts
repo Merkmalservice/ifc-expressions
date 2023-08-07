@@ -14,12 +14,17 @@ import { ExprKind } from "../../ExprKind.js";
 import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { isNullish } from "../../../IfcExpressionUtils.js";
+import {Type} from "../../../parse/Types";
 
 export class TYPE extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
 
   constructor() {
     super("TYPE", [new FuncArgObjectAccessor(true, TYPE.KEY_OBJECT_REF)]);
+  }
+
+  getReturnType(): Type {
+    return Type.IFC_OBJECT_REF;
   }
 
   protected calculateResult(

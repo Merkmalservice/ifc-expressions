@@ -3,10 +3,16 @@ import {ExpressionValue} from "../../../value/ExpressionValue.js";
 import {ExprEvalResult, ExprEvalSuccess, ExprEvalSuccessObj, ExprEvalTypeErrorObj,} from "../../ExprEvalResult.js";
 import {ExprKind} from "../../ExprKind.js";
 import {StringValue} from "../../../value/StringValue.js";
+import {Type} from "../../../parse/Types";
 
 export class FuncArgRegex extends FuncArgBase<StringValue> {
   constructor(required: boolean, name: string, defaultValue?: StringValue) {
     super(required, name, defaultValue);
+  }
+
+
+  getType(): Type {
+    return Type.STRING;
   }
 
   protected transformForTypeCheck(

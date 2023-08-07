@@ -3,6 +3,7 @@ import {Func} from "../Func";
 import {FuncArgBoolean} from "../arg/FuncArgBoolean";
 import {ExpressionValue} from "../../../value/ExpressionValue";
 import {ExprEvalResult, ExprEvalSuccessObj} from "../../ExprEvalResult";
+import {Type} from "../../../parse/Types";
 
 export class FuncBooleanBinary extends Func {
     private static readonly KEY_LEFT= "left";
@@ -15,6 +16,10 @@ export class FuncBooleanBinary extends Func {
             new FuncArgBoolean(true, FuncBooleanBinary.KEY_RIGHT)
         ]);
         this.actualCalculation = fun;
+    }
+
+    getReturnType(): Type {
+        return Type.BOOLEAN;
     }
 
     protected calculateResult(evaluatedArguments: Map<string, ExpressionValue>): ExprEvalResult<ExpressionValue> {

@@ -1,17 +1,18 @@
-import { FuncArgBase } from "./FuncArgBase.js";
-import { ExpressionValue } from "../../../value/ExpressionValue.js";
-import {
-  ExprEvalResult,
-  ExprEvalSuccess,
-  ExprEvalTypeErrorObj,
-} from "../../ExprEvalResult.js";
-import { ExprKind } from "../../ExprKind.js";
-import { BooleanValue } from "../../../value/BooleanValue.js";
-import { Decimal } from "decimal.js";
+import {FuncArgBase} from "./FuncArgBase.js";
+import {ExpressionValue} from "../../../value/ExpressionValue.js";
+import {ExprEvalResult, ExprEvalSuccess, ExprEvalTypeErrorObj,} from "../../ExprEvalResult.js";
+import {ExprKind} from "../../ExprKind.js";
+import {BooleanValue} from "../../../value/BooleanValue.js";
+import {Type} from "../../../parse/Types";
 
 export class FuncArgBoolean extends FuncArgBase<BooleanValue> {
   constructor(required: boolean, name: string, defaultValue?: BooleanValue) {
     super(required, name, defaultValue);
+  }
+
+
+  getType(): Type {
+    return Type.BOOLEAN;
   }
 
   protected transformForTypeCheck(
