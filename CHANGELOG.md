@@ -7,19 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.0.1-beta.0 - 2023-08-08
+
 ### Fixed
 
 - Make SWITCH and MAP type checks more lenient, will allow types that overlap with expected, might fail upon evaluation
 
 ## 2.0.0-beta.0 - 2023-08-08
 
-### Fixed
-
-- PlusOrConcat checks are more optimistic, will allow values that overlap with expected, might fail upon evaluation
-
 ### Added
 
 - getType() method to Value, for easier evaluation-time type checks. Not ideal but works.
+
+### Fixed
+
+- PlusOrConcat checks are more optimistic, will allow values that overlap with expected, might fail upon evaluation
 
 ## 1.0.0-beta.0 - 2023-08-08
 
