@@ -2,7 +2,6 @@ import { Func } from "../Func.js";
 import { FuncArg } from "../FuncArg.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import {
-  ExprEvalFunctionEvaluationErrorObj,
   ExprEvalFunctionEvaluationObjectNotFoundErrorObj,
   ExprEvalMissingRequiredFunctionArgumentErrorObj,
   ExprEvalResult,
@@ -15,7 +14,8 @@ import { ExprKind } from "../../ExprKind.js";
 import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { isNullish } from "../../../IfcExpressionUtils.js";
-import {Type} from "../../../parse/Types";
+import { Type, Types } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class PROPERTY extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
@@ -23,13 +23,21 @@ export class PROPERTY extends Func {
 
   constructor() {
     super("PROPERTY", [
-      new FuncArgObjectAccessor(true, PROPERTY.KEY_OBJECT_REF),
+      new FuncArgObjectAccessor(
+        true,
+        PROPERTY.KEY_OBJECT_REF,
+        Types.or(
+          Type.IFC_ELEMENT_REF,
+          Type.IFC_PROPERTY_SET_REF,
+          Type.IFC_TYPE_OBJECT_REF
+        )
+      ),
       new FuncArg<string>(false, PROPERTY.KEY_PROPERTY_NAME),
     ]);
   }
 
-  getReturnType(): Type {
-    return Type.IFC_OBJECT_REF;
+  getReturnType(argumentTypes: Array<ExprType>): ExprType {
+    return Type.IFC_PROPERTY_REF;
   }
 
   protected calculateResult(

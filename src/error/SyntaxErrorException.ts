@@ -1,4 +1,3 @@
-import { Token } from "antlr4";
 import { isPresent } from "../IfcExpressionUtils.js";
 
 export class SyntaxErrorException extends Error {

@@ -1,17 +1,21 @@
-import {FuncArgBase} from "./FuncArgBase.js";
-import {ExpressionValue} from "../../../value/ExpressionValue.js";
-import {ExprEvalResult, ExprEvalSuccess, ExprEvalTypeErrorObj,} from "../../ExprEvalResult.js";
-import {ExprKind} from "../../ExprKind.js";
-import {BooleanValue} from "../../../value/BooleanValue.js";
-import {Type} from "../../../parse/Types";
+import { FuncArgBase } from "./FuncArgBase.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
+import {
+  ExprEvalResult,
+  ExprEvalSuccess,
+  ExprEvalTypeErrorObj,
+} from "../../ExprEvalResult.js";
+import { ExprKind } from "../../ExprKind.js";
+import { BooleanValue } from "../../../value/BooleanValue.js";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class FuncArgBoolean extends FuncArgBase<BooleanValue> {
   constructor(required: boolean, name: string, defaultValue?: BooleanValue) {
     super(required, name, defaultValue);
   }
 
-
-  getType(): Type {
+  getType(): ExprType {
     return Type.BOOLEAN;
   }
 
@@ -20,7 +24,7 @@ export class FuncArgBoolean extends FuncArgBase<BooleanValue> {
   ): ExprEvalResult<ExpressionValue> {
     const result = invocationValue.result;
     const value = result.getValue();
-    if (typeof value === 'boolean') {
+    if (typeof value === "boolean") {
       return invocationValue;
     }
     return new ExprEvalTypeErrorObj(

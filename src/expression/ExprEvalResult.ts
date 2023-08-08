@@ -7,9 +7,6 @@ export enum ExprEvalStatus {
   ERROR = 2000,
   UNDEFINED_RESULT = 2001,
   REFERENCE_ERROR = 2010,
-  MISSING_OPERAND,
-  MISSING_REQUIRED_FUNCTION_ARGUMENT = 2012,
-  UNKNOWN_FUNCTION = 2014,
   CONSEQUENTIAL_ERROR = 2020,
   MATH_ERROR = 2030,
   TYPE_ERROR = 2040,
@@ -17,6 +14,14 @@ export enum ExprEvalStatus {
   IFC_PROPERTY_NOT_FOUND = 2051,
   IFC_PROPERTY_SET_NOT_FOUND = 2052,
   IFC_TYPE_OBJECT_NOT_FOUND = 2053,
+  PARSE_ERROR = 2080,
+  SYNTAX_ERROR = 2081,
+  VALIDATION_ERROR = 2082,
+  STATIC_TYPE_ERROR = 2083,
+  MISSING_OPERAND = 2084,
+  MISSING_REQUIRED_FUNCTION_ARGUMENT = 2085,
+  UNKNOWN_FUNCTION = 2086,
+  WRONG_FUNCTION_ARGUMENT_TYPE = 2088,
 }
 
 export function isExprEvalStatus(candidate: number): boolean {
@@ -95,35 +100,6 @@ export class ExprEvalErrorUndefinedResult extends ExprEvalErrorObj {
   }
 }
 
-export class ExprEvalRefChainErrorObj extends ExprEvalErrorObj {
-  public readonly errorPathElement: string;
-  public readonly path: Array<string>;
-
-  constructor(
-    exprKind: ExprKind,
-    status: ExprEvalStatus,
-    errorPathElement: string,
-    message?: any
-  ) {
-    super(exprKind, status, message);
-    this.errorPathElement = errorPathElement;
-    this.path = [errorPathElement];
-  }
-
-  public static bubbleUp(
-    error: ExprEvalRefChainError,
-    currentPathElement
-  ): ExprEvalRefChainError {
-    return {
-      exprKind: error.exprKind,
-      status: error.status,
-      errorPathElement: error.errorPathElement,
-      path: [currentPathElement, ...error.path],
-      message: error.message,
-    };
-  }
-}
-
 export class ExprEvalError1Obj extends ExprEvalErrorObj {
   public readonly sub: ExprEvalResult<unknown>;
 
@@ -171,22 +147,6 @@ type ExprEvalUnspecificError = {
   readonly status: ExprEvalStatus;
   readonly message?: string;
 };
-
-export type ExprEvalRefChainError = ExprEvalUnspecificError & {
-  readonly errorPathElement: string;
-  readonly path: Array<string>;
-};
-
-export function isExprEvalRefChainError(
-  arg: any
-): arg is ExprEvalRefChainError {
-  return (
-    isExprEvalStatus(arg.status) &&
-    arg.status >= ExprEvalStatus.ERROR &&
-    Array.isArray(arg.path) &&
-    typeof arg.errorPathElement === "string"
-  );
-}
 
 export type ExprEvalReferencError = ExprEvalUnspecificError & {
   readonly status: ExprEvalStatus.REFERENCE_ERROR;
@@ -350,5 +310,147 @@ export class ExprEvalValueErrorObj<T> extends ExprEvalErrorObj {
 export class ExprEvalTypeErrorObj<T> extends ExprEvalValueErrorObj<T> {
   constructor(exprKind: ExprKind, message: any, offendingValue: T) {
     super(exprKind, ExprEvalStatus.TYPE_ERROR, message, offendingValue);
+  }
+}
+
+export type ExprEvalParseError = ExprEvalUnspecificError & {
+  exprKind: ExprKind.PARSE_ERROR;
+  line: number;
+  column: number;
+  offendingInput: string;
+};
+
+export type ExprEvalValidationError = ExprEvalUnspecificError & {
+  line: number;
+  column: number;
+  toLine?: number;
+  toColumn?: number;
+};
+
+export class ExprEvalParseErrorObj extends ExprEvalErrorObj {
+  public readonly line: number;
+  public readonly column: number;
+  public readonly offendingInput: string;
+
+  constructor(
+    status: ExprEvalStatus,
+    message: any,
+    line: number,
+    column: number,
+    offendingInput: string
+  ) {
+    super(ExprKind.PARSE_ERROR, status, message);
+    this.line = line;
+    this.column = column;
+    this.offendingInput = offendingInput;
+  }
+}
+
+export class ExprEvalValidationErrorObj extends ExprEvalErrorObj {
+  public readonly line: number;
+  public readonly toLine?: number;
+  public readonly column: number;
+  public readonly toColumn?: number;
+
+  constructor(
+    status: ExprEvalStatus,
+    message: any,
+    line: number,
+    column: number,
+    toLine?: number,
+    toColumn?: number
+  ) {
+    super(ExprKind.PARSE_ERROR, status, message);
+    this.line = line;
+    this.toLine = toLine;
+    this.column = column;
+    this.toColumn = toColumn;
+  }
+}
+
+export class ExprEvalUnknownFunctionErrorObj extends ExprEvalValidationErrorObj {
+  public readonly functionName: string;
+
+  constructor(
+    message: any,
+    line: number,
+    column: number,
+    functionName,
+    toLine?: number,
+    toColumn?: number
+  ) {
+    super(
+      ExprEvalStatus.UNKNOWN_FUNCTION,
+      message,
+      line,
+      column,
+      toLine,
+      toColumn
+    );
+    this.functionName = functionName;
+  }
+}
+
+export class ExprEvalMissingFunctionArgumentErrorObj extends ExprEvalValidationErrorObj {
+  public readonly functionName: string;
+  public readonly argumentName: string;
+  public readonly argumentIndex: number;
+
+  constructor(
+    message: any,
+    line: number,
+    column: number,
+    functionName: string,
+    argumentName: string,
+    argumentIndex: number,
+    toLine?: number,
+    toColumn?: number
+  ) {
+    super(
+      ExprEvalStatus.MISSING_REQUIRED_FUNCTION_ARGUMENT,
+      message,
+      line,
+      column,
+      toLine,
+      toColumn
+    );
+    this.functionName = functionName;
+    this.argumentName = argumentName;
+    this.argumentIndex = argumentIndex;
+  }
+}
+
+export class ExprEvalWrongFunctionArgumentTypeErrorObj extends ExprEvalValidationErrorObj {
+  public readonly functionName: string;
+  public readonly argumentName: string;
+  public readonly argumentIndex: number;
+  public readonly expectedType: string;
+  public readonly actualType: string;
+
+  constructor(
+    message: any,
+    line: number,
+    column: number,
+    functionName: string,
+    argumentName: string,
+    argumentIndex: number,
+    expectedType: string,
+    actualType: string,
+    toLine?: number,
+    toColumn?: number
+  ) {
+    super(
+      ExprEvalStatus.WRONG_FUNCTION_ARGUMENT_TYPE,
+      message,
+      line,
+      column,
+      toLine,
+      toColumn
+    );
+    this.functionName = functionName;
+    this.argumentName = argumentName;
+    this.argumentIndex = argumentIndex;
+    this.expectedType = expectedType;
+    this.actualType = actualType;
   }
 }

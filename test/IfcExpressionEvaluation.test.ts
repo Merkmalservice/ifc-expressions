@@ -1,9 +1,8 @@
-import {IfcExpression, isExprEvalSuccess} from "../src/IfcExpression.js";
+import { IfcExpression, isExprEvalSuccess } from "../src/IfcExpression.js";
 import Decimal from "decimal.js";
-import {IfcExpressionContext} from "../src/context/IfcExpressionContext.js";
-import {NumericValue} from "../src/value/NumericValue.js";
-import {StringValue} from "../src/value/StringValue.js";
-import {BooleanValue} from "../src/value/BooleanValue.js";
+import { NumericValue } from "../src/value/NumericValue.js";
+import { StringValue } from "../src/value/StringValue.js";
+import { BooleanValue } from "../src/value/BooleanValue.js";
 import {
   ExprEvalFunctionEvaluationConsequentialErrorObj,
   ExprEvalFunctionEvaluationObjectNotFoundErrorObj,
@@ -12,14 +11,11 @@ import {
   ExprEvalSuccessObj,
 } from "../src/expression/ExprEvalResult.js";
 
-import {ExprKind} from "../src/expression/ExprKind.js";
-import {ctxSimple} from "./SimpleIfcExpressionContext";
-import {NumericLiteralExpr} from "../src/expression/numeric/NumericLiteralExpr";
-import {PlusExpr} from "../src/expression/numeric/PlusExpr";
-import {FunctionExpr} from "../src/expression/function/FunctionExpr";
-import {StringLiteralExpr} from "../src/expression/string/StringLiteralExpr";
-import {ArrayExpr} from "../src/expression/structure/ArrayExpr";
-import {E} from "../src/E";
+import { ExprKind } from "../src/expression/ExprKind.js";
+import { ctxSimple } from "./SimpleIfcExpressionContext.js";
+import { NumericLiteralExpr } from "../src/expression/numeric/NumericLiteralExpr.js";
+import { PlusExpr } from "../src/expression/numeric/PlusExpr.js";
+import { E } from "../src/E.js";
 
 describe.each([
   ["1", new Decimal("1")],
@@ -27,7 +23,13 @@ describe.each([
   ["1.5", new Decimal("1.5")],
   [new NumericLiteralExpr(1.5).toExprString(), new Decimal(1.5)],
   ["1+1", new Decimal("2")],
-  [new PlusExpr(new NumericLiteralExpr(1), new NumericLiteralExpr(1)).toExprString(), new Decimal(2)],
+  [
+    new PlusExpr(
+      new NumericLiteralExpr(1),
+      new NumericLiteralExpr(1)
+    ).toExprString(),
+    new Decimal(2),
+  ],
   ["2*3", new Decimal("6")],
   ["6/2", new Decimal("3")],
   ["6-2", new Decimal("4")],
@@ -59,14 +61,19 @@ describe.each([
     'MAP("yellow", [["rot", "red"],["grün","green"],["blau", "blue"]], "not found")',
     "not found",
   ],
-  [E.fun("MAP",
+  [
+    E.fun(
+      "MAP",
       E.string("rot"),
       E.array(
-          E.array(E.string("rot"), E.string("red")),
-          E.array(E.string("grün"), E.string("green")),
-          E.array(E.string("blau"), E.string("blue"))),
+        E.array(E.string("rot"), E.string("red")),
+        E.array(E.string("grün"), E.string("green")),
+        E.array(E.string("blau"), E.string("blue"))
+      ),
       E.string("[not mapped]")
-    ).toExprString(), "red"],
+    ).toExprString(),
+    "red",
+  ],
   ["TRUE && TRUE", true],
   ["TRUE && false", false],
   ["false && TRUE", false],
@@ -85,10 +92,10 @@ describe.each([
   ["TRUE.implies(TRUE)", true],
   ["IMPLIES(FALSE, FALSE)", true],
 
-  ["SWITCH([[TRUE,1],[FALSE,2]],0)",new Decimal(1)],
-  ["SWITCH([[TRUE,1],[TRUE,2]],0)",new Decimal(1)],
-  ["SWITCH([[FALSE,1],[TRUE,2]],0)",new Decimal(2)],
-  ["SWITCH([[FALSE,1],[FALSE,2]],0)",new Decimal(0)],
+  ["SWITCH([[TRUE,1],[FALSE,2]],0)", new Decimal(1)],
+  ["SWITCH([[TRUE,1],[TRUE,2]],0)", new Decimal(1)],
+  ["SWITCH([[FALSE,1],[TRUE,2]],0)", new Decimal(2)],
+  ["SWITCH([[FALSE,1],[FALSE,2]],0)", new Decimal(0)],
 
   ["CONTAINS('ABC', 'AB')", true],
   ["CONTAINS('ABC', 'AB*')", true],
@@ -204,10 +211,7 @@ describe.each([
   ["'BETON'.replace('B*O', 'KRA')", "KRAN"],
 ])("ifcExpression (no context)", (input: string, result: any) => {
   it(`evaluate("${input}") = ${result}`, () => {
-    const actualResult = IfcExpression.evaluate(
-      input,
-      {} as unknown as IfcExpressionContext
-    );
+    const actualResult = IfcExpression.evaluate(input);
     expect(isExprEvalSuccess(actualResult)).toBe(true);
     expect(
       (actualResult as ExprEvalSuccess<any>).result.getValue()
@@ -412,19 +416,19 @@ describe.each([
     25,
     "$element.type().propertySet('dontFindThisPropertySet').property('Bewehrungsgrad').name()",
     new ExprEvalFunctionEvaluationConsequentialErrorObj(
+      ExprKind.FUNCTION,
+      "NAME",
+      new ExprEvalFunctionEvaluationConsequentialErrorObj(
         ExprKind.FUNCTION,
-        "NAME",
-        new ExprEvalFunctionEvaluationConsequentialErrorObj(
-            ExprKind.FUNCTION,
-            "PROPERTY",
-            new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
-                ExprKind.FUNCTION,
-                ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND,
-                "No ifc property set found with name 'dontFindThisPropertySet'",
-                "PROPERTYSET",
-                "dontFindThisPropertySet"
-            )
+        "PROPERTY",
+        new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
+          ExprKind.FUNCTION,
+          ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND,
+          "No ifc property set found with name 'dontFindThisPropertySet'",
+          "PROPERTYSET",
+          "dontFindThisPropertySet"
         )
+      )
     ),
     ctxSimple,
   ],
@@ -469,14 +473,10 @@ describe.each([
 );
 
 describe("ifcExpression", () => {
-  it(".evaluate(ctx) throws SyntaxErrorException", () => {
-    expect(() =>
-      IfcExpression.evaluate("1+", {} as unknown as IfcExpressionContext)
-    ).toThrow();
+  it(".evaluate() does not throw", () => {
+    expect(() => IfcExpression.evaluate("1+")).not.toThrow();
   });
-  it(".parse() does not throw SyntaxErrorException", () => {
+  it(".parse() does not throw ", () => {
     expect(() => IfcExpression.parse("1+")).not.toThrow();
   });
 });
-
-

@@ -1,8 +1,8 @@
 import { Decimal } from "decimal.js";
 import { Value } from "./Value.js";
-import {Comparable} from "./Comparable";
+import { Comparable } from "./Comparable.js";
 
-export class NumericValue implements Value<Decimal>, Comparable<NumericValue>{
+export class NumericValue implements Value<Decimal>, Comparable<NumericValue> {
   private readonly numericValue: Decimal;
 
   constructor(value: Decimal | string | number) {
@@ -38,8 +38,6 @@ export class NumericValue implements Value<Decimal>, Comparable<NumericValue>{
   compareTo(other: NumericValue): number {
     return this.numericValue.comparedTo(other.numericValue);
   }
-
-
 }
 
 export type NumericValueType = {

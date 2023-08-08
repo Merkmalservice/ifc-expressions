@@ -23,7 +23,11 @@ export class LogicalValue implements Value<boolean | "UNKNOWN"> {
   }
 
   toString(): string {
-    return this.logicalValue === "UNKNOWN" ? "UNKNOWN" : (this.logicalValue ? "TRUE" : "FALSE");
+    return this.logicalValue === "UNKNOWN"
+      ? "UNKNOWN"
+      : this.logicalValue
+      ? "TRUE"
+      : "FALSE";
   }
 
   public static isLogicalValueType(arg: any): arg is LogicalValueType {

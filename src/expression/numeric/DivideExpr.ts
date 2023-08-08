@@ -9,6 +9,8 @@ import {
   ExprEvalResult,
   ExprEvalStatus,
 } from "../ExprEvalResult.js";
+import { Type } from "../../type/Types.js";
+import { ExprType } from "../../type/ExprType.js";
 
 export class DivideExpr extends Expr2<
   NumericValue,
@@ -46,4 +48,7 @@ export class DivideExpr extends Expr2<
     return `${this.left.toExprString()} / ${this.right.toExprString()}`;
   }
 
+  getType(): ExprType {
+    return Type.NUMERIC;
+  }
 }

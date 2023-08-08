@@ -4,6 +4,8 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { NumericValue } from "../../value/NumericValue.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
+import { Type } from "../../type/Types.js";
+import { ExprType } from "../../type/ExprType.js";
 
 export class MultiplyExpr extends Expr2<
   NumericValue,
@@ -27,5 +29,7 @@ export class MultiplyExpr extends Expr2<
     return `${this.left.toExprString()} * ${this.right.toExprString()}`;
   }
 
-
+  getType(): ExprType {
+    return Type.NUMERIC;
+  }
 }

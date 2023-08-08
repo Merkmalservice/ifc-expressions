@@ -3,7 +3,6 @@ import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor.js";
 import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
 import { isPresent } from "../IfcExpressionUtils.js";
 import { IfcPropertyAccessor } from "./IfcPropertyAccessor.js";
-import { IfcElementAccessor } from "./IfcElementAccessor.js";
 
 export abstract class IfcTypeObjectAccessor extends IfcRootObjectAccessor {
   getNestedObjectAccessor(name: string): ObjectAccessor | undefined {

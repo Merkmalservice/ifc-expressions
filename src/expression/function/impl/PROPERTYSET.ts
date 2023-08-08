@@ -9,7 +9,6 @@ import {
   ExprEvalSuccessObj,
   ExprEvalTypeErrorObj,
 } from "../../ExprEvalResult.js";
-import { ObjectAccessor } from "../../../context/ObjectAccessor.js";
 import { ObjectAccessorValue } from "../../../value/ObjectAccessorValue.js";
 import { ExprKind } from "../../ExprKind.js";
 import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
@@ -22,7 +21,8 @@ import {
 import { isIfcTypeObjectAccessor } from "../../../context/IfcTypeObjectAccessor.js";
 import { isNullish } from "../../../IfcExpressionUtils.js";
 import { IfcPropertySetAccessor } from "../../../context/IfcPropertySetAccessor.js";
-import {Type} from "../../../parse/Types";
+import { Type, Types } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class PROPERTYSET extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
@@ -30,14 +30,21 @@ export class PROPERTYSET extends Func {
 
   constructor() {
     super("PROPERTYSET", [
-      new FuncArgObjectAccessor(true, PROPERTYSET.KEY_OBJECT_REF),
+      new FuncArgObjectAccessor(
+        true,
+        PROPERTYSET.KEY_OBJECT_REF,
+        Types.or(
+          Type.IFC_ELEMENT_REF,
+          Type.IFC_PROPERTY_REF,
+          Type.IFC_TYPE_OBJECT_REF
+        )
+      ),
       new FuncArg<string>(false, PROPERTYSET.KEY_PSET_NAME),
     ]);
   }
 
-
-  getReturnType(): Type {
-    return Type.IFC_OBJECT_REF;
+  getReturnType(argumentTypes: Array<ExprType>): ExprType {
+    return Type.IFC_PROPERTY_SET_REF;
   }
 
   protected calculateResult(

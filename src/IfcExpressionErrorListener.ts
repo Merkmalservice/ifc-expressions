@@ -1,5 +1,5 @@
 import { ErrorListener, RecognitionException, Recognizer, Token } from "antlr4";
-import {isNullish, isPresent} from "./IfcExpressionUtils.js";
+import { isNullish, isPresent } from "./IfcExpressionUtils.js";
 import { SyntaxErrorException } from "./error/SyntaxErrorException.js";
 import { ValidationException } from "./error/ValidationException.js";
 
@@ -18,15 +18,20 @@ export class IfcExpressionErrorListener extends ErrorListener<Token | number> {
     msg: string,
     e: RecognitionException | undefined
   ) {
-    if (typeof offendingSymbol === 'number') {
+    if (typeof offendingSymbol === "number") {
       this.exception = new SyntaxErrorException(
-          offendingSymbol,
-          line,
-          column,
-          msg
+        offendingSymbol,
+        line,
+        column,
+        msg
       );
-    }else {
-      this.exception= new SyntaxErrorException(isNullish(offendingSymbol)? '[no symbol]' : offendingSymbol.text, line, column, msg);
+    } else {
+      this.exception = new SyntaxErrorException(
+        isNullish(offendingSymbol) ? "[no symbol]" : offendingSymbol.text,
+        line,
+        column,
+        msg
+      );
     }
   }
 

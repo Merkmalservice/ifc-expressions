@@ -1,17 +1,21 @@
-import {FuncArgBase} from "./FuncArgBase.js";
-import {ExpressionValue} from "../../../value/ExpressionValue.js";
-import {ExprEvalResult, ExprEvalSuccess, ExprEvalTypeErrorObj,} from "../../ExprEvalResult.js";
-import {ExprKind} from "../../ExprKind.js";
-import {StringValue} from "../../../value/StringValue.js";
-import {Type} from "../../../parse/Types";
+import { FuncArgBase } from "./FuncArgBase.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
+import {
+  ExprEvalResult,
+  ExprEvalSuccess,
+  ExprEvalTypeErrorObj,
+} from "../../ExprEvalResult.js";
+import { ExprKind } from "../../ExprKind.js";
+import { StringValue } from "../../../value/StringValue.js";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class FuncArgString extends FuncArgBase<StringValue> {
   constructor(required: boolean, name: string, defaultValue?: StringValue) {
     super(required, name, defaultValue);
   }
 
-
-  getType(): Type {
+  getType(): ExprType {
     return Type.STRING;
   }
 

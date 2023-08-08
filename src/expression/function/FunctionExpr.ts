@@ -7,11 +7,12 @@ import { Expr0 } from "../Expr0.js";
 import { Func } from "./Func.js";
 import { IfcExpressionFunctions } from "./IfcExpressionFunctions.js";
 import { isNullish } from "../../IfcExpressionUtils.js";
+import { ExprType } from "../../type/ExprType.js";
 
 export class FunctionExpr extends Expr0<ExpressionValue> {
-  private name: string;
+  private readonly name: string;
   private arguments: Array<Expr<ExpressionValue>>;
-  private functionImplementation: Func;
+  private readonly functionImplementation: Func;
 
   constructor(name: string, functionArguments: Array<Expr<ExpressionValue>>) {
     super(ExprKind.FUNCTION);
@@ -43,7 +44,14 @@ export class FunctionExpr extends Expr0<ExpressionValue> {
   }
 
   toExprString(): string {
-    return `${this.functionImplementation.getName()}(${this.arguments.map(arg => arg.toExprString()).join(",")})`;
+    return `${this.functionImplementation.getName()}(${this.arguments
+      .map((arg) => arg.toExprString())
+      .join(",")})`;
   }
 
+  getType(): ExprType {
+    return this.functionImplementation.getReturnType(
+      this.arguments.map((f) => f.getType())
+    );
+  }
 }

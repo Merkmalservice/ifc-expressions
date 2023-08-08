@@ -9,6 +9,8 @@ import { ExprKind } from "../ExprKind.js";
 import { Expr0 } from "../Expr0.js";
 import { ArrayValue } from "../../value/ArrayValue.js";
 import { ExpressionValue } from "../../value/ExpressionValue.js";
+import { ExprType } from "../../type/ExprType.js";
+import { Types } from "../../type/Types.js";
 
 export class ArrayExpr extends Expr0<ArrayValue> {
   private elements: Array<Expr<ExpressionValue>>;
@@ -36,8 +38,12 @@ export class ArrayExpr extends Expr0<ArrayValue> {
     }
     return new ArrayValue(evaluatedResult);
   }
+
   toExprString(): string {
-    return `[${this.elements.map(elem => elem.toExprString()).join(",")}]`;
+    return `[${this.elements.map((elem) => elem.toExprString()).join(",")}]`;
   }
 
+  getType(): ExprType {
+    return Types.tuple(...this.elements.map((e) => e.getType()));
+  }
 }

@@ -8,15 +8,15 @@ import {
 import { ExprKind } from "../../ExprKind.js";
 import { NumericValue } from "../../../value/NumericValue.js";
 import { Decimal } from "decimal.js";
-import {Type} from "../../../parse/Types";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class FuncArgNumeric extends FuncArgBase<NumericValue> {
   constructor(required: boolean, name: string, defaultValue?: NumericValue) {
     super(required, name, defaultValue);
   }
 
-
-  getType(): Type {
+  getType(): ExprType {
     return Type.NUMERIC;
   }
 

@@ -1,5 +1,5 @@
-import {ParserRuleContext} from "antlr4";
-import {ValidationException} from "./ValidationException.js";
+import { ParserRuleContext } from "antlr4";
+import { ValidationException } from "./ValidationException.js";
 
 export class NoSuchFunctionException extends ValidationException {
   readonly functionName: string;

@@ -31,7 +31,11 @@ export abstract class IfcElementAccessor extends IfcRootObjectAccessor {
   abstract getIfcClass(): string;
 
   listNestedObjects(): Array<string> {
-    return ["type", ...this.listIfcPropertyNames(), ...this.listIfcPropertySetNames()];
+    return [
+      "type",
+      ...this.listIfcPropertyNames(),
+      ...this.listIfcPropertySetNames(),
+    ];
   }
 
   listAttributes(): Array<string> {

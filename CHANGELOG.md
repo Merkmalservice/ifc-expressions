@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- add comarison operators and functions
+- add simple type inference for parse-time and compile-time errors
+- add tuple type and type disjunction
+
 ### Changed
 
 - Allow for method-style function invocation, such as `"abc ".trim()` (given a trim function exists that takes a string).

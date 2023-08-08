@@ -8,7 +8,7 @@ import {
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 
 export abstract class FuncArgBase<T> extends FuncArg<T> {
-  constructor(required: boolean, name: string, defaultValue?: T) {
+  protected constructor(required: boolean, name: string, defaultValue?: T) {
     super(required, name, defaultValue);
   }
 

@@ -2,9 +2,10 @@ import { NumericValue } from "../../value/NumericValue.js";
 import { Expr1 } from "../Expr1.js";
 import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
-import { Decimal } from "decimal.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
+import { Type } from "../../type/Types.js";
+import { ExprType } from "../../type/ExprType.js";
 
 export class UnaryMinusExpr extends Expr1<NumericValue, NumericValue> {
   constructor(value: Expr<NumericValue>) {
@@ -23,4 +24,7 @@ export class UnaryMinusExpr extends Expr1<NumericValue, NumericValue> {
     return `-${this.value.toExprString()}`;
   }
 
+  getType(): ExprType {
+    return Type.NUMERIC;
+  }
 }

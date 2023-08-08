@@ -1,22 +1,27 @@
-import {LiteralExpr} from "../LiteralExpr";
-import {BooleanValue} from "../../value/BooleanValue";
-import {ExprKind} from "../ExprKind";
-import {ExprEvalError} from "../ExprEvalResult";
-import {IfcExpressionContext} from "../../context/IfcExpressionContext";
+import { LiteralExpr } from "../LiteralExpr.js";
+import { BooleanValue } from "../../value/BooleanValue.js";
+import { ExprKind } from "../ExprKind.js";
+import { ExprEvalError } from "../ExprEvalResult.js";
+import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
+import { Type } from "../../type/Types.js";
+import { ExprType } from "../../type/ExprType.js";
 
 export class BooleanLiteralExpr extends LiteralExpr<boolean, BooleanValue> {
+  constructor(value: boolean) {
+    super(ExprKind.BOOLEAN_LITERAL, value);
+  }
 
-    constructor(value: boolean) {
-        super(ExprKind.BOOLEAN_LITERAL, value);
-    }
+  protected calculateResult(
+    ctx: IfcExpressionContext
+  ): ExprEvalError | BooleanValue {
+    return BooleanValue.of(this.value);
+  }
 
-    protected calculateResult(ctx: IfcExpressionContext): ExprEvalError | BooleanValue {
-        return BooleanValue.of(this.value);
-    }
+  toExprString(): string {
+    return this.value === true ? "TRUE" : "FALSE";
+  }
 
-    toExprString(): string {
-        return this.value === true ? "TRUE" : "FALSE";
-    }
-
-
+  getType(): ExprType {
+    return Type.BOOLEAN;
+  }
 }

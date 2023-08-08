@@ -7,15 +7,15 @@ import {
 } from "../../ExprEvalResult.js";
 import { ExprKind } from "../../ExprKind.js";
 import { NumericValue } from "../../../value/NumericValue.js";
-import {Type} from "../../../parse/Types";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class FuncArgInt extends FuncArgBase<NumericValue> {
   constructor(required: boolean, name: string, defaultValue?: NumericValue) {
     super(required, name, defaultValue);
   }
 
-
-  getType(): Type {
+  getType(): ExprType {
     return Type.NUMERIC;
   }
 

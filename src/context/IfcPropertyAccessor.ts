@@ -2,7 +2,6 @@ import { isObjectAccessor, ObjectAccessor } from "./ObjectAccessor.js";
 import { NamedObjectAccessor } from "./NamedObjectAccessor.js";
 import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
 import { ExpressionValue } from "../value/ExpressionValue.js";
-import { IfcElementAccessor } from "./IfcElementAccessor.js";
 
 export abstract class IfcPropertyAccessor extends NamedObjectAccessor {
   getNestedObjectAccessor(name: string): ObjectAccessor | undefined {

@@ -1,22 +1,16 @@
 import { Func } from "../Func.js";
 import { FuncArg } from "../FuncArg.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
-import {
-  ExprEvalMissingRequiredFunctionArgumentErrorObj,
-  ExprEvalResult,
-  ExprEvalSuccessObj,
-} from "../../ExprEvalResult.js";
+import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { ObjectAccessor } from "../../../context/ObjectAccessor.js";
-import { ExprKind } from "../../ExprKind.js";
-import { ObjectAccessorValue } from "../../../value/ObjectAccessorValue.js";
-import {Type} from "../../../parse/Types";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class AttributeAccessorFunction extends Func {
   private readonly attributeName;
   static readonly KEY_OBJECT_REF = "objectRef";
-  private returnType: Type;
+  private readonly returnType: ExprType;
 
-  constructor(attributeName: string, returnType: Type) {
+  constructor(attributeName: string, returnType: ExprType) {
     super(attributeName.toUpperCase(), [
       new FuncArg<string>(true, AttributeAccessorFunction.KEY_OBJECT_REF),
     ]);
@@ -24,8 +18,7 @@ export class AttributeAccessorFunction extends Func {
     this.returnType = returnType;
   }
 
-
-  getReturnType(): Type {
+  getReturnType(argumentTypes: Array<ExprType>): ExprType {
     return this.returnType;
   }
 

@@ -3,6 +3,8 @@ import { Expr } from "../Expr.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { NumericValue } from "../../value/NumericValue.js";
 import { ExprKind } from "../ExprKind.js";
+import { Type } from "../../type/Types.js";
+import { ExprType } from "../../type/ExprType.js";
 
 export class PlusExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
   constructor(left: Expr<NumericValue>, right: Expr<NumericValue>) {
@@ -22,4 +24,7 @@ export class PlusExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
     return `${this.left.toExprString()} + ${this.right.toExprString()}`;
   }
 
+  getType(): ExprType {
+    return Type.NUMERIC;
+  }
 }

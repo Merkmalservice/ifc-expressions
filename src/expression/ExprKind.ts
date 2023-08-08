@@ -32,4 +32,5 @@ export enum ExprKind {
   CMP_LESS_THAN_OR_EQUAL = "CMP_LESS_THAN_OR_EQUAL",
   CMP_GREATER_THAN = "CMP_GREATER_THAN",
   CMP_GREATER_THAN_OR_EQUAL = "CMP_GREATER_THAN_OR_EQUAL",
+  PARSE_ERROR = "PARSE_ERROR" /* to be used when no expr was compiled due to a parse/validation error */,
 }

@@ -1,22 +1,14 @@
 import { FuncArgBase } from "./FuncArgBase.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
-import {
-  ExprEvalResult,
-  ExprEvalSuccess,
-  ExprEvalTypeErrorObj,
-} from "../../ExprEvalResult.js";
-import { ExprKind } from "../../ExprKind.js";
-import { NumericValue } from "../../../value/NumericValue.js";
-import {Type} from "../../../parse/Types";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class FuncArgAny extends FuncArgBase<ExpressionValue> {
   constructor(required: boolean, name: string, defaultValue?: ExpressionValue) {
     super(required, name, defaultValue);
   }
 
-
-  getType(): Type {
+  getType(): ExprType {
     return Type.ANY;
   }
-
 }

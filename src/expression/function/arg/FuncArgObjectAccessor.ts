@@ -6,25 +6,31 @@ import {
   ExprEvalTypeErrorObj,
 } from "../../ExprEvalResult.js";
 import { ExprKind } from "../../ExprKind.js";
-import { NumericValue } from "../../../value/NumericValue.js";
-import { Decimal } from "decimal.js";
 import { ObjectAccessorValue } from "../../../value/ObjectAccessorValue.js";
-import { ObjectAccessor } from "../../../IfcExpression.js";
 import { isObjectAccessor } from "../../../context/ObjectAccessor.js";
-import {Type} from "../../../parse/Types";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
+import { IfcExpressionFunctionConfigException } from "../../../error/IfcExpressionFunctionConfigException.js";
 
 export class FuncArgObjectAccessor extends FuncArgBase<ObjectAccessorValue> {
+  private readonly type: ExprType;
   constructor(
     required: boolean,
     name: string,
+    specificType: ExprType,
     defaultValue?: ObjectAccessorValue
   ) {
     super(required, name, defaultValue);
+    if (!Type.IFC_OBJECT_REF.isAssignableFrom(specificType)) {
+      throw new IfcExpressionFunctionConfigException(
+        `${Type.IFC_OBJECT_REF.getName()} is not assignable from provided object accessor type ${specificType.getName()}`
+      );
+    }
+    this.type = specificType;
   }
 
-
-  getType(): Type {
-    return Type.IFC_OBJECT_REF;
+  getType(): ExprType {
+    return this.type;
   }
 
   protected transformForTypeCheck(

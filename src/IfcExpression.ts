@@ -2,6 +2,7 @@ import {
   CharStream,
   CommonTokenStream,
   ErrorListener,
+  ParserRuleContext,
   ParseTreeWalker,
   Token,
 } from "antlr4";
@@ -25,9 +26,7 @@ import { IfcPropertyAccessor } from "./context/IfcPropertyAccessor.js";
 import { IfcRootObjectAccessor } from "./context/IfcRootObjectAccessor.js";
 import { IfcTypeObjectAccessor } from "./context/IfcTypeObjectAccessor.js";
 import { NamedObjectAccessor } from "./context/NamedObjectAccessor.js";
-import IfcExpressionParser, {
-  ExprContext,
-} from "./gen/parser/IfcExpressionParser.js";
+import IfcExpressionParser from "./gen/parser/IfcExpressionParser.js";
 import IfcExpressionVisitor from "./gen/parser/IfcExpressionVisitor.js";
 import IfcExpressionLexer from "./gen/parser/IfcExpressionLexer.js";
 import { ObjectAccessor } from "./context/ObjectAccessor.js";
@@ -42,6 +41,9 @@ import {
 } from "./expression/ExprEvalResult.js";
 import { ExprKind } from "./expression/ExprKind.js";
 import { ValidationException } from "./error/ValidationException.js";
+import { TypeManager } from "./type/TypeManager.js";
+import { mapException } from "./error/ExceptionToExprEvalErrorMapper.js";
+import { NopContext } from "./context/NopContext.js";
 
 export {
   IfcElementAccessor,
@@ -76,19 +78,19 @@ export {
 export type { BoxedValueTypes };
 
 export class IfcExpressionParseResult {
-  private readonly _typeManager;
-  private readonly _parseTree;
+  private readonly _typeManager: TypeManager;
+  private readonly _parseTree: ParserRuleContext;
 
-  constructor(typeManager, exprContext) {
+  constructor(typeManager: TypeManager, exprContext) {
     this._typeManager = typeManager;
     this._parseTree = exprContext;
   }
 
-  get typeManager() {
+  get typeManager(): TypeManager {
     return this._typeManager;
   }
 
-  get parseTree() {
+  get parseTree(): ParserRuleContext {
     return this._parseTree;
   }
 }
@@ -126,24 +128,29 @@ export class IfcExpression {
         }
       }
     }
-    return new IfcExpressionParseResult(validationListener.getTypeManager(), expr);
+    return new IfcExpressionParseResult(
+      validationListener.getTypeManager(),
+      expr
+    );
+  }
+
+  private static compile(
+    parseResult: IfcExpressionParseResult
+  ): Expr<ExpressionValue> {
+    const visitor = new ExprVisitor(parseResult.typeManager);
+    return visitor.visit(parseResult.parseTree);
   }
 
   public static evaluate(
     expression: string,
-    context: IfcExpressionContext
+    context: IfcExpressionContext = new NopContext()
   ): ExprEvalResult<ExpressionValue> {
     const errorListener = new IfcExpressionErrorListener();
     const parseResult = IfcExpression.parse(expression, errorListener);
     if (errorListener.isErrorOccurred()) {
-      throw errorListener.getException();
+      return mapException(errorListener.getException());
     }
-    const parsedExpression = this.extractExprTree(parseResult);
-    return parsedExpression.evaluate(context, new Map<string, any>());
-  }
-
-  private static extractExprTree(parseResult: IfcExpressionParseResult): Expr<ExpressionValue> {
-    const visitor = new ExprVisitor(parseResult.typeManager);
-    return visitor.visit(parseResult.parseTree);
+    const compiledExpression = this.compile(parseResult);
+    return compiledExpression.evaluate(context, new Map<string, any>());
   }
 }

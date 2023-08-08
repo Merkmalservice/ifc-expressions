@@ -1,9 +1,7 @@
 import { Func } from "../Func.js";
-import { FuncArg } from "../FuncArg.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import {
   ExprEvalFunctionEvaluationObjectNotFoundErrorObj,
-  ExprEvalMissingRequiredFunctionArgumentErrorObj,
   ExprEvalResult,
   ExprEvalStatus,
   ExprEvalSuccessObj,
@@ -12,19 +10,25 @@ import {
 import { ObjectAccessorValue } from "../../../value/ObjectAccessorValue.js";
 import { ExprKind } from "../../ExprKind.js";
 import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
-import { StringValue } from "../../../value/StringValue.js";
 import { isNullish } from "../../../IfcExpressionUtils.js";
-import {Type} from "../../../parse/Types";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class TYPE extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
 
   constructor() {
-    super("TYPE", [new FuncArgObjectAccessor(true, TYPE.KEY_OBJECT_REF)]);
+    super("TYPE", [
+      new FuncArgObjectAccessor(
+        true,
+        TYPE.KEY_OBJECT_REF,
+        Type.IFC_ELEMENT_REF
+      ),
+    ]);
   }
 
-  getReturnType(): Type {
-    return Type.IFC_OBJECT_REF;
+  getReturnType(argumentTypes: Array<ExprType>): ExprType {
+    return Type.IFC_TYPE_OBJECT_REF;
   }
 
   protected calculateResult(

@@ -7,11 +7,12 @@ import {
   isExprEvalError,
 } from "./ExprEvalResult.js";
 import { ExprKind } from "./ExprKind.js";
+import { ExprType } from "../type/ExprType.js";
 
 export abstract class ExprBase<T> implements Expr<T> {
   private readonly exprKind: ExprKind;
 
-  constructor(exprKind: ExprKind) {
+  protected constructor(exprKind: ExprKind) {
     this.exprKind = exprKind;
   }
 
@@ -35,4 +36,5 @@ export abstract class ExprBase<T> implements Expr<T> {
 
   abstract toExprString(): string;
 
+  abstract getType(): ExprType;
 }

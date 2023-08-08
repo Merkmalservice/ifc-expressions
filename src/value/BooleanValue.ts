@@ -1,5 +1,5 @@
 import { Value } from "./Value.js";
-import {Comparable} from "./Comparable";
+import { Comparable } from "./Comparable.js";
 
 export class BooleanValue implements Value<boolean>, Comparable<BooleanValue> {
   private readonly booleanValue: boolean;
@@ -24,7 +24,7 @@ export class BooleanValue implements Value<boolean>, Comparable<BooleanValue> {
   }
 
   compareTo(other: BooleanValue): number {
-    return this.booleanValue ? other.booleanValue ? 0 : 1 : -1;
+    return this.booleanValue ? (other.booleanValue ? 0 : 1) : -1;
   }
 
   toString(): string {

@@ -1,31 +1,39 @@
-import {BooleanValue} from "../../../value/BooleanValue";
-import {Func} from "../Func";
-import {FuncArgBoolean} from "../arg/FuncArgBoolean";
-import {ExpressionValue} from "../../../value/ExpressionValue";
-import {ExprEvalResult, ExprEvalSuccessObj} from "../../ExprEvalResult";
-import {Type} from "../../../parse/Types";
+import { BooleanValue } from "../../../value/BooleanValue.js";
+import { Func } from "../Func.js";
+import { FuncArgBoolean } from "../arg/FuncArgBoolean.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
+import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class FuncBooleanBinary extends Func {
-    private static readonly KEY_LEFT= "left";
-    private static readonly KEY_RIGHT= "right";
-    private readonly actualCalculation: (l:boolean, r:boolean) => boolean;
+  private static readonly KEY_LEFT = "left";
+  private static readonly KEY_RIGHT = "right";
+  private readonly actualCalculation: (l: boolean, r: boolean) => boolean;
 
-    constructor(name: string, fun: (l:boolean,r:boolean) => boolean) {
-        super(name, [
-            new FuncArgBoolean(true, FuncBooleanBinary.KEY_LEFT),
-            new FuncArgBoolean(true, FuncBooleanBinary.KEY_RIGHT)
-        ]);
-        this.actualCalculation = fun;
-    }
+  constructor(name: string, fun: (l: boolean, r: boolean) => boolean) {
+    super(name, [
+      new FuncArgBoolean(true, FuncBooleanBinary.KEY_LEFT),
+      new FuncArgBoolean(true, FuncBooleanBinary.KEY_RIGHT),
+    ]);
+    this.actualCalculation = fun;
+  }
 
-    getReturnType(): Type {
-        return Type.BOOLEAN;
-    }
+  getReturnType(argumentTypes: Array<ExprType>): ExprType {
+    return Type.BOOLEAN;
+  }
 
-    protected calculateResult(evaluatedArguments: Map<string, ExpressionValue>): ExprEvalResult<ExpressionValue> {
-        const left = evaluatedArguments.get(FuncBooleanBinary.KEY_LEFT) as BooleanValue;
-        const right = evaluatedArguments.get(FuncBooleanBinary.KEY_RIGHT) as BooleanValue;
-        return new ExprEvalSuccessObj(BooleanValue.of(this.actualCalculation(left.getValue(),right.getValue())));
-    }
-
+  protected calculateResult(
+    evaluatedArguments: Map<string, ExpressionValue>
+  ): ExprEvalResult<ExpressionValue> {
+    const left = evaluatedArguments.get(
+      FuncBooleanBinary.KEY_LEFT
+    ) as BooleanValue;
+    const right = evaluatedArguments.get(
+      FuncBooleanBinary.KEY_RIGHT
+    ) as BooleanValue;
+    return new ExprEvalSuccessObj(
+      BooleanValue.of(this.actualCalculation(left.getValue(), right.getValue()))
+    );
+  }
 }

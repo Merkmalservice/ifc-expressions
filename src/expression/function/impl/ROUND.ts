@@ -5,7 +5,8 @@ import { FuncArgNumeric } from "../arg/FuncArgNumeric.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { Decimal } from "decimal.js";
-import {Type} from "../../../parse/Types";
+import { Type } from "../../../type/Types.js";
+import { ExprType } from "../../../type/ExprType.js";
 
 export class ROUND extends Func {
   private static KEY_INPUT = "input";
@@ -18,7 +19,7 @@ export class ROUND extends Func {
     ]);
   }
 
-  getReturnType(): Type {
+  getReturnType(argumentTypes: Array<ExprType>): ExprType {
     return Type.NUMERIC;
   }
 

@@ -1,7 +1,7 @@
 import { Value } from "./Value.js";
-import {Comparable} from "./Comparable";
+import { Comparable } from "./Comparable.js";
 
-export class StringValue implements Value<string>, Comparable<StringValue>{
+export class StringValue implements Value<string>, Comparable<StringValue> {
   private readonly stringValue: string;
   private static collator = new Intl.Collator();
 
@@ -31,8 +31,6 @@ export class StringValue implements Value<string>, Comparable<StringValue>{
   compareTo(other: StringValue): number {
     return StringValue.collator.compare(this.stringValue, other.stringValue);
   }
-
-
 
   static isStringValueType(arg: any): arg is StringValueType {
     return typeof arg.stringValue === "string";

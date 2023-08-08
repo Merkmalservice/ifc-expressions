@@ -3,6 +3,8 @@ import { Expr } from "../Expr.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { StringValue } from "../../value/StringValue.js";
 import { ExprKind } from "../ExprKind.js";
+import { ExprType } from "../../type/ExprType.js";
+import { Type } from "../../type/Types.js";
 
 export class StringConcatExpr extends Expr2<
   StringValue,
@@ -26,4 +28,7 @@ export class StringConcatExpr extends Expr2<
     return `${this.left.toExprString()} + ${this.right.toExprString()}`;
   }
 
+  getType(): ExprType {
+    return Type.STRING;
+  }
 }

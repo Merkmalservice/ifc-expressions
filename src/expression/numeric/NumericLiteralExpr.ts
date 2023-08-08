@@ -4,6 +4,8 @@ import { NumericValue } from "../../value/NumericValue.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { ExprKind } from "../ExprKind.js";
 import { LiteralExpr } from "../LiteralExpr.js";
+import { Type } from "../../type/Types.js";
+import { ExprType } from "../../type/ExprType.js";
 
 export class NumericLiteralExpr extends LiteralExpr<
   NumericValue,
@@ -23,4 +25,7 @@ export class NumericLiteralExpr extends LiteralExpr<
     return `${this.value.getValue().toString()}`;
   }
 
+  getType(): ExprType {
+    return Type.NUMERIC;
+  }
 }
