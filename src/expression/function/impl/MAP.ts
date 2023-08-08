@@ -50,7 +50,7 @@ export class MAP extends Func {
     ).getTypes();
     const inType = tupleTypes[0];
     const outType = tupleTypes[1];
-    if (!argumentTypes[0].isSameTypeAs(inType)) {
+    if (!argumentTypes[0].overlapsWith(inType)) {
       throw new WrongFunctionArgumentTypeException(
         this.name,
         this.formalArguments[0].name,
@@ -60,7 +60,7 @@ export class MAP extends Func {
         ctx
       );
     }
-    if (argumentTypes.length > 2 && !argumentTypes[2].isSameTypeAs(outType)) {
+    if (argumentTypes.length > 2 && !argumentTypes[2].overlapsWith(outType)) {
       throw new WrongFunctionArgumentTypeException(
         this.name,
         this.formalArguments[2].name,

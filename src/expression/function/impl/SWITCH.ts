@@ -44,7 +44,7 @@ export class SWITCH extends Func {
     ).getTypes();
     const inType = tupleTypes[0];
     const outType = tupleTypes[1];
-    if (!Type.BOOLEAN.isSameTypeAs(inType)) {
+    if (!Type.BOOLEAN.overlapsWith(inType)) {
       throw new WrongFunctionArgumentTypeException(
         this.name,
         this.formalArguments[0].name,
@@ -55,7 +55,7 @@ export class SWITCH extends Func {
       );
     }
 
-    if (argumentTypes.length > 1 && !argumentTypes[1].isSameTypeAs(outType)) {
+    if (argumentTypes.length > 1 && !argumentTypes[1].overlapsWith(outType)) {
       throw new WrongFunctionArgumentTypeException(
         this.name,
         this.formalArguments[1].name,
