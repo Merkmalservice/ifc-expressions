@@ -7,22 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.0.0-beta.0 - 2023-08-08
+
 ### Added
 
 - add comarison operators and functions
 - add simple type inference for parse-time and compile-time errors
 - add tuple type and type disjunction
+- power function, e.g. `2^4`
+- boolean expressions
 
 ### Changed
 
 - Allow for method-style function invocation, such as `"abc ".trim()` (given a trim function exists that takes a string).
 - Clean up the syntax a bit, so that there are fewer secrets that one needs to know
 - Accessing property, property set, and type is now done using functions. Those who like spreadsheet formulae will appreciate that they can now write `VALUE(PROPERTY(PROPERTYSET($element,'PSet_WallCommon'),'width'))`. All others will cheer for `$element.propertySet('PSet_WallCommon').property('width').value()`, which is equivalent, as is any combination of the two styles.
-
-### Added
-
-- power function, e.g. `2^4`
-- boolean expressions
 
 ### Fixed
 
