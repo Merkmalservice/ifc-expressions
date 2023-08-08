@@ -9,7 +9,8 @@ export class Type {
   static readonly ANY = new SimpleType("any");
   static readonly NUMERIC = new SimpleType("numeric");
   static readonly STRING = new SimpleType("string");
-  static readonly BOOLEAN = new SimpleType("boolean");
+  static readonly LOGICAL = new SimpleType("logical");
+  static readonly BOOLEAN = new SimpleType("boolean", Type.LOGICAL);
   static readonly IFC_OBJECT_REF = new SimpleType("ifcObjectRef");
   static readonly IFC_ELEMENT_REF = new SimpleType(
     "ifcElementRef",

@@ -462,6 +462,12 @@ describe.each([
     new ExprEvalSuccessObj(BooleanValue.of(false)),
     ctxSimple,
   ],
+  [
+    31,
+    "'the value is ' + $property.value().toString()",
+    new ExprEvalSuccessObj(StringValue.of("the value is 120")),
+    ctxSimple,
+  ],
 ])(
   "ifcExpression (with 'simple' context)",
   (testCase: number | string, input: string, result: any, context: any) => {

@@ -141,9 +141,9 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     this.typeManager.setType(ctx, Types.numeric());
   };
   exitSEAddSub: (ctx: SEAddSubContext) => void = (ctx) => {
-    if (this.typeManager.isString(ctx._left, ctx._right)) {
+    if (this.typeManager.overlapsWithString(ctx._left, ctx._right)) {
       this.typeManager.setType(ctx, Types.string());
-    } else if (this.typeManager.isNumeric(ctx._left, ctx._right)) {
+    } else if (this.typeManager.overlapsWithNumeric(ctx._left, ctx._right)) {
       this.typeManager.setType(ctx, Types.numeric());
     } else {
       throw new ExpressionTypeError(

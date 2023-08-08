@@ -1,4 +1,6 @@
 import { Value } from "./Value.js";
+import { ExprType } from "../type/ExprType.js";
+import { Type } from "../type/Types.js";
 
 export class ReferenceValue implements Value<string> {
   private readonly referenceValue: string;
@@ -13,6 +15,10 @@ export class ReferenceValue implements Value<string> {
 
   getValue(): string {
     return this.referenceValue;
+  }
+
+  getType(): ExprType {
+    return Type.STRING;
   }
 
   equals(other: Value<any>): boolean {

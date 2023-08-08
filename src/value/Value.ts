@@ -1,4 +1,5 @@
 import { BoxedValueTypes } from "./BoxedValueTypes.js";
+import { ExprType } from "../type/ExprType.js";
 
 export interface Value<
   T extends
@@ -8,4 +9,5 @@ export interface Value<
   getValue(): T;
   equals(other: Value<any>): boolean;
   toString();
+  getType(): ExprType;
 }

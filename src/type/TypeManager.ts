@@ -78,15 +78,31 @@ export class TypeManager {
     return ctxs.every((ctx) => Types.isType(this.types.get(ctx), type));
   }
 
+  public overlapsWith(type: ExprType, ...ctxs) {
+    return ctxs.every((ctx) => type.overlapsWith(this.types.get(ctx)));
+  }
+
   public isString(...ctxs) {
     return this.isType(Type.STRING, ...ctxs);
+  }
+
+  public overlapsWithString(...ctxs) {
+    return this.overlapsWith(Type.STRING, ...ctxs);
   }
 
   public isBoolean(...ctxs) {
     return this.isType(Type.BOOLEAN, ...ctxs);
   }
 
+  public overlapsWithBoolean(...ctxs) {
+    return this.overlapsWith(Type.BOOLEAN, ...ctxs);
+  }
+
   public isNumeric(...ctxs) {
     return this.isType(Type.NUMERIC, ...ctxs);
+  }
+
+  public overlapsWithNumeric(...ctxs) {
+    return this.overlapsWith(Type.NUMERIC, ...ctxs);
   }
 }

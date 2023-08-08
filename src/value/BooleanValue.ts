@@ -1,5 +1,7 @@
 import { Value } from "./Value.js";
 import { Comparable } from "./Comparable.js";
+import { ExprType } from "../type/ExprType.js";
+import { Type } from "../type/Types.js";
 
 export class BooleanValue implements Value<boolean>, Comparable<BooleanValue> {
   private readonly booleanValue: boolean;
@@ -14,6 +16,10 @@ export class BooleanValue implements Value<boolean>, Comparable<BooleanValue> {
 
   getValue(): boolean {
     return this.booleanValue;
+  }
+
+  getType(): ExprType {
+    return Type.BOOLEAN;
   }
 
   equals(other: Value<any>): boolean {

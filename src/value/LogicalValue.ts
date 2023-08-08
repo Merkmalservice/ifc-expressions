@@ -1,4 +1,6 @@
 import { Value } from "./Value.js";
+import { ExprType } from "../type/ExprType.js";
+import { Type } from "../type/Types.js";
 
 export class LogicalValue implements Value<boolean | "UNKNOWN"> {
   private readonly logicalValue: boolean | "UNKNOWN";
@@ -20,6 +22,10 @@ export class LogicalValue implements Value<boolean | "UNKNOWN"> {
       LogicalValue.isLogicalValueType(other) &&
       other.logicalValue === this.logicalValue
     );
+  }
+
+  getType(): ExprType {
+    return Type.LOGICAL;
   }
 
   toString(): string {

@@ -185,8 +185,8 @@ export class ExprVisitor extends IfcExpressionVisitor<Expr<any>> {
       );
     }
     if (
-      this.typeManager.isString(ctx._left, ctx._right) ||
-      this.typeManager.isNumeric(ctx._left, ctx._right)
+      this.typeManager.overlapsWithString(ctx._left, ctx._right) ||
+      this.typeManager.overlapsWithNumeric(ctx._left, ctx._right)
     ) {
       return new PlusOrConcatExpr(
         this.visit(ctx._left),

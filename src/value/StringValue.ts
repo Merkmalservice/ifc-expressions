@@ -1,5 +1,7 @@
 import { Value } from "./Value.js";
 import { Comparable } from "./Comparable.js";
+import { Type } from "../type/Types.js";
+import { ExprType } from "../type/ExprType.js";
 
 export class StringValue implements Value<string>, Comparable<StringValue> {
   private readonly stringValue: string;
@@ -30,6 +32,10 @@ export class StringValue implements Value<string>, Comparable<StringValue> {
 
   compareTo(other: StringValue): number {
     return StringValue.collator.compare(this.stringValue, other.stringValue);
+  }
+
+  getType(): ExprType {
+    return Type.STRING;
   }
 
   static isStringValueType(arg: any): arg is StringValueType {

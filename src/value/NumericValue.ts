@@ -1,6 +1,8 @@
 import { Decimal } from "decimal.js";
 import { Value } from "./Value.js";
 import { Comparable } from "./Comparable.js";
+import { ExprType } from "../type/ExprType.js";
+import { Type } from "../type/Types.js";
 
 export class NumericValue implements Value<Decimal>, Comparable<NumericValue> {
   private readonly numericValue: Decimal;
@@ -18,6 +20,10 @@ export class NumericValue implements Value<Decimal>, Comparable<NumericValue> {
 
   getValue(): Decimal {
     return this.numericValue;
+  }
+
+  getType(): ExprType {
+    return Type.NUMERIC;
   }
 
   static isNumericValueType(arg: any): arg is NumericValueType {

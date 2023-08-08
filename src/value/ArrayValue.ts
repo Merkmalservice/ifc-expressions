@@ -1,4 +1,6 @@
 import { Value } from "./Value.js";
+import { ExprType } from "../type/ExprType.js";
+import { Type } from "../type/Types.js";
 
 export class ArrayValue implements Value<Array<Value<any>>> {
   private readonly arrayValue: Array<Value<any>>;
@@ -13,6 +15,10 @@ export class ArrayValue implements Value<Array<Value<any>>> {
 
   getValue(): Array<Value<any>> {
     return this.arrayValue;
+  }
+
+  getType(): ExprType {
+    return Type.ARRAY;
   }
 
   equals(other: Value<any>): boolean {

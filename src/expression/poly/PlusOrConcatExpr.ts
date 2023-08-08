@@ -41,7 +41,11 @@ export class PlusOrConcatExpr extends Expr2<
     }
     return new ExprEvalTypeErrorObj(
       ExprKind.FUNCTION,
-      "Operator '+' requires the operands to be either both of type numeric or both of type string, but they are not.",
+      `Operator '+' requires the operands to be either both of type numeric or both of type string, but they are '${leftResult
+        .getType()
+        .getName()}' (left operand) and '${rightResult
+        .getType()
+        .getName()}' (right operand)`,
       [leftResult, rightResult]
     );
   }
