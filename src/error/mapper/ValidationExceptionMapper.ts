@@ -7,7 +7,7 @@ import {
 import { InvalidSyntaxException } from "../InvalidSyntaxException.js";
 import { ValidationException } from "../ValidationException.js";
 import { ExpressionTypeError } from "../ExpressionTypeError.js";
-import { TextSpan } from "../../util/TextSpan";
+import { TextSpan } from "../../util/TextSpan.js";
 
 export class ValidationExceptionMapper
   implements

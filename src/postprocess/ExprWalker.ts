@@ -1,4 +1,4 @@
-import { Expr } from "../expression/Expr";
+import { Expr } from "../expression/Expr.js";
 import { ExprVisitor } from "./ExprVisitor.js";
 
 export class ExprWalker {

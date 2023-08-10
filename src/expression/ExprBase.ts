@@ -9,7 +9,7 @@ import {
 } from "./ExprEvalResult.js";
 import { ExprKind } from "./ExprKind.js";
 import { ExprType } from "../type/ExprType.js";
-import { TextSpan } from "../util/TextSpan";
+import { TextSpan } from "../util/TextSpan.js";
 import { isNullish } from "../util/IfcExpressionUtils.js";
 import { ExprStringBuilder } from "./ExprStringBuilder.js";
 

@@ -4,7 +4,7 @@ import {
   ExprEvalWrongFunctionArgumentTypeErrorObj,
 } from "../../expression/ExprEvalResult.js";
 import { WrongFunctionArgumentTypeException } from "../WrongFunctionArgumentTypeException.js";
-import { TextSpan } from "../../util/TextSpan";
+import { TextSpan } from "../../util/TextSpan.js";
 
 export class WrongFunctionArgumentTypeExceptionMapper
   implements ExceptionToExprEvalErrorMapper<WrongFunctionArgumentTypeException>

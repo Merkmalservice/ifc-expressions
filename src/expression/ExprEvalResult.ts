@@ -1,7 +1,7 @@
 import { Expr } from "./Expr.js";
 import { ExprKind } from "./ExprKind.js";
 import { isNullish } from "../util/IfcExpressionUtils.js";
-import { TextSpan } from "../util/TextSpan";
+import { TextSpan } from "../util/TextSpan.js";
 
 export enum ExprEvalStatus {
   SUCCESS = 1000,

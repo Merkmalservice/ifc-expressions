@@ -7,7 +7,7 @@ import { ExpressionTypeError } from "../src/error/ExpressionTypeError.js";
 import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException.js";
 import { Type, Types } from "../src/type/Types.js";
 import { ExprType } from "../src/type/ExprType.js";
-import { mapException } from "../src/error/ExceptionToExprEvalErrorMapper";
+import { mapException } from "../src/error/ExceptionToExprEvalErrorMapper.js";
 
 const cases = [
   // numeric

@@ -5,8 +5,8 @@ import { BooleanValue } from "../../../value/BooleanValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Types } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { FuncArgBoolean } from "../arg/FuncArgBoolean";
-import { FuncArgAny } from "../arg/FuncArgAny";
+import { FuncArgBoolean } from "../arg/FuncArgBoolean.js";
+import { FuncArgAny } from "../arg/FuncArgAny.js";
 
 export class IF extends Func {
   private static readonly ARG_NAME_CONDITION = "condition";

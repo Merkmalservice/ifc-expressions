@@ -1,4 +1,4 @@
-import { TextSpan } from "../src/util/TextSpan";
+import { TextSpan } from "../src/util/TextSpan.js";
 
 describe.each([
   ["abc abc abc", 1, 5, 1, 7, "abc abc abc\n    ~~~"],

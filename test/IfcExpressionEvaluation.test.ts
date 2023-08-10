@@ -21,9 +21,9 @@ import { ctxSimple } from "./SimpleIfcExpressionContext.js";
 import { NumericLiteralExpr } from "../src/expression/numeric/NumericLiteralExpr.js";
 import { PlusExpr } from "../src/expression/numeric/PlusExpr.js";
 import { E } from "../src/E.js";
-import { TextSpan } from "../src/util/TextSpan";
-import { Type, Types } from "../src/type/Types";
-import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException";
+import { TextSpan } from "../src/util/TextSpan.js";
+import { Type, Types } from "../src/type/Types.js";
+import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException.js";
 
 describe.each([
   ["1", new Decimal("1")],

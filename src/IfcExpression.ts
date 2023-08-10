@@ -44,8 +44,8 @@ import { ValidationException } from "./error/ValidationException.js";
 import { TypeManager } from "./compiler/TypeManager.js";
 import { mapException } from "./error/ExceptionToExprEvalErrorMapper.js";
 import { NopContext } from "./context/NopContext.js";
-import { ExprToTextInputLinker } from "./compiler/ExprToTextInputLinker";
-import { TextSpan } from "./util/TextSpan";
+import { ExprToTextInputLinker } from "./compiler/ExprToTextInputLinker.js";
+import { TextSpan } from "./util/TextSpan.js";
 
 export {
   IfcElementAccessor,

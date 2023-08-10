@@ -5,7 +5,7 @@ import {
 } from "../../expression/ExprEvalResult.js";
 import { NoSuchFunctionException } from "../NoSuchFunctionException.js";
 import { NoSuchMethodException } from "../NoSuchMethodException.js";
-import { TextSpan } from "../../util/TextSpan";
+import { TextSpan } from "../../util/TextSpan.js";
 
 export class NoSuchFunctionExceptionMapper
   implements

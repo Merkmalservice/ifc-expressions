@@ -4,7 +4,7 @@ import {
   ExprEvalValidationError,
 } from "../../expression/ExprEvalResult.js";
 import { MissingFunctionArgumentException } from "../MissingFunctionArgumentException.js";
-import { TextSpan } from "../../util/TextSpan";
+import { TextSpan } from "../../util/TextSpan.js";
 
 export class MissingFunctionArgumentExceptionMapper
   implements ExceptionToExprEvalErrorMapper<MissingFunctionArgumentException>

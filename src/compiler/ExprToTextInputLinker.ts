@@ -1,8 +1,8 @@
-import { ExprVisitor } from "../postprocess/ExprVisitor";
+import { ExprVisitor } from "../postprocess/ExprVisitor.js";
 import { ExprManager } from "./ExprManager.js";
-import { Expr } from "../expression/Expr";
-import { TextSpan } from "../util/TextSpan";
-import { ExprWalker } from "../postprocess/ExprWalker";
+import { Expr } from "../expression/Expr.js";
+import { TextSpan } from "../util/TextSpan.js";
+import { ExprWalker } from "../postprocess/ExprWalker.js";
 
 export class ExprToTextInputLinker extends ExprVisitor {
   private exprManager: ExprManager;

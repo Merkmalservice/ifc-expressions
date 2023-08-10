@@ -16,7 +16,7 @@ import { EXISTS } from "./impl/EXISTS.js";
 import { EQUALS } from "./impl/EQUALS.js";
 import { CompareMagnitudes } from "./impl/CompareMagnitudes.js";
 import { ReplacePattern } from "./impl/ReplacePattern.js";
-import { IF } from "./impl/IF";
+import { IF } from "./impl/IF.js";
 
 const builtinFunctions = new Map<string, Func>();
 function registerFunc(func: Func) {
