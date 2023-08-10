@@ -38,12 +38,6 @@ jobs:
 
       - name: Build and run tests
         run: npm run build-complete
-      - name: show generated parser files
-        if: ${{ failure() }}
-        run: |
-          shopt -s globstar
-          ls -l ./generated/**
-        shell: bash
 
       # configure git
       - name: setup git config

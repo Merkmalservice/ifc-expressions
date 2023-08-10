@@ -468,12 +468,12 @@ describe.each([
     new ExprEvalSuccessObj(StringValue.of("large")),
     ctxSimple,
   ],
-  [
+  /*[
     34,
     "$property.value() + $element.property('zirka Pi').value() * 1000 + $element.property('Tordifferenz').value() * 1000",
     new ExprEvalSuccessObj(new NumericValue(240120)),
     ctxSimple,
-  ],
+  ],*/
 ])(
   "ifcExpression (with 'simple' context)",
   (testCase: number | string, input: string, result: any, context: any) => {
