@@ -2,6 +2,7 @@ import gulp from "gulp";
 import ts from "gulp-typescript";
 import { deleteAsync } from "del";
 import uglify from "gulp-uglify";
+import replace from "gulp-replace";
 import fs from "fs";
 
 const mjsProject = ts.createProject("tsconfig.json");
@@ -23,6 +24,7 @@ gulp.task("compress", function () {
 gulp.task("transpile-mjs", function () {
   return gulp
     .src(["src/**/*.ts", "generated/**/*.ts"], { sourcemaps: true })
+    .pipe(replace(/from "([.\/]+(\w+\/)*\w+)";/g, 'from "$1.js";'))
     .pipe(mjsProject())
     .pipe(
       gulp.dest("dist/mjs/", {
@@ -33,6 +35,7 @@ gulp.task("transpile-mjs", function () {
 gulp.task("transpile-cjs", function () {
   return gulp
     .src(["src/**/*.ts", "generated/**/*.ts"], { sourcemaps: true })
+    .pipe(replace(/from "([.\/]+(\w+\/)*\w+)";/g, 'from "$1.js";'))
     .pipe(cjsProject())
     .pipe(gulp.dest("dist/cjs/", { sourcemaps: "." }));
 });

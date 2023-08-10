@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- ExprFacade
+- add '.js' extension for local imports to mjs and cjs transpile output via gulp-replace
+
 ## 2.0.1-beta.3 - 2023-08-10
 
 ## 2.0.1-beta.2 - 2023-08-10

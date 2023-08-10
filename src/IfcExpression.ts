@@ -46,6 +46,7 @@ import { mapException } from "./error/ExceptionToExprEvalErrorMapper.js";
 import { NopContext } from "./context/NopContext.js";
 import { ExprToTextInputLinker } from "./compiler/ExprToTextInputLinker.js";
 import { TextSpan } from "./util/TextSpan.js";
+import { ExprFacade } from "./expression/ExprFacade";
 
 export {
   IfcElementAccessor,
@@ -76,6 +77,7 @@ export {
   isExprEvalError,
   isExprEvalSuccess,
   ExprToTextInputLinker,
+  ExprFacade,
 };
 
 export type { BoxedValueTypes };
@@ -158,7 +160,7 @@ export class IfcExpression {
    */
   public static compile(
     parseResult: IfcExpressionParseResult
-  ): Expr<ExpressionValue> {
+  ): ExprFacade<ExpressionValue> {
     const compiler = new ExprCompiler(parseResult.typeManager);
     const expr = compiler.visit(parseResult.parseTree);
     ExprToTextInputLinker.linkTextToExpressions(
@@ -166,7 +168,7 @@ export class IfcExpression {
       expr,
       compiler.getExprManager()
     );
-    return expr;
+    return new ExprFacade(expr);
   }
 
   /**
@@ -187,7 +189,7 @@ export class IfcExpression {
       return mapException(errorListener.getException());
     }
     const compiledExpression = this.compile(parseResult);
-    return compiledExpression.evaluate(context, new Map<string, any>());
+    return compiledExpression.evaluate(context);
   }
 
   public static formatError(input: string, error: ExprEvalError) {
@@ -212,16 +214,9 @@ export class IfcExpression {
   }
 
   public static evaluateExpression(
-    expr: Expr<ExpressionValue>,
+    expr: ExprFacade<ExpressionValue>,
     context: IfcExpressionContext = new NopContext()
   ) {
-    if (isNullish(expr.getTextSpan())) {
-      // if the expr was created by parsing an input, it has a textSpan set.
-      // If the expr was created programmatically, we have to generate its exprString once, which causes its
-      // textspan to be set.
-      // make sure we know the position
-      expr.toExprString();
-    }
-    return expr.evaluate(context, new Map());
+    return expr.evaluate(context);
   }
 }
