@@ -13,16 +13,16 @@ export class ValidationException extends Error {
       )}, near '${ctx.getText()}'`
     );
     this.fromLine = ctx.start.line;
-    this.fromColumn = ctx.start.start;
+    this.fromColumn = ctx.start.column;
     this.toLine = ctx.stop.line;
-    this.toColumn = ctx.stop.stop;
+    this.toColumn = ctx.stop.column + (ctx.stop.text || "").length;
   }
 
   private static makeColumnsString(ctx: ParserRuleContext): string {
     const fromLine = ctx.start.line;
-    const fromColumn = ctx.start.start;
+    const fromColumn = ctx.start.column;
     const toLine = ctx.stop.line;
-    const toColumn = ctx.stop.stop;
+    const toColumn = ctx.stop.column + (ctx.stop.text || "").length;
     if (fromLine == toLine) {
       return fromColumn == toColumn
         ? `line ${fromLine}, column ${fromColumn}`

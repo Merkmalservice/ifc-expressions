@@ -10,6 +10,7 @@ import { Type } from "../../../type/Types.js";
 import { BooleanValue } from "../../../value/BooleanValue.js";
 import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class EXISTS extends Func {
   private static readonly KEY_OBJECT = "object";
@@ -25,15 +26,17 @@ export class EXISTS extends Func {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     return undefined; // does not get called
   }
 
   evaluate(
+    callingExpr: FunctionExpr,
     funcArgs: Array<ExprEvalResult<ExpressionValue>>
   ): ExprEvalResult<ExpressionValue> {
-    const args = this.getArgumentValues(funcArgs);
+    const args = this.getArgumentValues(callingExpr, funcArgs);
     if (isExprEvalError(args)) {
       return args;
     }

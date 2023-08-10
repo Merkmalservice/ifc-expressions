@@ -1,4 +1,4 @@
-import { isPresent } from "../IfcExpressionUtils.js";
+import { isPresent } from "../util/IfcExpressionUtils.js";
 
 export class SyntaxErrorException extends Error {
   private readonly _offendingSymbol: string | number;

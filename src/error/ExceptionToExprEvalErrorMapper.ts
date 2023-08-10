@@ -5,7 +5,7 @@ import {
 } from "../expression/ExprEvalResult.js";
 import { SyntaxErrorException } from "./SyntaxErrorException.js";
 import { SyntaxErrorMapper } from "./mapper/SyntaxErrorMapper.js";
-import { isNullish } from "../IfcExpressionUtils.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
 import { ExprKind } from "../expression/ExprKind.js";
 import { MissingFunctionArgumentExceptionMapper } from "./mapper/MissingFunctionArgumentExceptionMapper.js";
 import { NoSuchFunctionExceptionMapper } from "./mapper/NoSuchFunctionExceptionMapper.js";
@@ -48,7 +48,8 @@ export function mapException(e: Error): ExprEvalError {
     return new ExprEvalErrorObj(
       ExprKind.PARSE_ERROR,
       ExprEvalStatus.ERROR,
-      e.message
+      e.message,
+      this.getTextSpan()
     );
   }
   return mapper.mapException(e);

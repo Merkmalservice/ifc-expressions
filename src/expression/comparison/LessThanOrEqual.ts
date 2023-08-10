@@ -3,11 +3,16 @@ import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { Comparable } from "../../value/Comparable.js";
 import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class LessThanOrEqual<
   T extends ExpressionValue & Comparable<T>
 > extends ComparisonOp<T> {
   constructor(left: Expr<T>, right: Expr<T>) {
     super(ExprKind.CMP_LESS_THAN_OR_EQUAL, left, right, (num) => num <= 0);
+  }
+
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendExpr(this.left).appendString(" <= ").appendExpr(this.right);
   }
 }

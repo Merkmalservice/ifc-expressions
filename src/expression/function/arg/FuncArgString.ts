@@ -9,6 +9,7 @@ import { ExprKind } from "../../ExprKind.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class FuncArgString extends FuncArgBase<StringValue> {
   constructor(required: boolean, name: string, defaultValue?: StringValue) {
@@ -20,6 +21,7 @@ export class FuncArgString extends FuncArgBase<StringValue> {
   }
 
   protected transformForTypeCheck(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalSuccess<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const result = invocationValue.result;
@@ -31,7 +33,8 @@ export class FuncArgString extends FuncArgBase<StringValue> {
       `Argument ${this.name} must be a string, but was ${JSON.stringify(
         result
       )}`,
-      result
+      result,
+      callingExpr.getTextSpan()
     );
   }
 }

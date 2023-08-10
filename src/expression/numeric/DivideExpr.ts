@@ -11,6 +11,7 @@ import {
 } from "../ExprEvalResult.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class DivideExpr extends Expr2<
   NumericValue,
@@ -40,12 +41,13 @@ export class DivideExpr extends Expr2<
       leftResult,
       rightResult,
       ExprEvalStatus.MATH_ERROR,
-      error
+      error,
+      this.getTextSpan()
     );
   }
 
-  toExprString(): string {
-    return `${this.left.toExprString()} / ${this.right.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder): void {
+    builder.appendExpr(this.left).appendString(" / ").appendExpr(this.right);
   }
 
   getType(): ExprType {

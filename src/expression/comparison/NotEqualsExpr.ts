@@ -7,6 +7,7 @@ import { ExprEvalError } from "../ExprEvalResult.js";
 import { BooleanValue } from "../../value/BooleanValue.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class NotEqualsExpr extends Expr2<
   ExpressionValue,
@@ -26,8 +27,8 @@ export class NotEqualsExpr extends Expr2<
     return new BooleanValue(!leftOperand.equals(rightOperand));
   }
 
-  toExprString(): string {
-    return `${this.left.toExprString()} == ${this.right.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendExpr(this.left).appendString(" != ").appendExpr(this.right);
   }
 
   getType(): ExprType {

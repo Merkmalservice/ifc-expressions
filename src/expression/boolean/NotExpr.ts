@@ -6,10 +6,11 @@ import { ExprEvalError } from "../ExprEvalResult.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class NotExpr extends Expr1<BooleanValue, BooleanValue> {
-  constructor(value: Expr<BooleanValue>) {
-    super(ExprKind.BOOLEAN_NOT, value);
+  constructor(sub: Expr<BooleanValue>) {
+    super(ExprKind.BOOLEAN_NOT, sub);
   }
 
   protected calculateResult(
@@ -20,8 +21,8 @@ export class NotExpr extends Expr1<BooleanValue, BooleanValue> {
     return BooleanValue.of(!subExpressionResult.getValue());
   }
 
-  toExprString(): string {
-    return `!${this.value}`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendString("!").appendExpr(this.sub);
   }
 
   getType(): ExprType {

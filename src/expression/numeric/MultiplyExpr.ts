@@ -6,6 +6,7 @@ import { ExprKind } from "../ExprKind.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class MultiplyExpr extends Expr2<
   NumericValue,
@@ -25,8 +26,8 @@ export class MultiplyExpr extends Expr2<
     return NumericValue.of(left.getValue().mul(right.getValue()));
   }
 
-  toExprString(): string {
-    return `${this.left.toExprString()} * ${this.right.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder): void {
+    builder.appendExpr(this.left).appendString(" * ").appendExpr(this.right);
   }
 
   getType(): ExprType {

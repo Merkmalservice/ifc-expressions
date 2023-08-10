@@ -3,9 +3,10 @@ import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { BooleanValue } from "../../../value/BooleanValue.js";
-import { isNullish } from "../../../IfcExpressionUtils.js";
+import { isNullish } from "../../../util/IfcExpressionUtils.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class MatchesPattern extends ApplyRegex {
   constructor(name: string, simplePattern: boolean, requireFullMatch: boolean) {
@@ -17,6 +18,7 @@ export class MatchesPattern extends ApplyRegex {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const inputValue = evaluatedArguments.get(MatchesPattern.KEY_INPUT);

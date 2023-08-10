@@ -1,6 +1,6 @@
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { IfcExpressionFunctionConfigException } from "../../error/IfcExpressionFunctionConfigException.js";
-import { isNullish } from "../../IfcExpressionUtils.js";
+import { isNullish } from "../../util/IfcExpressionUtils.js";
 import { FuncArg } from "./FuncArg.js";
 import {
   ExprEvalError,
@@ -16,6 +16,7 @@ import { MissingFunctionArgumentException } from "../../error/MissingFunctionArg
 import { WrongFunctionArgumentTypeException } from "../../error/WrongFunctionArgumentTypeException.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ParserRuleContext } from "antlr4";
+import { FunctionExpr } from "./FunctionExpr.js";
 
 export abstract class Func {
   protected name: string;
@@ -35,16 +36,16 @@ export abstract class Func {
   public abstract getReturnType(argumentTypes: Array<ExprType>): ExprType;
 
   public checkArgumentsAndGetReturnType(
-    argumentTypes: Array<ExprType>,
-    ctx: ParserRuleContext
+    argumentTypes: Array<[ParserRuleContext, ExprType]>,
+    ctx
   ): ExprType {
     this.checkArgumentTypes(argumentTypes, ctx);
-    return this.getReturnType(argumentTypes);
+    return this.getReturnType(argumentTypes.map((t) => t[1]));
   }
 
   protected checkArgumentTypes(
-    providedArgumentTypes: Array<ExprType>,
-    ctx: ParserRuleContext
+    providedArgumentTypes: Array<[ParserRuleContext, ExprType]>,
+    ctx
   ): void {
     const numProvided = providedArgumentTypes.length;
     if (!isNullish(this.formalArguments)) {
@@ -53,15 +54,15 @@ export abstract class Func {
         if (numProvided > i) {
           Types.requireWeakIsAssignableFrom(
             this.formalArguments[i].getType(),
-            providedArgumentTypes[i],
+            providedArgumentTypes[i][1],
             () =>
               new WrongFunctionArgumentTypeException(
                 this.name,
                 this.formalArguments[i].name,
                 this.formalArguments[i].getType(),
-                providedArgumentTypes[i],
+                providedArgumentTypes[i][1],
                 i,
-                ctx
+                providedArgumentTypes[i][0]
               )
           );
         } else {
@@ -86,24 +87,21 @@ export abstract class Func {
   }
 
   public evaluate(
+    callingExpr: FunctionExpr,
     funcArgs: Array<ExprEvalResult<ExpressionValue>>
   ): ExprEvalResult<ExpressionValue> {
-    const evaluatedArguments = this.getArgumentValues(funcArgs);
+    const evaluatedArguments = this.getArgumentValues(callingExpr, funcArgs);
     if (isExprEvalError(evaluatedArguments)) {
       return evaluatedArguments;
     }
     const argumentsReadyForUse = new Map<string, ExpressionValue>();
     for (const [argName, argValue] of evaluatedArguments.entries()) {
       if (isExprEvalError(argValue)) {
-        return new ExprEvalFunctionEvaluationConsequentialErrorObj(
-          ExprKind.FUNCTION,
-          this.name,
-          argValue
-        );
+        return argValue;
       }
       argumentsReadyForUse.set(argName, argValue.result);
     }
-    return this.calculateResult(argumentsReadyForUse);
+    return this.calculateResult(callingExpr, argumentsReadyForUse);
   }
 
   /**
@@ -112,6 +110,7 @@ export abstract class Func {
    * @protected
    */
   protected abstract calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue>;
 
@@ -134,6 +133,7 @@ export abstract class Func {
    * @protected
    */
   protected getArgumentValues(
+    callingExpr: FunctionExpr,
     provided: Array<ExprEvalResult<ExpressionValue>>
   ): Map<string, ExprEvalResult<ExpressionValue>> | ExprEvalError {
     const result = new Map<string, ExprEvalResult<ExpressionValue>>();
@@ -142,7 +142,10 @@ export abstract class Func {
       for (let i = 0; i < this.formalArguments.length; i++) {
         const currentArg: FuncArg<unknown> = this.formalArguments[i];
         if (numProvided > i) {
-          result.set(currentArg.name, currentArg.transformValue(provided[i]));
+          result.set(
+            currentArg.name,
+            currentArg.transformValue(callingExpr, provided[i])
+          );
         } else {
           if (currentArg.hasDefaultValue()) {
             result.set(
@@ -156,7 +159,8 @@ export abstract class Func {
               `Required argument ${currentArg.name}, expected at position ${i} (starting at 0), is missing`,
               this.name,
               currentArg.name,
-              i
+              i,
+              callingExpr.getTextSpan()
             );
           }
         }

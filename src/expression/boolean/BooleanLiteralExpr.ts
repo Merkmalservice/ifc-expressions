@@ -5,6 +5,7 @@ import { ExprEvalError } from "../ExprEvalResult.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class BooleanLiteralExpr extends LiteralExpr<boolean, BooleanValue> {
   constructor(value: boolean) {
@@ -17,8 +18,8 @@ export class BooleanLiteralExpr extends LiteralExpr<boolean, BooleanValue> {
     return BooleanValue.of(this.value);
   }
 
-  toExprString(): string {
-    return this.value === true ? "TRUE" : "FALSE";
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendString(this.value === true ? "TRUE" : "FALSE");
   }
 
   getType(): ExprType {

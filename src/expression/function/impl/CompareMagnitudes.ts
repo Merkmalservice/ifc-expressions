@@ -11,6 +11,8 @@ import { ExprKind } from "../../ExprKind.js";
 import { BooleanValue } from "../../../value/BooleanValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Type } from "../../../type/Types.js";
+import { FunctionExpr } from "../FunctionExpr.js";
+import { ParserRuleContext } from "antlr4";
 
 export class CompareMagnitudes extends Func {
   private static readonly KEY_LEFT = "left";
@@ -26,6 +28,7 @@ export class CompareMagnitudes extends Func {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const left = evaluatedArguments.get(CompareMagnitudes.KEY_LEFT);
@@ -34,14 +37,16 @@ export class CompareMagnitudes extends Func {
       return new ExprEvalTypeErrorObj(
         ExprKind.FUNCTION,
         "Cannot compare: left value is not comparable",
-        left
+        left,
+        callingExpr.getTextSpan()
       );
     }
     if (!isComparable(right)) {
       return new ExprEvalTypeErrorObj(
         ExprKind.FUNCTION,
         "Cannot compare: right value is not comparable",
-        right
+        right,
+        callingExpr.getTextSpan()
       );
     }
     // @ts-ignore

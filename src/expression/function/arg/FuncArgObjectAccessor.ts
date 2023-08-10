@@ -11,6 +11,7 @@ import { isObjectAccessor } from "../../../context/ObjectAccessor.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { IfcExpressionFunctionConfigException } from "../../../error/IfcExpressionFunctionConfigException.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class FuncArgObjectAccessor extends FuncArgBase<ObjectAccessorValue> {
   private readonly type: ExprType;
@@ -34,6 +35,7 @@ export class FuncArgObjectAccessor extends FuncArgBase<ObjectAccessorValue> {
   }
 
   protected transformForTypeCheck(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalSuccess<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const result = invocationValue.result;
@@ -46,7 +48,8 @@ export class FuncArgObjectAccessor extends FuncArgBase<ObjectAccessorValue> {
       `Argument ${
         this.name
       } must be an ObjectAccessor, but was ${JSON.stringify(value)}`,
-      value
+      value,
+      callingExpr.getTextSpan()
     );
   }
 }

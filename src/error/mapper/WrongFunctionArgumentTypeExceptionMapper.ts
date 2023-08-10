@@ -4,6 +4,7 @@ import {
   ExprEvalWrongFunctionArgumentTypeErrorObj,
 } from "../../expression/ExprEvalResult.js";
 import { WrongFunctionArgumentTypeException } from "../WrongFunctionArgumentTypeException.js";
+import { TextSpan } from "../../util/TextSpan";
 
 export class WrongFunctionArgumentTypeExceptionMapper
   implements ExceptionToExprEvalErrorMapper<WrongFunctionArgumentTypeException>
@@ -13,15 +14,17 @@ export class WrongFunctionArgumentTypeExceptionMapper
   ): ExprEvalValidationError {
     return new ExprEvalWrongFunctionArgumentTypeErrorObj(
       exception.message,
-      exception.fromLine,
-      exception.fromColumn,
       exception.functionName,
       exception.argumentName,
       exception.argumentIndex,
       exception.expectedType.getName(),
       exception.actualType.getName(),
-      exception.toLine,
-      exception.toColumn
+      TextSpan.of(
+        exception.fromLine,
+        exception.fromColumn + 1,
+        exception.toLine,
+        exception.toColumn
+      )
     );
   }
 }

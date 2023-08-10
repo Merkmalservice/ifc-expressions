@@ -7,6 +7,7 @@ import { StringValue } from "../../value/StringValue.js";
 import { ExprEvalError, ExprEvalTypeErrorObj } from "../ExprEvalResult.js";
 import { Type, Types } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class PlusOrConcatExpr extends Expr2<
   NumericValue | StringValue,
@@ -46,12 +47,13 @@ export class PlusOrConcatExpr extends Expr2<
         .getName()}' (left operand) and '${rightResult
         .getType()
         .getName()}' (right operand)`,
-      [leftResult, rightResult]
+      [leftResult, rightResult],
+      this.getTextSpan()
     );
   }
 
-  toExprString(): string {
-    return `${this.left.toExprString()} + ${this.right.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendExpr(this.left).appendString(" + ").appendExpr(this.right);
   }
 
   getType(): ExprType {

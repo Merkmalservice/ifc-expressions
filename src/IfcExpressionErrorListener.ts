@@ -1,5 +1,5 @@
 import { ErrorListener, RecognitionException, Recognizer, Token } from "antlr4";
-import { isNullish, isPresent } from "./IfcExpressionUtils.js";
+import { isNullish, isPresent } from "./util/IfcExpressionUtils.js";
 import { SyntaxErrorException } from "./error/SyntaxErrorException.js";
 import { ValidationException } from "./error/ValidationException.js";
 

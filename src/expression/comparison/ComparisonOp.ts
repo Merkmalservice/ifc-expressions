@@ -9,7 +9,7 @@ import { BooleanValue } from "../../value/BooleanValue.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
 
-export class ComparisonOp<
+export abstract class ComparisonOp<
   T extends ExpressionValue & Comparable<T>
 > extends Expr2<T, T, BooleanValue> {
   private readonly comparisonFunction: (number) => boolean;
@@ -22,10 +22,6 @@ export class ComparisonOp<
   ) {
     super(exprKind, left, right);
     this.comparisonFunction = cmp;
-  }
-
-  toExprString(): string {
-    return `${this.left.toExprString()} > ${this.right.toExprString}`;
   }
 
   protected calculateResult(

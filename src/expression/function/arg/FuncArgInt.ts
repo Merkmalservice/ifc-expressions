@@ -9,6 +9,7 @@ import { ExprKind } from "../../ExprKind.js";
 import { NumericValue } from "../../../value/NumericValue.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class FuncArgInt extends FuncArgBase<NumericValue> {
   constructor(required: boolean, name: string, defaultValue?: NumericValue) {
@@ -20,6 +21,7 @@ export class FuncArgInt extends FuncArgBase<NumericValue> {
   }
 
   protected transformForTypeCheck(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalSuccess<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const result = invocationValue.result;
@@ -27,7 +29,8 @@ export class FuncArgInt extends FuncArgBase<NumericValue> {
       return new ExprEvalTypeErrorObj(
         ExprKind.FUNCTION_ARGUMENTS,
         `Argument ${this.name} must be a NumericValue, but was ${result}`,
-        result
+        result,
+        callingExpr.getTextSpan()
       );
     }
     const value = result.numericValue;
@@ -37,7 +40,8 @@ export class FuncArgInt extends FuncArgBase<NumericValue> {
     return new ExprEvalTypeErrorObj(
       ExprKind.FUNCTION_ARGUMENTS,
       `Value of argument ${this.name} must be an integer, but was ${value}`,
-      value
+      value,
+      callingExpr.getTextSpan()
     );
   }
 }

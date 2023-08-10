@@ -1,4 +1,4 @@
-import { isFunction } from "../IfcExpressionUtils.js";
+import { isFunction } from "../util/IfcExpressionUtils.js";
 
 export interface Comparable<T> {
   compareTo(other: T): number;

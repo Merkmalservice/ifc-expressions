@@ -1,13 +1,20 @@
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { ExprEvalError, isExprEvalSuccess } from "../ExprEvalResult.js";
+import {
+  ExprEvalError,
+  ExprEvalFunctionEvaluationErrorObj,
+  ExprEvalResult,
+  ExprEvalStatus,
+  isExprEvalSuccess,
+} from "../ExprEvalResult.js";
 import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
 import { Expr0 } from "../Expr0.js";
 import { Func } from "./Func.js";
 import { IfcExpressionFunctions } from "./IfcExpressionFunctions.js";
-import { isNullish } from "../../IfcExpressionUtils.js";
+import { isNullish } from "../../util/IfcExpressionUtils.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class FunctionExpr extends Expr0<ExpressionValue> {
   private readonly name: string;
@@ -24,6 +31,10 @@ export class FunctionExpr extends Expr0<ExpressionValue> {
     }
   }
 
+  getChildren(): Array<Expr<any>> {
+    return [...this.arguments];
+  }
+
   protected doEvaluate(
     ctx: IfcExpressionContext,
     localCtx: Map<string, any>
@@ -33,20 +44,36 @@ export class FunctionExpr extends Expr0<ExpressionValue> {
       const evalResult = this.arguments[i].evaluate(ctx, localCtx);
       functionArguments.push(evalResult);
     }
-    const evaluationResult = IfcExpressionFunctions.applyFunction(
-      this.name,
-      functionArguments
-    );
+    const evaluationResult = this.applyFunction(this.name, functionArguments);
     if (isExprEvalSuccess(evaluationResult)) {
       return evaluationResult.result;
     }
     return evaluationResult;
   }
 
-  toExprString(): string {
-    return `${this.functionImplementation.getName()}(${this.arguments
-      .map((arg) => arg.toExprString())
-      .join(",")})`;
+  private applyFunction(
+    name: string,
+    functionArgs: Array<ExprEvalResult<ExpressionValue>>
+  ): ExprEvalResult<ExpressionValue> {
+    const func = IfcExpressionFunctions.getFunction(name);
+    if (isNullish(func)) {
+      return new ExprEvalFunctionEvaluationErrorObj(
+        ExprKind.FUNCTION,
+        ExprEvalStatus.UNKNOWN_FUNCTION,
+        `No such function ${IfcExpressionFunctions.normalizeName(name)}`,
+        name,
+        this.getTextSpan()
+      );
+    }
+    return func.evaluate(this, functionArgs);
+  }
+
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder
+      .appendString(this.functionImplementation.getName())
+      .appendString("(")
+      .appendExprArray(this.arguments)
+      .appendString(")");
   }
 
   getType(): ExprType {

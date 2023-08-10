@@ -5,6 +5,7 @@ import {
 } from "../../expression/ExprEvalResult.js";
 import { NoSuchFunctionException } from "../NoSuchFunctionException.js";
 import { NoSuchMethodException } from "../NoSuchMethodException.js";
+import { TextSpan } from "../../util/TextSpan";
 
 export class NoSuchFunctionExceptionMapper
   implements
@@ -21,11 +22,13 @@ export class NoSuchFunctionExceptionMapper
         : exception.methodName;
     return new ExprEvalUnknownFunctionErrorObj(
       exception.message,
-      exception.fromLine,
-      exception.fromColumn,
       name,
-      exception.toLine,
-      exception.toColumn
+      TextSpan.of(
+        exception.fromLine,
+        exception.fromColumn + 1,
+        exception.toLine,
+        exception.toColumn + 1
+      )
     );
   }
 }

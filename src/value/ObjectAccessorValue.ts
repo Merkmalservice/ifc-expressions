@@ -1,6 +1,6 @@
 import { ObjectAccessor } from "../context/ObjectAccessor.js";
 import { Value } from "./Value.js";
-import { isNullish } from "../IfcExpressionUtils.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
 import { ExprType } from "../type/ExprType.js";
 import { Type } from "../type/Types.js";
 

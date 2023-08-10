@@ -6,11 +6,11 @@ import {
   ParseTreeWalker,
   Token,
 } from "antlr4";
-import { ExprVisitor } from "./ExprVisitor.js";
+import { ExprCompiler } from "./compiler/ExprCompiler.js";
 import { IfcExpressionErrorListener } from "./IfcExpressionErrorListener.js";
-import { IfcExpressionValidationListener } from "./IfcExpressionValidationListener.js";
+import { IfcExpressionValidationListener } from "./compiler/IfcExpressionValidationListener.js";
 
-import { isNullish, isPresent } from "./IfcExpressionUtils.js";
+import { isNullish, isPresent } from "./util/IfcExpressionUtils.js";
 import { IfcExpressionContext } from "./context/IfcExpressionContext.js";
 import { Expr } from "./expression/Expr.js";
 
@@ -34,6 +34,7 @@ import { IfcExpressionEvaluationException } from "./expression/IfcExpressionEval
 import type { ExpressionValue } from "./value/ExpressionValue.js";
 import type { BoxedValueTypes } from "./value/BoxedValueTypes.js";
 import {
+  ExprEvalConsequentialError1Obj,
   ExprEvalError,
   ExprEvalResult,
   isExprEvalError,
@@ -41,9 +42,11 @@ import {
 } from "./expression/ExprEvalResult.js";
 import { ExprKind } from "./expression/ExprKind.js";
 import { ValidationException } from "./error/ValidationException.js";
-import { TypeManager } from "./type/TypeManager.js";
+import { TypeManager } from "./compiler/TypeManager.js";
 import { mapException } from "./error/ExceptionToExprEvalErrorMapper.js";
 import { NopContext } from "./context/NopContext.js";
+import { ExprToTextInputLinker } from "./compiler/ExprToTextInputLinker";
+import { TextSpan } from "./util/TextSpan";
 
 export {
   IfcElementAccessor,
@@ -62,7 +65,7 @@ export {
   NamedObjectAccessor,
   ObjectAccessor,
   Expr,
-  ExprVisitor,
+  ExprCompiler,
   ExprKind,
   IfcExpressionEvaluationException,
   IfcExpressionErrorListener,
@@ -78,12 +81,14 @@ export {
 export type { BoxedValueTypes };
 
 export class IfcExpressionParseResult {
+  private readonly _input: string;
   private readonly _typeManager: TypeManager;
   private readonly _parseTree: ParserRuleContext;
 
-  constructor(typeManager: TypeManager, exprContext) {
+  constructor(input: string, typeManager: TypeManager, exprContext) {
     this._typeManager = typeManager;
     this._parseTree = exprContext;
+    this._input = input;
   }
 
   get typeManager(): TypeManager {
@@ -93,9 +98,19 @@ export class IfcExpressionParseResult {
   get parseTree(): ParserRuleContext {
     return this._parseTree;
   }
+
+  get input(): string {
+    return this._input;
+  }
 }
 
 export class IfcExpression {
+  /**
+   * Parses the input and returns a parse result, which contains the parse tree, the type information per parse tree node, and the input.
+   * @param input
+   * @param errorListener
+   * @return the parse result, which can subequently be compiled into an Expr using compile().
+   */
   public static parse(
     input: string,
     errorListener?: ErrorListener<Token | number>
@@ -129,18 +144,38 @@ export class IfcExpression {
       }
     }
     return new IfcExpressionParseResult(
+      input,
       validationListener.getTypeManager(),
       expr
     );
   }
 
-  private static compile(
+  /**
+   * Compiles the specified parseResult into an Expr.
+   * @param parseResult
+   * @return the Expression (Expr), which can be evaluated to obtain its result.
+   */
+  public static compile(
     parseResult: IfcExpressionParseResult
   ): Expr<ExpressionValue> {
-    const visitor = new ExprVisitor(parseResult.typeManager);
-    return visitor.visit(parseResult.parseTree);
+    const compiler = new ExprCompiler(parseResult.typeManager);
+    const expr = compiler.visit(parseResult.parseTree);
+    ExprToTextInputLinker.linkTextToExpressions(
+      parseResult.input,
+      expr,
+      compiler.getExprManager()
+    );
+    return expr;
   }
 
+  /**
+   * Evaluates the specified input expression and returns the evaluation result. The parse
+   * and compile steps are done internally.
+   *
+   * @param expression: the input expression
+   * @param context: the context required for accessing the IFC model
+   * @return the result (or an error object).
+   */
   public static evaluate(
     expression: string,
     context: IfcExpressionContext = new NopContext()
@@ -152,5 +187,40 @@ export class IfcExpression {
     }
     const compiledExpression = this.compile(parseResult);
     return compiledExpression.evaluate(context, new Map<string, any>());
+  }
+
+  public static formatError(input: string, error: ExprEvalError) {
+    const lines = ["** Error **"];
+    if (!isNullish(error["textSpan"])) {
+      const span: TextSpan = error["textSpan"];
+      const underlined = span.underline(input, "^");
+      const startString = "Input: ";
+      const indented = this.indent(underlined, startString.length);
+      const replaced = startString + indented.substr(startString.length);
+      replaced.split("\n").forEach((line) => lines.push(line));
+    }
+    lines.push("Problem: " + error.message);
+    return lines.join("\n");
+  }
+
+  private static indent(s: string, by: number) {
+    return s
+      .split("\n")
+      .map((line) => " ".repeat(by) + line)
+      .join("\n");
+  }
+
+  public static evaluateExpression(
+    expr: Expr<ExpressionValue>,
+    context: IfcExpressionContext = new NopContext()
+  ) {
+    if (isNullish(expr.getTextSpan())) {
+      // if the expr was created by parsing an input, it has a textSpan set.
+      // If the expr was created programmatically, we have to generate its exprString once, which causes its
+      // textspan to be set.
+      // make sure we know the position
+      expr.toExprString();
+    }
+    return expr.evaluate(context, new Map());
   }
 }

@@ -6,6 +6,7 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class UnaryMinusExpr extends Expr1<NumericValue, NumericValue> {
   constructor(value: Expr<NumericValue>) {
@@ -20,8 +21,8 @@ export class UnaryMinusExpr extends Expr1<NumericValue, NumericValue> {
     return NumericValue.of(subExpressionResult.getValue().times(-1));
   }
 
-  toExprString(): string {
-    return `-${this.value.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendString("-").appendExpr(this.sub);
   }
 
   getType(): ExprType {

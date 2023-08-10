@@ -6,6 +6,7 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class XorExpr extends Expr2<BooleanValue, BooleanValue, BooleanValue> {
   constructor(left: Expr<BooleanValue>, right: Expr<BooleanValue>) {
@@ -23,8 +24,8 @@ export class XorExpr extends Expr2<BooleanValue, BooleanValue, BooleanValue> {
     return BooleanValue.of(left ? !right : right);
   }
 
-  toExprString(): string {
-    return `${this.left.toExprString()} ^ ${this.right.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendExpr(this.left).appendString(" ><").appendExpr(this.right);
   }
 
   getType(): ExprType {

@@ -2,15 +2,15 @@ import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
 import { ExprBase } from "./ExprBase.js";
 import { ExprKind } from "./ExprKind.js";
 import {
-  ExprEvalConsequentialError2Obj,
   ExprEvalError,
   ExprEvalError2Obj,
   ExprEvalErrorUndefinedResult,
   ExprEvalResult,
   ExprEvalStatus,
+  isExprEvalError,
   isExprEvalSuccess,
 } from "./ExprEvalResult.js";
-import { isNullish } from "../IfcExpressionUtils.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
 import { Expr } from "./Expr.js";
 
 export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {
@@ -21,6 +21,10 @@ export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {
     super(exprKind);
     this.left = left;
     this.right = right;
+  }
+
+  getChildren(): Array<Expr<any>> {
+    return [this.left, this.right];
   }
 
   protected abstract doEvaluate(
@@ -37,7 +41,10 @@ export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {
   ): ExprEvalResult<E> {
     const leftResult = this.left.evaluate(ctx, localCtx);
     if (isNullish(leftResult)) {
-      return new ExprEvalErrorUndefinedResult(this.left.getKind());
+      return new ExprEvalErrorUndefinedResult(
+        this.left.getKind(),
+        this.getTextSpan()
+      );
     }
     this.handleLeftResult(leftResult);
     const rightResult = this.right.evaluate(ctx, localCtx);
@@ -50,7 +57,9 @@ export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {
         isNullish(rightResult)
           ? new ExprEvalErrorUndefinedResult(this.right.getKind())
           : rightResult,
-        ExprEvalStatus.MISSING_OPERAND
+        ExprEvalStatus.MISSING_OPERAND,
+        undefined,
+        this.getTextSpan()
       );
     }
     if (isExprEvalSuccess(leftResult) && isExprEvalSuccess(rightResult)) {
@@ -64,12 +73,10 @@ export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {
       } catch (error) {
         return this.handleError(error, leftResult, rightResult);
       }
-    } else {
-      return new ExprEvalConsequentialError2Obj(
-        this.getKind(),
-        leftResult,
-        rightResult
-      );
+    } else if (isExprEvalError(leftResult)) {
+      return leftResult;
+    } else if (isExprEvalError(rightResult)) {
+      return rightResult;
     }
   }
 
@@ -83,7 +90,8 @@ export abstract class Expr2LeftBeforeRight<L, R, E> extends ExprBase<E> {
       leftResult,
       rightResult,
       ExprEvalStatus.ERROR,
-      error
+      error,
+      this.getTextSpan()
     );
   }
 }

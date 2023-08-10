@@ -1,8 +1,9 @@
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprEvalResult } from "../ExprEvalResult.js";
-import { isNullish } from "../../IfcExpressionUtils.js";
+import { isNullish } from "../../util/IfcExpressionUtils.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { FunctionExpr } from "./FunctionExpr.js";
 
 export class FuncArg<T> {
   protected _required: boolean;
@@ -25,6 +26,7 @@ export class FuncArg<T> {
    * @param invocationValue
    */
   public transformValue(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalResult<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     return invocationValue;

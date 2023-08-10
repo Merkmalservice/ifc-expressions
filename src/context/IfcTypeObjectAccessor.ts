@@ -1,7 +1,7 @@
 import { isObjectAccessor, ObjectAccessor } from "./ObjectAccessor.js";
 import { IfcRootObjectAccessor } from "./IfcRootObjectAccessor.js";
 import { IfcPropertySetAccessor } from "./IfcPropertySetAccessor.js";
-import { isPresent } from "../IfcExpressionUtils.js";
+import { isPresent } from "../util/IfcExpressionUtils.js";
 import { IfcPropertyAccessor } from "./IfcPropertyAccessor.js";
 
 export abstract class IfcTypeObjectAccessor extends IfcRootObjectAccessor {

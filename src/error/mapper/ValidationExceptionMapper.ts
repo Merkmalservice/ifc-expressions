@@ -7,6 +7,7 @@ import {
 import { InvalidSyntaxException } from "../InvalidSyntaxException.js";
 import { ValidationException } from "../ValidationException.js";
 import { ExpressionTypeError } from "../ExpressionTypeError.js";
+import { TextSpan } from "../../util/TextSpan";
 
 export class ValidationExceptionMapper
   implements
@@ -29,10 +30,12 @@ export class ValidationExceptionMapper
     return new ExprEvalValidationErrorObj(
       status,
       exception.message,
-      exception.fromLine,
-      exception.fromColumn,
-      exception.toLine,
-      exception.toColumn
+      TextSpan.of(
+        exception.fromLine,
+        exception.fromColumn + 1,
+        exception.toLine,
+        exception.toColumn + 1
+      )
     );
   }
 }

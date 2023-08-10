@@ -7,6 +7,7 @@ import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { Decimal } from "decimal.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class ROUND extends Func {
   private static KEY_INPUT = "input";
@@ -24,6 +25,7 @@ export class ROUND extends Func {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const input = evaluatedArguments.get(ROUND.KEY_INPUT) as NumericValue;

@@ -4,6 +4,7 @@ import {
   ExprEvalValidationError,
 } from "../../expression/ExprEvalResult.js";
 import { MissingFunctionArgumentException } from "../MissingFunctionArgumentException.js";
+import { TextSpan } from "../../util/TextSpan";
 
 export class MissingFunctionArgumentExceptionMapper
   implements ExceptionToExprEvalErrorMapper<MissingFunctionArgumentException>
@@ -13,13 +14,15 @@ export class MissingFunctionArgumentExceptionMapper
   ): ExprEvalValidationError {
     return new ExprEvalMissingFunctionArgumentErrorObj(
       exception.message,
-      exception.fromLine,
-      exception.fromColumn,
       exception.functionName,
       exception.argumentName,
       exception.index,
-      exception.toLine,
-      exception.toColumn
+      TextSpan.of(
+        exception.fromLine,
+        exception.fromColumn + 1,
+        exception.toLine,
+        exception.toColumn + 1
+      )
     );
   }
 }

@@ -1,7 +1,7 @@
 import { ParserRuleContext } from "antlr4";
-import { Type, Types } from "./Types.js";
+import { Type, Types } from "../type/Types.js";
 import { ExpressionTypeError } from "../error/ExpressionTypeError.js";
-import { ExprType } from "./ExprType.js";
+import { ExprType } from "../type/ExprType.js";
 
 export class TypeManager {
   private readonly types = new Map<ParserRuleContext, ExprType>();

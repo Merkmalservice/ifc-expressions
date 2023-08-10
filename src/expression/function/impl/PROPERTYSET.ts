@@ -19,10 +19,11 @@ import {
   isIfcPropertyAccessor,
 } from "../../../context/IfcPropertyAccessor.js";
 import { isIfcTypeObjectAccessor } from "../../../context/IfcTypeObjectAccessor.js";
-import { isNullish } from "../../../IfcExpressionUtils.js";
+import { isNullish } from "../../../util/IfcExpressionUtils.js";
 import { IfcPropertySetAccessor } from "../../../context/IfcPropertySetAccessor.js";
 import { Type, Types } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class PROPERTYSET extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
@@ -48,6 +49,7 @@ export class PROPERTYSET extends Func {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const objectRef = evaluatedArguments
@@ -61,22 +63,25 @@ export class PROPERTYSET extends Func {
           "Name is required to access a property set of an IFC element",
           this.getName(),
           PROPERTYSET.KEY_PSET_NAME,
-          1
+          1,
+          callingExpr.getTextSpan()
         );
       }
       if (!StringValue.isStringValueType(psetNameVal)) {
         return new ExprEvalTypeErrorObj(
           ExprKind.FUNCTION_ARGUMENTS,
           "Property set name must be a string",
-          psetNameVal
+          psetNameVal,
+          callingExpr.getTextSpan()
         );
       }
       const psetName: string = psetNameVal.stringValue;
       const resultingObjectAccessor =
         objectRef.getIfcPropertySetAccessor(psetName);
-      return this.makeResult(resultingObjectAccessor, psetName);
+      return this.makeResult(callingExpr, resultingObjectAccessor, psetName);
     } else if (isIfcPropertyAccessor(objectRef)) {
       return this.makeResult(
+        callingExpr,
         (objectRef as IfcPropertyAccessor).getIfcPropertySetAccessor(),
         "[PropertySet of Property]"
       );
@@ -88,18 +93,21 @@ export class PROPERTYSET extends Func {
           "Name is required to access a property set of an IFC type object",
           this.getName(),
           PROPERTYSET.KEY_PSET_NAME,
-          1
+          1,
+          callingExpr.getTextSpan()
         );
       }
       if (!StringValue.isStringValueType(psetNameVal)) {
         return new ExprEvalTypeErrorObj(
           ExprKind.FUNCTION_ARGUMENTS,
           "Property set name must be a string",
-          psetNameVal
+          psetNameVal,
+          callingExpr.getTextSpan()
         );
       }
       const psetName: string = psetNameVal.stringValue;
       return this.makeResult(
+        callingExpr,
         objectRef.getIfcPropertySetAccessor(psetName),
         psetName
       );
@@ -107,11 +115,13 @@ export class PROPERTYSET extends Func {
     return new ExprEvalTypeErrorObj(
       ExprKind.FUNCTION_ARGUMENTS,
       "Cannot evaluate function 'propertySet' on the specified object",
-      objectRef
+      objectRef,
+      callingExpr.getTextSpan()
     );
   }
 
   private makeResult(
+    callingExpr: FunctionExpr,
     resultingObjectAccessor: IfcPropertySetAccessor,
     psetName: string
   ) {
@@ -121,7 +131,8 @@ export class PROPERTYSET extends Func {
         ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND,
         `No ifc property set found with name '${psetName}'`,
         this.getName(),
-        psetName
+        psetName,
+        callingExpr.getTextSpan()
       );
     } else {
       return new ExprEvalSuccessObj(

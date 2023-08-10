@@ -7,6 +7,7 @@ import {
   ExprEvalStatus,
 } from "./ExprEvalResult.js";
 import { ExprBase } from "./ExprBase.js";
+import { Expr } from "./Expr.js";
 
 export abstract class LiteralExpr<V, E> extends ExprBase<E> {
   readonly value: V;
@@ -14,6 +15,10 @@ export abstract class LiteralExpr<V, E> extends ExprBase<E> {
   protected constructor(exprKind: ExprKind, value: V) {
     super(exprKind);
     this.value = value;
+  }
+
+  getChildren(): Array<Expr<any>> {
+    return [];
   }
 
   protected abstract calculateResult(
@@ -33,6 +38,11 @@ export abstract class LiteralExpr<V, E> extends ExprBase<E> {
   }
 
   protected handleError(error: any): ExprEvalError {
-    return new ExprEvalErrorObj(this.getKind(), ExprEvalStatus.ERROR, error);
+    return new ExprEvalErrorObj(
+      this.getKind(),
+      ExprEvalStatus.ERROR,
+      error,
+      this.getTextSpan()
+    );
   }
 }

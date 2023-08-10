@@ -10,9 +10,10 @@ import {
 import { ObjectAccessorValue } from "../../../value/ObjectAccessorValue.js";
 import { ExprKind } from "../../ExprKind.js";
 import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
-import { isNullish } from "../../../IfcExpressionUtils.js";
+import { isNullish } from "../../../util/IfcExpressionUtils.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class TYPE extends Func {
   static readonly KEY_OBJECT_REF = "objectRef";
@@ -32,6 +33,7 @@ export class TYPE extends Func {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const objectRef = evaluatedArguments.get(TYPE.KEY_OBJECT_REF).getValue();
@@ -44,7 +46,8 @@ export class TYPE extends Func {
           ExprEvalStatus.IFC_TYPE_OBJECT_NOT_FOUND,
           `No type object found`,
           this.getName(),
-          "[Type of IFC element]"
+          "[Type of IFC element]",
+          callingExpr.getTextSpan()
         );
       } else {
         return new ExprEvalSuccessObj(
@@ -55,7 +58,8 @@ export class TYPE extends Func {
     return new ExprEvalTypeErrorObj(
       ExprKind.FUNCTION_ARGUMENTS,
       `Cannot evaluate function ${this.getName()} on the specified object`,
-      objectRef
+      objectRef,
+      callingExpr.getTextSpan()
     );
   }
 }

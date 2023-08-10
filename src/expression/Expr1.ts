@@ -1,7 +1,6 @@
 import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
 import { ExprKind } from "./ExprKind.js";
 import {
-  ExprEvalConsequentialError1Obj,
   ExprEvalError,
   ExprEvalError1Obj,
   ExprEvalErrorUndefinedResult,
@@ -11,14 +10,18 @@ import {
 } from "./ExprEvalResult.js";
 import { ExprBase } from "./ExprBase.js";
 import { Expr } from "./Expr.js";
-import { isNullish } from "../IfcExpressionUtils.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
 
 export abstract class Expr1<V, E> extends ExprBase<E> {
-  readonly value: Expr<V>;
+  readonly sub: Expr<V>;
 
-  protected constructor(exprKind: ExprKind, value: Expr<V>) {
+  protected constructor(exprKind: ExprKind, sub: Expr<V>) {
     super(exprKind);
-    this.value = value;
+    this.sub = sub;
+  }
+
+  getChildren(): Array<Expr<any>> {
+    return [this.sub];
   }
 
   protected abstract calculateResult(
@@ -39,10 +42,7 @@ export abstract class Expr1<V, E> extends ExprBase<E> {
     localCtx: Map<string, any>,
     subExpressionResult: ExprEvalError
   ): ExprEvalResult<E> {
-    return new ExprEvalConsequentialError1Obj(
-      this.getKind(),
-      subExpressionResult
-    );
+    return subExpressionResult;
   }
 
   // calculate the final result
@@ -79,12 +79,14 @@ export abstract class Expr1<V, E> extends ExprBase<E> {
     if (!isNullish(beforeRecursionError)) {
       return beforeRecursionError;
     }
-    const subResult = this.value.evaluate(ctx, localCtx);
+    const subResult = this.sub.evaluate(ctx, localCtx);
     if (isNullish(subResult)) {
       return new ExprEvalError1Obj(
         this.getKind(),
-        new ExprEvalErrorUndefinedResult(this.value.getKind()),
-        ExprEvalStatus.MISSING_OPERAND
+        new ExprEvalErrorUndefinedResult(this.sub.getKind()),
+        ExprEvalStatus.MISSING_OPERAND,
+        undefined,
+        this.getTextSpan()
       );
     }
     try {
@@ -102,7 +104,8 @@ export abstract class Expr1<V, E> extends ExprBase<E> {
       this.getKind(),
       subResult,
       ExprEvalStatus.ERROR,
-      error
+      error,
+      this.getTextSpan()
     );
   }
 }

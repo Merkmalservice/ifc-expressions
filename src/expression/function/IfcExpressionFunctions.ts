@@ -1,12 +1,5 @@
-import {
-  ExprEvalFunctionEvaluationErrorObj,
-  ExprEvalResult,
-  ExprEvalStatus,
-} from "../ExprEvalResult.js";
-import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { Func } from "./Func.js";
-import { isNullish } from "../../IfcExpressionUtils.js";
-import { ExprKind } from "../ExprKind.js";
+import { isNullish } from "../../util/IfcExpressionUtils.js";
 import { MAP } from "./impl/MAP.js";
 import { ROUND } from "./impl/ROUND.js";
 import { AttributeAccessorFunction } from "./impl/AttributeAccessorFunction.js";
@@ -15,7 +8,7 @@ import { PROPERTY } from "./impl/PROPERTY.js";
 import { TYPE } from "./impl/TYPE.js";
 import { FuncBooleanBinary } from "./impl/FuncBooleanBinary.js";
 import { NOT } from "./impl/NOT.js";
-import { SWITCH } from "./impl/SWITCH.js";
+import { CHOOSE } from "./impl/CHOOSE.js";
 import { MatchesPattern } from "./impl/MatchesPattern.js";
 import { Type, Types } from "../../type/Types.js";
 import { TOSTRING } from "./impl/TOSTRING.js";
@@ -23,21 +16,41 @@ import { EXISTS } from "./impl/EXISTS.js";
 import { EQUALS } from "./impl/EQUALS.js";
 import { CompareMagnitudes } from "./impl/CompareMagnitudes.js";
 import { ReplacePattern } from "./impl/ReplacePattern.js";
+import { IF } from "./impl/IF";
 
 const builtinFunctions = new Map<string, Func>();
 function registerFunc(func: Func) {
-  builtinFunctions.set(normalizeName(func.getName()), func);
+  builtinFunctions.set(
+    IfcExpressionFunctions.normalizeName(func.getName()),
+    func
+  );
 }
-
-function normalizeName(name: string): string {
-  if (isNullish(name)) {
-    return undefined;
+export class IfcExpressionFunctions {
+  public static normalizeName(name: string): string {
+    if (isNullish(name)) {
+      return undefined;
+    }
+    return name.toUpperCase();
   }
-  return name.toUpperCase();
+
+  public static isBuiltinFunction(name: string) {
+    if (isNullish(name)) {
+      return false;
+    }
+    return builtinFunctions.has(this.normalizeName(name));
+  }
+
+  public static getFunction(name: string): Func {
+    if (isNullish(name)) {
+      return undefined;
+    }
+    return builtinFunctions.get(this.normalizeName(name));
+  }
 }
 
 registerFunc(new MAP());
-registerFunc(new SWITCH());
+registerFunc(new CHOOSE());
+registerFunc(new IF());
 registerFunc(new ROUND());
 registerFunc(new AttributeAccessorFunction("name", Type.STRING));
 registerFunc(new AttributeAccessorFunction("guid", Type.STRING));
@@ -72,34 +85,3 @@ registerFunc(new MatchesPattern("REGEXCONTAINS", false, false));
 registerFunc(new MatchesPattern("REGEXMATCHES", false, true));
 registerFunc(new ReplacePattern("REPLACE", true));
 registerFunc(new ReplacePattern("REGEXREPLACE", false));
-export class IfcExpressionFunctions {
-  public static isBuiltinFunction(name: string) {
-    if (isNullish(name)) {
-      return false;
-    }
-    return builtinFunctions.has(normalizeName(name));
-  }
-
-  public static getFunction(name: string) {
-    if (isNullish(name)) {
-      return undefined;
-    }
-    return builtinFunctions.get(normalizeName(name));
-  }
-
-  public static applyFunction(
-    name: string,
-    functionArgs: Array<ExprEvalResult<ExpressionValue>>
-  ): ExprEvalResult<ExpressionValue> {
-    const func = IfcExpressionFunctions.getFunction(name);
-    if (isNullish(func)) {
-      return new ExprEvalFunctionEvaluationErrorObj(
-        ExprKind.FUNCTION,
-        ExprEvalStatus.UNKNOWN_FUNCTION,
-        `No such function ${normalizeName(name)}`,
-        name
-      );
-    }
-    return func.evaluate(functionArgs);
-  }
-}

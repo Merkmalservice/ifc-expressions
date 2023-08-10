@@ -5,6 +5,7 @@ import { StringValue } from "../../value/StringValue.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExprType } from "../../type/ExprType.js";
 import { Type } from "../../type/Types.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class StringConcatExpr extends Expr2<
   StringValue,
@@ -24,8 +25,8 @@ export class StringConcatExpr extends Expr2<
     return StringValue.of(left.getValue() + right.getValue());
   }
 
-  toExprString(): string {
-    return `${this.left.toExprString()} + ${this.right.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder): void {
+    builder.appendExpr(this.left).appendString(" + ").appendExpr(this.right);
   }
 
   getType(): ExprType {

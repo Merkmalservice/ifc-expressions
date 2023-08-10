@@ -6,6 +6,7 @@ import {
   isExprEvalSuccess,
 } from "../../ExprEvalResult.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export abstract class FuncArgBase<T> extends FuncArg<T> {
   protected constructor(required: boolean, name: string, defaultValue?: T) {
@@ -13,20 +14,21 @@ export abstract class FuncArgBase<T> extends FuncArg<T> {
   }
 
   transformValue(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalResult<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     if (isExprEvalSuccess(invocationValue)) {
-      return this.transformForTypeCheck(invocationValue);
+      return this.transformForTypeCheck(callingExpr, invocationValue);
     }
-    return this.transformForError(invocationValue);
+    return this.transformForError(callingExpr, invocationValue);
   }
 
   /**
    * Override to type-check the successfully evaluated invocationValue.
-   * @param result
    * @protected
    */
   protected transformForTypeCheck(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalSuccess<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     return invocationValue;
@@ -38,6 +40,7 @@ export abstract class FuncArgBase<T> extends FuncArg<T> {
    * @protected
    */
   protected transformForError(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalError
   ): ExprEvalResult<ExpressionValue> {
     return invocationValue;

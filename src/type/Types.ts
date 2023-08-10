@@ -33,7 +33,11 @@ export class Type {
 
 export class Types {
   public static or(...types: Array<ExprType>) {
-    return new TypeDisjunction(...types);
+    const disjunction = new TypeDisjunction(...types);
+    if (disjunction.getTypes().length == 1) {
+      return disjunction.getTypes()[0];
+    }
+    return disjunction;
   }
   public static array(elementType: ExprType): ArrayType {
     return new ArrayType(elementType);

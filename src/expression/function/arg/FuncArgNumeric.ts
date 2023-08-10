@@ -10,6 +10,7 @@ import { NumericValue } from "../../../value/NumericValue.js";
 import { Decimal } from "decimal.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class FuncArgNumeric extends FuncArgBase<NumericValue> {
   constructor(required: boolean, name: string, defaultValue?: NumericValue) {
@@ -21,6 +22,7 @@ export class FuncArgNumeric extends FuncArgBase<NumericValue> {
   }
 
   protected transformForTypeCheck(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalSuccess<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const result = invocationValue.result;
@@ -33,7 +35,8 @@ export class FuncArgNumeric extends FuncArgBase<NumericValue> {
       `Argument ${this.name} must be a number, but was ${JSON.stringify(
         value
       )}`,
-      value
+      value,
+      callingExpr.getTextSpan()
     );
   }
 }

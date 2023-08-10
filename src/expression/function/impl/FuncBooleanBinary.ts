@@ -5,6 +5,7 @@ import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class FuncBooleanBinary extends Func {
   private static readonly KEY_LEFT = "left";
@@ -24,6 +25,7 @@ export class FuncBooleanBinary extends Func {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const left = evaluatedArguments.get(

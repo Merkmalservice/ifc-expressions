@@ -1,4 +1,4 @@
-import { isNullish } from "../IfcExpressionUtils.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
 import { Type } from "./Types.js";
 import { ExprType } from "./ExprType.js";
 import { TypeDisjunction } from "./TypeDisjunction.js";

@@ -7,14 +7,16 @@ import { ExpressionTypeError } from "../src/error/ExpressionTypeError.js";
 import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException.js";
 import { Type, Types } from "../src/type/Types.js";
 import { ExprType } from "../src/type/ExprType.js";
+import { mapException } from "../src/error/ExceptionToExprEvalErrorMapper";
 
-describe.each([
+const cases = [
   // numeric
+
   ["+1", SyntaxErrorException, null],
   ["(1)", null, Type.NUMERIC],
   ["((1))", null, Type.NUMERIC],
   ["((1))", null, Type.NUMERIC],
-  ['"1"', null, Type.NUMERIC],
+  ['"1"', null, Type.STRING],
   ["1+1", null, Type.NUMERIC],
   ["+1+1", SyntaxErrorException, null],
   ["-1+1", null, Type.NUMERIC],
@@ -94,7 +96,6 @@ describe.each([
   ["$element.ifcClass()", null, Type.STRING],
   ["$element.name()", null, Type.STRING],
   ["$element.description()", null, Type.STRING],
-  ["$element.guid()", null, Type.STRING],
   ["$property.ifcClass()", null, Type.STRING],
   ["$property.name()", null, Type.STRING],
   ["$property.description()", null, Type.STRING],
@@ -174,32 +175,86 @@ describe.each([
     WrongFunctionArgumentTypeException,
     null,
   ],
-  ["SWITCH([[FALSE,1],[FALSE,2]],0)", null, Type.NUMERIC],
-  ["SWITCH([['a',1],['b',2]],0)", WrongFunctionArgumentTypeException, null],
+  ["CHOOSE([['a',1],['b',2]],0)", WrongFunctionArgumentTypeException, null],
+  ["CHOOSE([[FALSE,1],[FALSE,2]],0)", null, Type.NUMERIC],
+
   [
-    "SWITCH([[FALSE,1],[TRUE,2]],'a')",
+    "CHOOSE([[FALSE,1],[TRUE,2]],'a')",
     WrongFunctionArgumentTypeException,
     null,
   ],
-])(
+  [
+    "CHOOSE(\n" + "   [\n" + "     ['a',1],\n" + "     ['b',2]],\n" + "0)",
+    WrongFunctionArgumentTypeException,
+    null,
+  ],
+  ["$element.guid()", null, Type.STRING],
+  [
+    "CHOOSE([[FALSE,1],[FALSE,'bla']],0)",
+    null,
+    Types.or(Type.NUMERIC, Type.STRING),
+  ],
+  ["IF(TRUE,1,2)", null, Type.NUMERIC],
+  ["IF(TRUE,1,'a')", null, Types.or(Type.NUMERIC, Type.STRING)],
+  ["IF(TRUE,FALSE,'a')", null, Types.or(Type.BOOLEAN, Type.STRING)],
+  ["IF('a',1,'a')", WrongFunctionArgumentTypeException, null],
+  ["IF(0,1,'a')", WrongFunctionArgumentTypeException, null],
+];
+
+describe.each(cases)(
   "Parse IfcExpression",
   (input: string, expectedException: any, expectedType: ExprType) => {
     it(`parse("${input}"): ${
       expectedException === null ? "ok" : expectedException.name
     }`, () => {
       const errorListener = new IfcExpressionErrorListener();
-      const expr = IfcExpression.parse(input, errorListener);
+      const parseResult = IfcExpression.parse(input, errorListener);
       if (expectedException === null) {
         expect(errorListener.getException()).toBe(undefined);
-        expect(
-          expr.typeManager.getType(expr.parseTree).isSameTypeAs(expectedType)
+        const actualType = parseResult.typeManager.getType(
+          parseResult.parseTree
         );
+        expect(actualType.isSameTypeAs(expectedType)).toBe(true);
       } else {
         expect(errorListener.isErrorOccurred()).toBe(true);
         const actualException = errorListener.getException();
+        //expect(
+        //  IfcExpression.formatError(input, mapException(actualException))
+        //).toBe("somethingelse");
         expect(actualException).not.toBeUndefined();
         const className = actualException.constructor.name;
         expect(className).toBe(expectedException.name);
+      }
+    });
+  }
+);
+
+describe.each(cases)(
+  "Parse IfcExpression, stringify again and compare results",
+  (input: string, expectedException: any, expectedType: ExprType) => {
+    it(`parse("${input}"): ${
+      expectedException === null ? "ok" : expectedException.name
+    }`, () => {
+      if (expectedException === null) {
+        const errorListener = new IfcExpressionErrorListener();
+        const parseResult = IfcExpression.parse(input, errorListener);
+        expect(errorListener.getException()).toBe(undefined);
+        const actualType = parseResult.typeManager.getType(
+          parseResult.parseTree
+        );
+        expect(actualType.isSameTypeAs(expectedType)).toBe(true);
+        const expr = IfcExpression.compile(parseResult);
+        const exprString = expr.toExprString();
+        const errorListener2 = new IfcExpressionErrorListener();
+        const parseResult2 = IfcExpression.parse(exprString, errorListener);
+        expect(errorListener2.getException()).toBe(undefined);
+        const actualType2 = parseResult2.typeManager.getType(
+          parseResult2.parseTree
+        );
+        expect(actualType2.isSameTypeAs(expectedType)).toBe(true);
+        const expr2 = IfcExpression.compile(parseResult);
+        const exprString2 = expr2.toExprString();
+        expect(exprString2).toBe(exprString);
       }
     });
   }

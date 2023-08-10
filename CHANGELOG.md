@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- IF function
+- TextSpan, TextPosition (for locating errors)
+- Make sure every error has the text location set
+- Read up on semver ;-)
+
+### Changed
+
+- rename function SWITCH to CHOOSE
+- refactor `Expr.toExprString()` such that it uses a builder, which allows us to track the text position of the expr in the generated string.
+- refactor folder structure
+
 ## 2.0.1-beta.0 - 2023-08-08
 
 ### Fixed

@@ -2,8 +2,6 @@ import { IfcExpressionContext } from "../context/IfcExpressionContext.js";
 import { ExprBase } from "./ExprBase.js";
 import { ExprKind } from "./ExprKind.js";
 import {
-  ExprEvalConsequentialError1Obj,
-  ExprEvalConsequentialError2Obj,
   ExprEvalError,
   ExprEvalError2Obj,
   ExprEvalErrorUndefinedResult,
@@ -12,7 +10,7 @@ import {
   isExprEvalError,
   isExprEvalSuccess,
 } from "./ExprEvalResult.js";
-import { isNullish } from "../IfcExpressionUtils.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
 import { Expr } from "./Expr.js";
 
 export abstract class Expr2<L, R, E> extends ExprBase<E> {
@@ -23,6 +21,10 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
     super(exprKind);
     this.left = left;
     this.right = right;
+  }
+
+  getChildren(): Array<Expr<any>> {
+    return [this.left, this.right];
   }
 
   protected abstract calculateResult(
@@ -54,7 +56,10 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
     this.onBeforeRecursion(ctx, localCtx);
     const leftResult = this.left.evaluate(ctx, localCtx);
     if (isNullish(leftResult)) {
-      return new ExprEvalErrorUndefinedResult(this.left.getKind());
+      return new ExprEvalErrorUndefinedResult(
+        this.left.getKind(),
+        this.left.getTextSpan()
+      );
     }
     if (isExprEvalError(leftResult)) {
       return this.makeErrorForLeftSubExprError(ctx, localCtx, leftResult);
@@ -62,7 +67,10 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
     this.onAfterLeftRecursion(ctx, localCtx, leftResult.result);
     const rightResult = this.right.evaluate(ctx, localCtx);
     if (isNullish(rightResult)) {
-      return new ExprEvalErrorUndefinedResult(this.right.getKind());
+      return new ExprEvalErrorUndefinedResult(
+        this.right.getKind(),
+        this.getTextSpan()
+      );
     }
     if (isExprEvalSuccess(rightResult)) {
       try {
@@ -92,11 +100,7 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
     leftResult: ExprEvalResult<L>,
     rightResult: ExprEvalError
   ): ExprEvalResult<E> {
-    return new ExprEvalConsequentialError2Obj(
-      this.getKind(),
-      leftResult,
-      rightResult
-    );
+    return rightResult;
   }
 
   protected makeErrorForLeftSubExprError(
@@ -104,11 +108,7 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
     localCtx: Map<string, any>,
     leftResult: ExprEvalError
   ): ExprEvalError {
-    return new ExprEvalConsequentialError1Obj(
-      this.getKind(),
-      leftResult,
-      "Cannot evaluate attribute reference"
-    );
+    return leftResult;
   }
 
   protected handleError(
@@ -121,7 +121,8 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
       leftResult,
       rightResult,
       ExprEvalStatus.ERROR,
-      error
+      error,
+      this.getTextSpan()
     );
   }
 }

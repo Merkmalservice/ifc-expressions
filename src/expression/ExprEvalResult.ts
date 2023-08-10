@@ -1,6 +1,7 @@
 import { Expr } from "./Expr.js";
 import { ExprKind } from "./ExprKind.js";
-import { isNullish } from "../IfcExpressionUtils.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
+import { TextSpan } from "../util/TextSpan";
 
 export enum ExprEvalStatus {
   SUCCESS = 1000,
@@ -61,10 +62,12 @@ export class ExprEvalErrorObj {
   public readonly status: ExprEvalStatus;
   public readonly exprKind: ExprKind;
   public readonly message?: string;
+  public readonly textSpan?: TextSpan;
   constructor(
     exprKind: ExprKind,
     status: ExprEvalStatus = ExprEvalStatus.ERROR,
-    message?: any
+    message?: any,
+    textSpan?: TextSpan
   ) {
     if (!isExprEvalStatus(status) || status < ExprEvalStatus.ERROR) {
       throw new Error(`ExprEvalStatus ${status} is not an error status"`);
@@ -73,6 +76,9 @@ export class ExprEvalErrorObj {
     this.exprKind = exprKind;
     if (!isNullish(message)) {
       this.message = mapErrorObjectToMessage(message);
+    }
+    if (!isNullish(textSpan)) {
+      this.textSpan = textSpan;
     }
   }
 }
@@ -91,11 +97,12 @@ export function mapErrorObjectToMessage(errorObjectOrMessage: any): string {
 }
 
 export class ExprEvalErrorUndefinedResult extends ExprEvalErrorObj {
-  constructor(epxrKind: ExprKind) {
+  constructor(epxrKind: ExprKind, textSpan?: TextSpan) {
     super(
       epxrKind,
       ExprEvalStatus.UNDEFINED_RESULT,
-      "Expression evaluated to undefined or null - this should never happen"
+      "Expression evaluated to undefined or null - this should never happen",
+      textSpan
     );
   }
 }
@@ -107,9 +114,10 @@ export class ExprEvalError1Obj extends ExprEvalErrorObj {
     exprKind: ExprKind,
     sub: ExprEvalResult<unknown>,
     status: ExprEvalStatus,
-    message?: any
+    message?: any,
+    textSpan?: TextSpan
   ) {
-    super(exprKind, status, message);
+    super(exprKind, status, message, textSpan);
     this.sub = sub;
   }
 }
@@ -123,9 +131,10 @@ export class ExprEvalError2Obj extends ExprEvalErrorObj {
     left: ExprEvalResult<unknown>,
     right: ExprEvalResult<unknown>,
     status?: ExprEvalStatus,
-    message?: any
+    message?: any,
+    textSpan?: TextSpan
   ) {
-    super(exprKind, status, message);
+    super(exprKind, status, message, textSpan);
     this.left = left;
     this.right = right;
   }
@@ -166,42 +175,17 @@ export class ExprEvalConsequentialError1Obj extends ExprEvalErrorObj {
   constructor(
     exprKind: ExprKind,
     cause: ExprEvalResult<unknown>,
-    message?: any
+    message?: any,
+    textSpan?: TextSpan
   ) {
     super(
       exprKind,
       ExprEvalStatus.CONSEQUENTIAL_ERROR,
-      message || "Consequential error"
+      message || "Consequential error",
+      textSpan
     );
     this.exprKind = exprKind;
     this.cause = cause;
-  }
-}
-
-export type ExprEvalConsequentialError2 = ExprEvalUnspecificError & {
-  readonly status: ExprEvalStatus.CONSEQUENTIAL_ERROR;
-  readonly exprKind: ExprKind;
-  readonly leftCause: ExprEvalResult<unknown>;
-  readonly rightCause: ExprEvalResult<unknown>;
-};
-
-export class ExprEvalConsequentialError2Obj extends ExprEvalErrorObj {
-  public readonly leftCause: ExprEvalResult<unknown>;
-  public readonly rightCause: ExprEvalResult<unknown>;
-
-  constructor(
-    exprKind: ExprKind,
-    leftCause: ExprEvalResult<unknown>,
-    rightCause: ExprEvalResult<unknown>,
-    message?: any
-  ) {
-    super(
-      exprKind,
-      ExprEvalStatus.CONSEQUENTIAL_ERROR,
-      message || "Consequential error"
-    );
-    this.leftCause = leftCause;
-    this.rightCause = rightCause;
   }
 }
 
@@ -227,9 +211,10 @@ export class ExprEvalFunctionEvaluationErrorObj extends ExprEvalErrorObj {
     exprKind: ExprKind,
     status: ExprEvalStatus,
     message: any,
-    functionName: string
+    functionName: string,
+    textSpan?: TextSpan
   ) {
-    super(exprKind, status, message);
+    super(exprKind, status, message, textSpan);
     this.functionName = functionName;
   }
 }
@@ -242,9 +227,10 @@ export class ExprEvalFunctionEvaluationObjectNotFoundErrorObj extends ExprEvalFu
     status: ExprEvalStatus,
     message: any,
     functionName: string,
-    objectKey: string
+    objectKey: string,
+    textSpan?: TextSpan
   ) {
-    super(exprKind, status, message, functionName);
+    super(exprKind, status, message, functionName, textSpan);
     this.offendingKey = objectKey;
   }
 }
@@ -252,12 +238,18 @@ export class ExprEvalFunctionEvaluationObjectNotFoundErrorObj extends ExprEvalFu
 export class ExprEvalFunctionEvaluationConsequentialErrorObj extends ExprEvalFunctionEvaluationErrorObj {
   public readonly cause: ExprEvalError;
 
-  constructor(exprKind: ExprKind, functionName: string, cause: ExprEvalError) {
+  constructor(
+    exprKind: ExprKind,
+    functionName: string,
+    cause: ExprEvalError,
+    textSpan?: TextSpan
+  ) {
     super(
       exprKind,
       ExprEvalStatus.CONSEQUENTIAL_ERROR,
       `Error evaluating function ${functionName}`,
-      functionName
+      functionName,
+      textSpan
     );
     this.cause = cause;
   }
@@ -272,13 +264,15 @@ export class ExprEvalMissingRequiredFunctionArgumentErrorObj extends ExprEvalFun
     message: any,
     functionName: string,
     argumentName: string,
-    argumentIndex: number
+    argumentIndex: number,
+    textSpan?: TextSpan
   ) {
     super(
       exprKind,
       ExprEvalStatus.MISSING_REQUIRED_FUNCTION_ARGUMENT,
       message,
-      functionName
+      functionName,
+      textSpan
     );
     this.argumentName = argumentName;
     this.argumentIndex = argumentIndex;
@@ -300,16 +294,28 @@ export class ExprEvalValueErrorObj<T> extends ExprEvalErrorObj {
     exprKind: ExprKind,
     status: ExprEvalStatus,
     message: any,
-    offendingValue: T
+    offendingValue: T,
+    textSpan?: TextSpan
   ) {
-    super(exprKind, status, message);
+    super(exprKind, status, message, textSpan);
     this.offendingValue = offendingValue;
   }
 }
 
 export class ExprEvalTypeErrorObj<T> extends ExprEvalValueErrorObj<T> {
-  constructor(exprKind: ExprKind, message: any, offendingValue: T) {
-    super(exprKind, ExprEvalStatus.TYPE_ERROR, message, offendingValue);
+  constructor(
+    exprKind: ExprKind,
+    message: any,
+    offendingValue: T,
+    textSpan?: TextSpan
+  ) {
+    super(
+      exprKind,
+      ExprEvalStatus.TYPE_ERROR,
+      message,
+      offendingValue,
+      textSpan
+    );
   }
 }
 
@@ -321,10 +327,7 @@ export type ExprEvalParseError = ExprEvalUnspecificError & {
 };
 
 export type ExprEvalValidationError = ExprEvalUnspecificError & {
-  line: number;
-  column: number;
-  toLine?: number;
-  toColumn?: number;
+  textSpan: TextSpan;
 };
 
 export class ExprEvalParseErrorObj extends ExprEvalErrorObj {
@@ -335,58 +338,26 @@ export class ExprEvalParseErrorObj extends ExprEvalErrorObj {
   constructor(
     status: ExprEvalStatus,
     message: any,
-    line: number,
-    column: number,
-    offendingInput: string
+    offendingInput: string,
+    textSpan: TextSpan
   ) {
-    super(ExprKind.PARSE_ERROR, status, message);
-    this.line = line;
-    this.column = column;
+    super(ExprKind.PARSE_ERROR, status, message, textSpan);
     this.offendingInput = offendingInput;
   }
 }
 
 export class ExprEvalValidationErrorObj extends ExprEvalErrorObj {
-  public readonly line: number;
-  public readonly toLine?: number;
-  public readonly column: number;
-  public readonly toColumn?: number;
-
-  constructor(
-    status: ExprEvalStatus,
-    message: any,
-    line: number,
-    column: number,
-    toLine?: number,
-    toColumn?: number
-  ) {
-    super(ExprKind.PARSE_ERROR, status, message);
-    this.line = line;
-    this.toLine = toLine;
-    this.column = column;
-    this.toColumn = toColumn;
+  public readonly textSpan: TextSpan;
+  constructor(status: ExprEvalStatus, message: any, textSpan: TextSpan) {
+    super(ExprKind.PARSE_ERROR, status, message, textSpan);
   }
 }
 
 export class ExprEvalUnknownFunctionErrorObj extends ExprEvalValidationErrorObj {
   public readonly functionName: string;
 
-  constructor(
-    message: any,
-    line: number,
-    column: number,
-    functionName,
-    toLine?: number,
-    toColumn?: number
-  ) {
-    super(
-      ExprEvalStatus.UNKNOWN_FUNCTION,
-      message,
-      line,
-      column,
-      toLine,
-      toColumn
-    );
+  constructor(message: any, functionName, textSpan: TextSpan) {
+    super(ExprEvalStatus.UNKNOWN_FUNCTION, message, textSpan);
     this.functionName = functionName;
   }
 }
@@ -398,22 +369,12 @@ export class ExprEvalMissingFunctionArgumentErrorObj extends ExprEvalValidationE
 
   constructor(
     message: any,
-    line: number,
-    column: number,
     functionName: string,
     argumentName: string,
     argumentIndex: number,
-    toLine?: number,
-    toColumn?: number
+    textSpan: TextSpan
   ) {
-    super(
-      ExprEvalStatus.MISSING_REQUIRED_FUNCTION_ARGUMENT,
-      message,
-      line,
-      column,
-      toLine,
-      toColumn
-    );
+    super(ExprEvalStatus.MISSING_REQUIRED_FUNCTION_ARGUMENT, message, textSpan);
     this.functionName = functionName;
     this.argumentName = argumentName;
     this.argumentIndex = argumentIndex;
@@ -429,24 +390,14 @@ export class ExprEvalWrongFunctionArgumentTypeErrorObj extends ExprEvalValidatio
 
   constructor(
     message: any,
-    line: number,
-    column: number,
     functionName: string,
     argumentName: string,
     argumentIndex: number,
     expectedType: string,
     actualType: string,
-    toLine?: number,
-    toColumn?: number
+    textSpan: TextSpan
   ) {
-    super(
-      ExprEvalStatus.WRONG_FUNCTION_ARGUMENT_TYPE,
-      message,
-      line,
-      column,
-      toLine,
-      toColumn
-    );
+    super(ExprEvalStatus.WRONG_FUNCTION_ARGUMENT_TYPE, message, textSpan);
     this.functionName = functionName;
     this.argumentName = argumentName;
     this.argumentIndex = argumentIndex;

@@ -151,8 +151,10 @@ An expression can be
 
 `exists(object: ifcObjectRef): boolean` check whether an object reference obtained by the above methods actually exists (suppresses the error they generate)
 
-#### Translation functions
+#### Translation and condition functions
 
 `map(input, mapping: [[in, out], [in, out], ... ], default)`: finds the first `[in,out]` pair in the specified mapping where `in == input` and returns that pair's `out` value. If none is found, `default` is returned.
 
-'switch([[condition, out], [condition, out], ... ]', default): finds the first `[condition, out]` pair where `condition == true` and returns its `out` value. In none is found, `default` is returned.
+`if(condition, thenValue, elseValue)`: returns `thenValue` if `condition` is `true`, `elseValue` otherwise.
+
+`choose([[condition, out], [condition, out], ... ], default)`: finds the first `[condition, out]` pair where `condition == true` and returns its `out` value. In none is found, `default` is returned.

@@ -5,6 +5,7 @@ import {
   ExprEvalParseErrorObj,
   ExprEvalStatus,
 } from "../../expression/ExprEvalResult.js";
+import { TextSpan } from "../../util/TextSpan";
 
 export class SyntaxErrorMapper
   implements ExceptionToExprEvalErrorMapper<SyntaxErrorException>
@@ -13,9 +14,13 @@ export class SyntaxErrorMapper
     return new ExprEvalParseErrorObj(
       ExprEvalStatus.SYNTAX_ERROR,
       exception.message,
-      exception.line,
-      exception.column,
-      "" + exception.offendingSymbol
+      "" + exception.offendingSymbol,
+      TextSpan.of(
+        exception.line,
+        exception.column + 1,
+        exception.line,
+        exception.column + 1
+      )
     );
   }
 }

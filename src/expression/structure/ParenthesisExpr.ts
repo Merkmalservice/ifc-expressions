@@ -4,10 +4,11 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class ParenthesisExpr extends Expr1<ExpressionValue, ExpressionValue> {
   constructor(expression: Expr<ExpressionValue>) {
-    super(ExprKind.BOOLEAN_PARENTHESIS, expression);
+    super(ExprKind.PARENTHESIS, expression);
   }
 
   protected calculateResult(
@@ -17,11 +18,12 @@ export class ParenthesisExpr extends Expr1<ExpressionValue, ExpressionValue> {
   ): ExpressionValue {
     return subExpressionValue;
   }
-  toExprString(): string {
-    return `(${this.value.toExprString()})`;
+
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendString("(").appendExpr(this.sub).appendString(")");
   }
 
   getType(): ExprType {
-    return this.value.getType();
+    return this.sub.getType();
   }
 }

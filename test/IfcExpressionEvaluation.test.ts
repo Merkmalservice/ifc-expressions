@@ -1,4 +1,8 @@
-import { IfcExpression, isExprEvalSuccess } from "../src/IfcExpression.js";
+import {
+  IfcExpression,
+  isExprEvalError,
+  isExprEvalSuccess,
+} from "../src/IfcExpression.js";
 import Decimal from "decimal.js";
 import { NumericValue } from "../src/value/NumericValue.js";
 import { StringValue } from "../src/value/StringValue.js";
@@ -9,6 +13,7 @@ import {
   ExprEvalStatus,
   ExprEvalSuccess,
   ExprEvalSuccessObj,
+  ExprEvalWrongFunctionArgumentTypeErrorObj,
 } from "../src/expression/ExprEvalResult.js";
 
 import { ExprKind } from "../src/expression/ExprKind.js";
@@ -16,6 +21,9 @@ import { ctxSimple } from "./SimpleIfcExpressionContext.js";
 import { NumericLiteralExpr } from "../src/expression/numeric/NumericLiteralExpr.js";
 import { PlusExpr } from "../src/expression/numeric/PlusExpr.js";
 import { E } from "../src/E.js";
+import { TextSpan } from "../src/util/TextSpan";
+import { Type, Types } from "../src/type/Types";
+import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException";
 
 describe.each([
   ["1", new Decimal("1")],
@@ -92,10 +100,10 @@ describe.each([
   ["TRUE.implies(TRUE)", true],
   ["IMPLIES(FALSE, FALSE)", true],
 
-  ["SWITCH([[TRUE,1],[FALSE,2]],0)", new Decimal(1)],
-  ["SWITCH([[TRUE,1],[TRUE,2]],0)", new Decimal(1)],
-  ["SWITCH([[FALSE,1],[TRUE,2]],0)", new Decimal(2)],
-  ["SWITCH([[FALSE,1],[FALSE,2]],0)", new Decimal(0)],
+  ["CHOOSE([[TRUE,1],[FALSE,2]],0)", new Decimal(1)],
+  ["CHOOSE([[TRUE,1],[TRUE,2]],0)", new Decimal(1)],
+  ["CHOOSE([[FALSE,1],[TRUE,2]],0)", new Decimal(2)],
+  ["CHOOSE([[FALSE,1],[FALSE,2]],0)", new Decimal(0)],
 
   ["CONTAINS('ABC', 'AB')", true],
   ["CONTAINS('ABC', 'AB*')", true],
@@ -209,6 +217,9 @@ describe.each([
   ["'BETON'.replace('ON', 'E')", "BETE"],
   ["'BETON'.regexReplace('BET(?!T)', 'GAST')", "GASTON"],
   ["'BETON'.replace('B*O', 'KRA')", "KRAN"],
+  ["IF(TRUE,1,2)", new Decimal(1)],
+  ["IF(FALSE,1,'a')", "a"],
+  ["IF(TRUE,FALSE,'a')", false],
 ])("ifcExpression (no context)", (input: string, result: any) => {
   it(`evaluate("${input}") = ${result}`, () => {
     const actualResult = IfcExpression.evaluate(input);
@@ -323,32 +334,26 @@ describe.each([
   [
     17,
     "$element.property('dontFindThisProperty').value()",
-    new ExprEvalFunctionEvaluationConsequentialErrorObj(
+    new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
       ExprKind.FUNCTION,
-      "VALUE",
-      new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
-        ExprKind.FUNCTION,
-        ExprEvalStatus.IFC_PROPERTY_NOT_FOUND,
-        "No ifc property found with name 'dontFindThisProperty'",
-        "PROPERTY",
-        "dontFindThisProperty"
-      )
+      ExprEvalStatus.IFC_PROPERTY_NOT_FOUND,
+      "No ifc property found with name 'dontFindThisProperty'",
+      "PROPERTY",
+      "dontFindThisProperty",
+      TextSpan.of(1, 10, 1, 41)
     ),
     ctxSimple,
   ],
   [
     18,
     "$element.propertySet('PSet_Betonbau').property('dontFindThisProperty').value()",
-    new ExprEvalFunctionEvaluationConsequentialErrorObj(
+    new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
       ExprKind.FUNCTION,
-      "VALUE",
-      new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
-        ExprKind.FUNCTION,
-        ExprEvalStatus.IFC_PROPERTY_NOT_FOUND,
-        "No ifc property found with name 'dontFindThisProperty'",
-        "PROPERTY",
-        "dontFindThisProperty"
-      )
+      ExprEvalStatus.IFC_PROPERTY_NOT_FOUND,
+      "No ifc property found with name 'dontFindThisProperty'",
+      "PROPERTY",
+      "dontFindThisProperty",
+      TextSpan.of(1, 39, 1, 70)
     ),
     ctxSimple,
   ],
@@ -361,36 +366,26 @@ describe.each([
   [
     20,
     "$property.propertySet().property('dontFindThisProperty').value()",
-    new ExprEvalFunctionEvaluationConsequentialErrorObj(
+    new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
       ExprKind.FUNCTION,
-      "VALUE",
-      new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
-        ExprKind.FUNCTION,
-        ExprEvalStatus.IFC_PROPERTY_NOT_FOUND,
-        "No ifc property found with name 'dontFindThisProperty'",
-        "PROPERTY",
-        "dontFindThisProperty"
-      )
+      ExprEvalStatus.IFC_PROPERTY_NOT_FOUND,
+      "No ifc property found with name 'dontFindThisProperty'",
+      "PROPERTY",
+      "dontFindThisProperty",
+      TextSpan.of(1, 25, 1, 56)
     ),
     ctxSimple,
   ],
   [
     21,
     "$element.propertySet('dontFindThisPropertySet').property('dontFindThisProperty').value()",
-    new ExprEvalFunctionEvaluationConsequentialErrorObj(
+    new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
       ExprKind.FUNCTION,
-      "VALUE",
-      new ExprEvalFunctionEvaluationConsequentialErrorObj(
-        ExprKind.FUNCTION,
-        "PROPERTY",
-        new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
-          ExprKind.FUNCTION,
-          ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND,
-          "No ifc property set found with name 'dontFindThisPropertySet'",
-          "PROPERTYSET",
-          "dontFindThisPropertySet"
-        )
-      )
+      ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND,
+      "No ifc property set found with name 'dontFindThisPropertySet'",
+      "PROPERTYSET",
+      "dontFindThisPropertySet",
+      TextSpan.of(1, 10, 1, 47)
     ),
     ctxSimple,
   ],
@@ -415,26 +410,19 @@ describe.each([
   [
     25,
     "$element.type().propertySet('dontFindThisPropertySet').property('Bewehrungsgrad').name()",
-    new ExprEvalFunctionEvaluationConsequentialErrorObj(
+    new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
       ExprKind.FUNCTION,
-      "NAME",
-      new ExprEvalFunctionEvaluationConsequentialErrorObj(
-        ExprKind.FUNCTION,
-        "PROPERTY",
-        new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
-          ExprKind.FUNCTION,
-          ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND,
-          "No ifc property set found with name 'dontFindThisPropertySet'",
-          "PROPERTYSET",
-          "dontFindThisPropertySet"
-        )
-      )
+      ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND,
+      "No ifc property set found with name 'dontFindThisPropertySet'",
+      "PROPERTYSET",
+      "dontFindThisPropertySet",
+      TextSpan.of(1, 17, 1, 54)
     ),
     ctxSimple,
   ],
   [
     26,
-    "SWITCH([[$element.property('Betonguete').value().CONTAINS('C20'), 'C20'],[$element.property('Betonguete').value().CONTAINS('C25'),'C25']],'C??')",
+    "CHOOSE([[$element.property('Betonguete').value().CONTAINS('C20'), 'C20'],[$element.property('Betonguete').value().CONTAINS('C25'),'C25']],'C??')",
     new ExprEvalSuccessObj(StringValue.of("C25")),
     ctxSimple,
   ],
@@ -468,12 +456,27 @@ describe.each([
     new ExprEvalSuccessObj(StringValue.of("the value is 120")),
     ctxSimple,
   ],
+  [
+    32,
+    "$property.value() + $element.property('Bewehrungsgrad').value() * 1000 + $element.property('Bewehrungsgrad').value() * 1000",
+    new ExprEvalSuccessObj(NumericValue.of(240120)),
+    ctxSimple,
+  ],
+  [
+    33,
+    "IF($property.value() > 100, 'large', 'small')",
+    new ExprEvalSuccessObj(StringValue.of("large")),
+    ctxSimple,
+  ],
 ])(
   "ifcExpression (with 'simple' context)",
   (testCase: number | string, input: string, result: any, context: any) => {
     it(`case ${testCase}: evaluate("${input}", ctx) = ${result}`, () => {
       const actualResult = IfcExpression.evaluate(input, context);
       expect(actualResult).toStrictEqual(result);
+      //if (isExprEvalError(actualResult)){
+      //  expect(IfcExpression.formatError(input, actualResult)).toBe("somethingelse");
+      //}
     });
   }
 );

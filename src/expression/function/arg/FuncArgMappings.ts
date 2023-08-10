@@ -10,6 +10,7 @@ import { ArrayValue } from "../../../value/ArrayValue.js";
 import { ExprKind } from "../../ExprKind.js";
 import { Type, Types } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 
 export class FuncArgMappings extends FuncArg<any> {
   constructor(required: boolean, name: string) {
@@ -21,16 +22,22 @@ export class FuncArgMappings extends FuncArg<any> {
   }
 
   transformValue(
+    callingExpr: FunctionExpr,
     invocationValue: ExprEvalResult<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     if (isExprEvalSuccess(invocationValue)) {
       const mappings = invocationValue.result as ArrayValue;
       if (!Array.isArray(mappings.getValue())) {
-        return FuncArgMappings.makeError(mappings, "The value is not an array");
+        return FuncArgMappings.makeError(
+          callingExpr,
+          mappings,
+          "The value is not an array"
+        );
       }
       const arr = mappings.getValue();
       if (arr.length === 0) {
         return FuncArgMappings.makeError(
+          callingExpr,
           mappings,
           "The mappings array is empty"
         );
@@ -40,12 +47,14 @@ export class FuncArgMappings extends FuncArg<any> {
   }
 
   public static checkSingleMapping(
+    callingExpr: FunctionExpr,
     mappings: Array<ArrayValue>,
     index: number
   ): ExprEvalError | undefined {
     const element = mappings[index];
     if (!ArrayValue.isArrayValueType(element)) {
       return FuncArgMappings.makeError(
+        callingExpr,
         element,
         `The element at 0-based position${index} is not an array: ${JSON.stringify(
           element
@@ -55,6 +64,7 @@ export class FuncArgMappings extends FuncArg<any> {
     const pair = (element as unknown as ArrayValue).getValue();
     if (pair.length !== 2) {
       return FuncArgMappings.makeError(
+        callingExpr,
         element,
         `The array at 0-based position ${index} must be of length 2 but is of length ${pair.length}`
       );
@@ -62,11 +72,16 @@ export class FuncArgMappings extends FuncArg<any> {
     return undefined;
   }
 
-  private static makeError(mappings: ExpressionValue, problem: string) {
+  private static makeError(
+    callingExpr: FunctionExpr,
+    mappings: ExpressionValue,
+    problem: string
+  ) {
     return new ExprEvalTypeErrorObj(
       ExprKind.FUNCTION_ARGUMENTS,
       `Argument ${this.name} must be an array containing two arrays of the same length (i.e., a 2xn matrix: 2 rows, N columns). Problem: ${problem}.`,
-      mappings
+      mappings,
+      callingExpr.getTextSpan()
     );
   }
 }

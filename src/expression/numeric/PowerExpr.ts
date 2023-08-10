@@ -6,6 +6,7 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class PowerExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
   constructor(left: Expr<NumericValue>, right: Expr<NumericValue>) {
@@ -21,8 +22,8 @@ export class PowerExpr extends Expr2<NumericValue, NumericValue, NumericValue> {
     return NumericValue.of(leftOperand.getValue().pow(rightOperand.getValue()));
   }
 
-  toExprString(): string {
-    return `${this.left.toExprString()} ^ ${this.right.toExprString()}`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendExpr(this.left).appendString(" ^ ").appendExpr(this.right);
   }
 
   getType(): ExprType {

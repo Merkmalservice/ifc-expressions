@@ -6,6 +6,7 @@ import { ExprKind } from "../ExprKind.js";
 import { LiteralExpr } from "../LiteralExpr.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class NumericLiteralExpr extends LiteralExpr<
   NumericValue,
@@ -21,8 +22,8 @@ export class NumericLiteralExpr extends LiteralExpr<
     return this.value;
   }
 
-  toExprString(): string {
-    return `${this.value.getValue().toString()}`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder.appendString(this.value.getValue().toFixed());
   }
 
   getType(): ExprType {

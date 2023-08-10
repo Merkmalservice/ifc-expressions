@@ -1,4 +1,4 @@
-import IfcExpressionListener from "./gen/parser/IfcExpressionListener.js";
+import IfcExpressionListener from "../gen/parser/IfcExpressionListener.js";
 import {
   ArrayElementListContext,
   ArrayExprContext,
@@ -26,17 +26,17 @@ import {
   SEVariableRefContext,
   StringLiteralContext,
   VariableRefContext,
-} from "./gen/parser/IfcExpressionParser.js";
-import { IfcExpressionFunctions } from "./expression/function/IfcExpressionFunctions.js";
-import { NoSuchFunctionException } from "./error/NoSuchFunctionException.js";
-import { InvalidSyntaxException } from "./error/InvalidSyntaxException.js";
-import { Type, Types } from "./type/Types.js";
+} from "../gen/parser/IfcExpressionParser.js";
+import { IfcExpressionFunctions } from "../expression/function/IfcExpressionFunctions.js";
+import { NoSuchFunctionException } from "../error/NoSuchFunctionException.js";
+import { InvalidSyntaxException } from "../error/InvalidSyntaxException.js";
+import { Type, Types } from "../type/Types.js";
 import { ParserRuleContext } from "antlr4";
-import { TypeManager } from "./type/TypeManager.js";
-import { ExpressionTypeError } from "./error/ExpressionTypeError.js";
-import { isNullish } from "./IfcExpressionUtils.js";
-import { ValidationException } from "./error/ValidationException.js";
-import { ExprType } from "./type/ExprType.js";
+import { TypeManager } from "./TypeManager.js";
+import { ExpressionTypeError } from "../error/ExpressionTypeError.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
+import { ValidationException } from "../error/ValidationException.js";
+import { ExprType } from "../type/ExprType.js";
 
 export class IfcExpressionValidationListener extends IfcExpressionListener {
   private readonly typeManager: TypeManager;
@@ -179,7 +179,7 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   private pushMethodCallTarget(ctx: ParserRuleContext) {
     if (ctx.parentCtx["_target"]) {
       const targetType = this.typeManager.getType(ctx.parentCtx["_target"]);
-      this.methodCallTargetStack.push(targetType);
+      this.methodCallTargetStack.push([ctx, targetType]);
     } else {
       throw new ValidationException(
         "Did not find expected context attribute 'target' in parent rule context",
@@ -208,13 +208,19 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
 
   private collectArgumentTypes: (
     ctx: ExprListContext,
-    resultSoFar?: Array<ExprType>
-  ) => Array<ExprType> = (ctx, resultSoFar?: Array<ExprType>) => {
+    resultSoFar?: Array<[ParserRuleContext, ExprType]>
+  ) => Array<[ParserRuleContext, ExprType]> = (
+    ctx,
+    resultSoFar?: Array<[ParserRuleContext, ExprType]>
+  ) => {
     if (isNullish(resultSoFar)) {
       resultSoFar = [];
     }
     if (!isNullish(ctx)) {
-      resultSoFar.push(this.typeManager.getType(ctx.singleExpr()));
+      resultSoFar.push([
+        ctx.singleExpr(),
+        this.typeManager.getType(ctx.singleExpr()),
+      ]);
       const rest = ctx.exprList();
       if (!isNullish(rest)) {
         return this.collectArgumentTypes(rest, resultSoFar);

@@ -4,6 +4,7 @@ import { LiteralExpr } from "../LiteralExpr.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExprType } from "../../type/ExprType.js";
 import { Type } from "../../type/Types.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class StringLiteralExpr extends LiteralExpr<StringValue, StringValue> {
   constructor(value: string) {
@@ -14,8 +15,11 @@ export class StringLiteralExpr extends LiteralExpr<StringValue, StringValue> {
     return this.value;
   }
 
-  toExprString(): string {
-    return `"${this.value.getValue()}"`;
+  protected buildExprString(builder: ExprStringBuilder) {
+    builder
+      .appendString("'")
+      .appendString(this.value.getValue())
+      .appendString("'");
   }
 
   getType(): ExprType {

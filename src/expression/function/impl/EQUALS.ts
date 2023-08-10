@@ -5,6 +5,8 @@ import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { BooleanValue } from "../../../value/BooleanValue.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprType } from "../../../type/ExprType.js";
+import { FunctionExpr } from "../FunctionExpr.js";
+import { ParserRuleContext } from "antlr4";
 
 export class EQUALS extends Func {
   protected static readonly KEY_LEFT = "left";
@@ -18,6 +20,7 @@ export class EQUALS extends Func {
   }
 
   protected calculateResult(
+    callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     const left = evaluatedArguments.get(EQUALS.KEY_LEFT);
