@@ -34,7 +34,6 @@ import { IfcExpressionEvaluationException } from "./expression/IfcExpressionEval
 import type { ExpressionValue } from "./value/ExpressionValue.js";
 import type { BoxedValueTypes } from "./value/BoxedValueTypes.js";
 import {
-  ExprEvalConsequentialError1Obj,
   ExprEvalError,
   ExprEvalResult,
   isExprEvalError,
@@ -76,6 +75,7 @@ export {
   ExprEvalError,
   isExprEvalError,
   isExprEvalSuccess,
+  ExprToTextInputLinker,
 };
 
 export type { BoxedValueTypes };
@@ -128,7 +128,8 @@ export class IfcExpression {
     }
     lexer.addErrorListener(myErrorListener);
     parser.addErrorListener(myErrorListener);
-    const expr = parser.expr();
+    let expr;
+    expr = parser.expr();
     const validationListener = new IfcExpressionValidationListener();
     if (!myErrorListener.isErrorOccurred()) {
       const walker = new ParseTreeWalker();

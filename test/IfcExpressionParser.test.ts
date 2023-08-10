@@ -199,6 +199,11 @@ const cases = [
   ["IF(TRUE,FALSE,'a')", null, Types.or(Type.BOOLEAN, Type.STRING)],
   ["IF('a',1,'a')", WrongFunctionArgumentTypeException, null],
   ["IF(0,1,'a')", WrongFunctionArgumentTypeException, null],
+  [
+    "$property.value() + $element.property('zirka Pi').value() * 1000 + $element.property('Tordifferenz').value() * 1000",
+    null,
+    Type.NUMERIC,
+  ],
 ];
 
 describe.each(cases)(
