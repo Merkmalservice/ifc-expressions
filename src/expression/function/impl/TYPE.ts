@@ -39,7 +39,7 @@ export class TYPE extends Func {
     const objectRef = evaluatedArguments.get(TYPE.KEY_OBJECT_REF).getValue();
     const accessorFun = objectRef["getIfcTypeObjectAccessor"];
     if (typeof accessorFun === "function") {
-      const resultingObjectAccessor = accessorFun();
+      const resultingObjectAccessor = accessorFun.call(objectRef);
       if (isNullish(resultingObjectAccessor)) {
         return new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
           ExprKind.FUNCTION,

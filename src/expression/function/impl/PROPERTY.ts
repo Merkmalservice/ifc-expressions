@@ -72,7 +72,7 @@ export class PROPERTY extends Func {
         );
       }
       const propertyName: string = propertyNameVal.stringValue;
-      const resultingObjectAccessor = accessorFun(propertyName);
+      const resultingObjectAccessor = accessorFun.call(objectRef, propertyName);
       if (isNullish(resultingObjectAccessor)) {
         return new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
           ExprKind.FUNCTION,
