@@ -27,10 +27,19 @@ export class MatchesPattern extends ApplyRegex {
     if (pattern.length === 0) {
       return new ExprEvalSuccessObj(BooleanValue.of(false));
     }
-    const caseSensitive = evaluatedArguments.get(
-      MatchesPattern.KEY_CASE_INSENSITIVE
-    );
-    const flags = caseSensitive.getValue() ? "im" : "m";
+    let flags = "m"; // default for simple pattern
+    if (this.simplePattern) {
+      const caseSensitive = evaluatedArguments.get(
+        MatchesPattern.KEY_CASE_INSENSITIVE
+      );
+      if (caseSensitive) {
+        flags = "im";
+      }
+    } else {
+      flags = (
+        evaluatedArguments.get(MatchesPattern.KEY_FLAGS) as StringValue
+      ).getValue();
+    }
     const regex = new RegExp(pattern, flags);
     const input = (inputValue as StringValue).getValue();
     const matches = input.match(regex);

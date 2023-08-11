@@ -220,6 +220,29 @@ describe.each([
   ["IF(TRUE,1,2)", new Decimal(1)],
   ["IF(FALSE,1,'a')", "a"],
   ["IF(TRUE,FALSE,'a')", false],
+  ["REGEXREPLACE('C25/30','[C/]','')", "2530"],
+  ["REGEXREPLACE('C25/30','[c/]','')", "2530"], //default: case insensitive
+  ["REGEXREPLACE('C25\n/30','\\d+','')", "C\n/"], //default: multiline
+  ["REGEXREPLACE('C25/30','\\d+','')", "C/"], //default: global
+  ["REGEXREPLACE('C25/30','\\d+','','i')", "C/30"], //not global
+  ["REGEXREPLACE('C25\n/30','\\d+$','','g')", "C25\n/"],
+  ["TOSTRING(2)", "2"],
+  ["TONUMERIC('2')", new Decimal(2)],
+  ["TONUMERIC('2.5')", new Decimal(2.5)],
+  ["TONUMERIC(true)", new Decimal(1)],
+  ["TONUMERIC(false)", new Decimal(0)],
+  ["TOBOOLEAN(1)", true],
+  ["TOBOOLEAN(0)", false],
+  ["TOBOOLEAN('true')", true],
+  ["TOBOOLEAN('TRUE')", true],
+  ["TOBOOLEAN('false')", false],
+  ["TOBOOLEAN('FALSE')", false],
+  ["TOBOOLEAN('0')", false],
+  ["TOBOOLEAN('1')", true],
+  ["TONUMBER(1)", new Decimal(1)],
+  ["TONUMERIC(1)", new Decimal(1)],
+  ["TOBOOLEAN(true)", true],
+  ["TOBOOLEAN(false)", false],
 ])("ifcExpression (no context)", (input: string, result: any) => {
   it(`evaluate("${input}") = ${result}`, () => {
     const actualResult = IfcExpression.evaluate(input);

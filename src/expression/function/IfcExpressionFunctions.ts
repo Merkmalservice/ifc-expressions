@@ -17,14 +17,30 @@ import { EQUALS } from "./impl/EQUALS.js";
 import { CompareMagnitudes } from "./impl/CompareMagnitudes.js";
 import { ReplacePattern } from "./impl/ReplacePattern.js";
 import { IF } from "./impl/IF.js";
+import { TONUMERIC } from "./impl/TONUMERIC";
+import { IfcExpressionFunctionConfigException } from "../../error/IfcExpressionFunctionConfigException";
+import { TOBOOLEAN } from "./impl/TOBOOLEAN";
 
 const builtinFunctions = new Map<string, Func>();
-function registerFunc(func: Func) {
-  builtinFunctions.set(
-    IfcExpressionFunctions.normalizeName(func.getName()),
-    func
+
+function registerOrDie(fnKey: string, func: Func) {
+  if (builtinFunctions.has(fnKey)) {
+    throw new IfcExpressionFunctionConfigException(
+      `cannot register function with name '${fnKey}': name already in use`
+    );
+  }
+  builtinFunctions.set(fnKey, func);
+}
+
+function registerFunc(func: Func, ...aliases: Array<string>) {
+  const fnKey = func.getName();
+  const keys = [...aliases];
+  keys.unshift(fnKey);
+  keys.forEach((key) =>
+    registerOrDie(IfcExpressionFunctions.normalizeName(key), func)
   );
 }
+
 export class IfcExpressionFunctions {
   public static normalizeName(name: string): string {
     if (isNullish(name)) {
@@ -67,6 +83,8 @@ registerFunc(new PROPERTY());
 registerFunc(new TYPE());
 registerFunc(new NOT());
 registerFunc(new TOSTRING());
+registerFunc(new TONUMERIC(), "TONUMBER");
+registerFunc(new TOBOOLEAN());
 registerFunc(new EXISTS());
 registerFunc(new FuncBooleanBinary("AND", (left, right) => left && right));
 registerFunc(new FuncBooleanBinary("OR", (left, right) => left || right));

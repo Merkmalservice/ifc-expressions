@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- toNumeric(alias: toNumber)
+- toBoolean()
+
+### Changed
+
+- RegexReplace and RegexMatch allow (a subset of) standard js regex flags
+- functions can have alias names
+
 ## 2.0.1-beta.6 - 2023-08-11
 
 ## 2.0.1-beta.5 - 2023-08-10

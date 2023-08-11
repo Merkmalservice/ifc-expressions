@@ -3,6 +3,7 @@ import { ExprType } from "../type/ExprType.js";
 import { Type } from "../type/Types.js";
 
 export class LogicalValue implements Value<boolean | "UNKNOWN"> {
+  public static readonly UNKNOWN = "UNKNOWN";
   private readonly logicalValue: boolean | "UNKNOWN";
 
   constructor(value: boolean | "UNKNOWN") {
@@ -29,7 +30,7 @@ export class LogicalValue implements Value<boolean | "UNKNOWN"> {
   }
 
   toString(): string {
-    return this.logicalValue === "UNKNOWN"
+    return this.logicalValue === LogicalValue.UNKNOWN
       ? "UNKNOWN"
       : this.logicalValue
       ? "TRUE"
@@ -40,7 +41,7 @@ export class LogicalValue implements Value<boolean | "UNKNOWN"> {
     return (
       (typeof arg.logicalValue !== "undefined" &&
         typeof arg.logicalValue === "boolean") ||
-      arg.logicalValue === "UNKNOWN"
+      arg.logicalValue === LogicalValue.UNKNOWN
     );
   }
 }

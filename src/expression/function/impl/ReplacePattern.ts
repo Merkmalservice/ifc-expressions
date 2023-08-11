@@ -8,6 +8,7 @@ import { FuncArgRegex } from "../arg/FuncArgRegex.js";
 import { MatchesPattern } from "./MatchesPattern.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
+import { BooleanValue } from "../../../value/BooleanValue";
 
 export class ReplacePattern extends ApplyRegex {
   private static readonly KEY_REPLACE = "replaceValue";
@@ -38,10 +39,19 @@ export class ReplacePattern extends ApplyRegex {
     if (pattern.length === 0) {
       return new ExprEvalSuccessObj(inputValue);
     }
-    const caseSensitive = evaluatedArguments.get(
-      MatchesPattern.KEY_CASE_INSENSITIVE
-    );
-    const flags = caseSensitive.getValue() ? "im" : "m";
+    let flags = "mg";
+    if (this.simplePattern) {
+      const caseSensitive = evaluatedArguments.get(
+        MatchesPattern.KEY_CASE_INSENSITIVE
+      );
+      if ((caseSensitive as BooleanValue).getValue()) {
+        flags = "img";
+      }
+    } else {
+      flags = (
+        evaluatedArguments.get(ReplacePattern.KEY_FLAGS) as StringValue
+      ).getValue();
+    }
     const regex = new RegExp(pattern, flags);
     const input = (inputValue as StringValue).getValue();
     const replace = (replaceValue as StringValue).getValue();

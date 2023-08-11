@@ -94,8 +94,16 @@ export class TypeManager {
     return this.isType(Type.BOOLEAN, ...ctxs);
   }
 
+  public isLogical(...ctxs) {
+    return this.isType(Type.LOGICAL, ... ctxs);
+  }
+
   public overlapsWithBoolean(...ctxs) {
     return this.overlapsWith(Type.BOOLEAN, ...ctxs);
+  }
+
+  public overlapsWithLogical(...ctxs) {
+    return this.overlapsWith(Type.LOGICAL, ...ctxs);
   }
 
   public isNumeric(...ctxs) {
