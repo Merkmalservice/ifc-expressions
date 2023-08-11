@@ -95,7 +95,7 @@ export class TypeManager {
   }
 
   public isLogical(...ctxs) {
-    return this.isType(Type.LOGICAL, ... ctxs);
+    return this.isType(Type.LOGICAL, ...ctxs);
   }
 
   public overlapsWithBoolean(...ctxs) {
