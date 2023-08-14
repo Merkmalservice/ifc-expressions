@@ -51,6 +51,9 @@ export class Types {
   public static isBoolean(actualType: ExprType) {
     return this.isType(actualType, Type.BOOLEAN);
   }
+  public static isLogical(actualType: ExprType) {
+    return this.isType(actualType, Type.LOGICAL);
+  }
   public static isString(actualType: ExprType) {
     return this.isType(actualType, Type.STRING);
   }
@@ -59,6 +62,9 @@ export class Types {
   }
   public static boolean() {
     return Type.BOOLEAN;
+  }
+  public static logical() {
+    return Type.LOGICAL;
   }
   public static string() {
     return Type.STRING;

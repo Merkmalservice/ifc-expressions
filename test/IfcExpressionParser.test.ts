@@ -8,6 +8,8 @@ import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionAr
 import { Type, Types } from "../src/type/Types.js";
 import { ExprType } from "../src/type/ExprType.js";
 import { mapException } from "../src/error/ExceptionToExprEvalErrorMapper.js";
+import { MissingFunctionArgumentException } from "../src/error/MissingFunctionArgumentException";
+import { SpuriousFunctionArgumentException } from "../src/error/SpuriousFunctionArgumentException";
 
 const cases = [
   // numeric
@@ -199,6 +201,16 @@ const cases = [
   ["IF(TRUE,FALSE,'a')", null, Types.or(Type.BOOLEAN, Type.STRING)],
   ["IF('a',1,'a')", WrongFunctionArgumentTypeException, null],
   ["IF(0,1,'a')", WrongFunctionArgumentTypeException, null],
+  ["IF(FALSE, 0, 1, 2)", SpuriousFunctionArgumentException, null],
+  ["IF(UNKNOWN,1,2,3)", null, Type.NUMERIC],
+  [
+    "IF(UNKNOWN,TRUE,'a',3)",
+    null,
+    Types.or(Type.STRING, Type.NUMERIC, Type.BOOLEAN),
+  ],
+  ["IF(UNKNOWN,0,1)", MissingFunctionArgumentException, null],
+  ["IF($property.value(),0,1)", null, Type.NUMERIC],
+  ["IF($property.value(),0,1,2)", null, Type.NUMERIC],
   [
     "$property.value() + $element.property('zirka Pi').value() * 1000 + $element.property('Tordifferenz').value() * 1000",
     null,

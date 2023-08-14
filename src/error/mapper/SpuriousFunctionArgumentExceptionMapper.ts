@@ -2,16 +2,18 @@ import { ExceptionToExprEvalErrorMapper } from "../ExceptionToExprEvalErrorMappe
 import {
   ExprEvalError,
   ExprEvalMissingFunctionArgumentErrorObj,
+  ExprEvalSpuriousFunctionArgumentErrorObj,
   ExprEvalValidationError,
 } from "../../expression/ExprEvalResult.js";
 import { MissingFunctionArgumentException } from "../MissingFunctionArgumentException.js";
 import { TextSpan } from "../../util/TextSpan.js";
+import { SpuriousFunctionArgumentException } from "../SpuriousFunctionArgumentException";
 
-export class MissingFunctionArgumentExceptionMapper
-  implements ExceptionToExprEvalErrorMapper<MissingFunctionArgumentException>
+export class SpuriousFunctionArgumentExceptionMapper
+  implements ExceptionToExprEvalErrorMapper<SpuriousFunctionArgumentException>
 {
-  mapException(exception: MissingFunctionArgumentException): ExprEvalError {
-    return new ExprEvalMissingFunctionArgumentErrorObj(
+  mapException(exception: SpuriousFunctionArgumentException): ExprEvalError {
+    return new ExprEvalSpuriousFunctionArgumentErrorObj(
       exception.message,
       exception.functionName,
       exception.argumentName,

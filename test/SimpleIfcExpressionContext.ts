@@ -6,6 +6,7 @@ import { NumericValue } from "../src/value/NumericValue.js";
 import { BooleanValue } from "../src/value/BooleanValue.js";
 import { IfcElementAccessor } from "../src/context/IfcElementAccessor.js";
 import { IfcTypeObjectAccessor } from "../src/context/IfcTypeObjectAccessor.js";
+import { LogicalValue } from "../src/value/LogicalValue";
 
 export const ctxSimple: any = {
   psetBetonbau: new (class extends IfcPropertySetAccessor {
@@ -25,6 +26,8 @@ export const ctxSimple: any = {
           return ctxSimple.propBewehrungsgrad;
         case "Sichtbeton":
           return ctxSimple.propSichtbeton;
+        case "BelastungstestBestanden":
+          return ctxSimple.propBelastungstestBestanden;
       }
       return undefined;
     }
@@ -34,7 +37,12 @@ export const ctxSimple: any = {
     }
 
     listIfcPropertyNames(): Array<string> {
-      return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
+      return [
+        "Betonguete",
+        "Bewehrungsgrad",
+        "Sichtbeton",
+        "BelastungstestBestanden",
+      ];
     }
   })(),
   propBetonguete: new (class extends IfcPropertyAccessor {
@@ -87,7 +95,25 @@ export const ctxSimple: any = {
     }
 
     getValue(): ExpressionValue {
-      return new BooleanValue(true);
+      return BooleanValue.of(true);
+    }
+  })(),
+
+  propBelastungstestBestanden: new (class extends IfcPropertyAccessor {
+    getDescription(): string {
+      return "Indicates whether the load test was passed successfully";
+    }
+
+    getName(): string {
+      return "BelastungstestBestanden";
+    }
+
+    getIfcPropertySetAccessor(): IfcPropertySetAccessor {
+      return ctxSimple.psetBetonbau;
+    }
+
+    getValue(): ExpressionValue {
+      return LogicalValue.of(true);
     }
   })(),
 
@@ -114,6 +140,8 @@ export const ctxSimple: any = {
           return ctxSimple.propBewehrungsgrad;
         case "Sichtbeton":
           return ctxSimple.propSichtbeton;
+        case "BelastungstestBestanden":
+          return ctxSimple.propBelastungstestBestanden;
       }
     }
 
@@ -135,7 +163,12 @@ export const ctxSimple: any = {
     }
 
     listIfcPropertyNames(): Array<string> {
-      return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
+      return [
+        "Betonguete",
+        "Bewehrungsgrad",
+        "Sichtbeton",
+        "BelastungstestBestanden",
+      ];
     }
 
     listIfcPropertySetNames(): Array<string> {
@@ -164,6 +197,8 @@ export const ctxSimple: any = {
           return ctxSimple.propDeckeBewehrungsgrad;
         case "Sichtbeton":
           return ctxSimple.propDeckeSichtbeton;
+        case "BelastungstestBestanden":
+          return ctxSimple.propDeckeBelastungstestBestanden;
       }
     }
 
@@ -181,7 +216,12 @@ export const ctxSimple: any = {
     }
 
     listIfcPropertyNames(): Array<string> {
-      return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
+      return [
+        "Betonguete",
+        "Bewehrungsgrad",
+        "Sichtbeton",
+        "BelastungstestBestanden",
+      ];
     }
 
     listIfcPropertySetNames(): Array<string> {
@@ -206,6 +246,8 @@ export const ctxSimple: any = {
           return ctxSimple.propDeckeBewehrungsgrad;
         case "Sichtbeton":
           return ctxSimple.propDeckeSichtbeton;
+        case "BelastungstestBestanden":
+          return ctxSimple.propDeckeBelastungstestBestanden;
       }
       return undefined;
     }
@@ -215,7 +257,12 @@ export const ctxSimple: any = {
     }
 
     listIfcPropertyNames(): Array<string> {
-      return ["Betonguete", "Bewehrungsgrad", "Sichtbeton"];
+      return [
+        "Betonguete",
+        "Bewehrungsgrad",
+        "Sichtbeton",
+        "BelastungstestBestanden",
+      ];
     }
   })(),
   propDeckeBetonguete: new (class extends IfcPropertyAccessor {
@@ -268,7 +315,25 @@ export const ctxSimple: any = {
     }
 
     getValue(): ExpressionValue {
-      return new BooleanValue(false);
+      return BooleanValue.of(false);
+    }
+  })(),
+
+  propDeckeBelastungstestBestanden: new (class extends IfcPropertyAccessor {
+    getDescription(): string {
+      return "Indicates whether the load test was passed successfully";
+    }
+
+    getName(): string {
+      return "BelastungstestBestanden";
+    }
+
+    getIfcPropertySetAccessor(): IfcPropertySetAccessor {
+      return ctxSimple.psetDeckeBetonbau;
+    }
+
+    getValue(): ExpressionValue {
+      return LogicalValue.unknown();
     }
   })(),
 };

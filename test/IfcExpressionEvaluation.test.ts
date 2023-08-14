@@ -1,31 +1,31 @@
 import {
+  ExprKind,
   IfcExpression,
-  isExprEvalError,
   isExprEvalSuccess,
+  LogicalValue,
 } from "../src/IfcExpression.js";
 import Decimal from "decimal.js";
 import { NumericValue } from "../src/value/NumericValue.js";
 import { StringValue } from "../src/value/StringValue.js";
 import { BooleanValue } from "../src/value/BooleanValue.js";
 import {
-  ExprEvalFunctionEvaluationConsequentialErrorObj,
   ExprEvalFunctionEvaluationObjectNotFoundErrorObj,
+  ExprEvalMissingRequiredFunctionArgumentErrorObj,
+  ExprEvalSpuriousFunctionArgumentErrorObj,
   ExprEvalStatus,
   ExprEvalSuccess,
   ExprEvalSuccessObj,
-  ExprEvalWrongFunctionArgumentTypeErrorObj,
 } from "../src/expression/ExprEvalResult.js";
 
-import { ExprKind } from "../src/expression/ExprKind.js";
 import { ctxSimple } from "./SimpleIfcExpressionContext.js";
 import { NumericLiteralExpr } from "../src/expression/numeric/NumericLiteralExpr.js";
 import { PlusExpr } from "../src/expression/numeric/PlusExpr.js";
 import { E } from "../src/E.js";
 import { TextSpan } from "../src/util/TextSpan.js";
-import { Type, Types } from "../src/type/Types.js";
-import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException.js";
+import { IF } from "../src/expression/function/impl/IF";
 
 describe.each([
+  ["!UNKNOWN", LogicalValue.UNKNOWN_VALUE],
   ["1", new Decimal("1")],
   [new NumericLiteralExpr(1).toExprString(), new Decimal(1)],
   ["1.5", new Decimal("1.5")],
@@ -93,12 +93,78 @@ describe.each([
   ["true >< false", true],
   ["TRUE && FALSE", false],
   ["(TRUE||FALSE) && TRUE", true],
+  ["TRUE && FALSE >< FALSE", false],
   ["TRUE.and(FALSE)", false],
   ["false.not()", true],
+
+  ["NOT(TRUE)", false],
+  ["NOT(FALSE)", true],
+  ["AND(TRUE, TRUE)", true],
   ["AND(TRUE, FALSE)", false],
-  ["TRUE && FALSE >< FALSE", false],
-  ["TRUE.implies(TRUE)", true],
+  ["AND(FALSE, TRUE)", false],
+  ["AND(FALSE, FALSE)", false],
+  ["OR(TRUE, TRUE)", true],
+  ["OR(TRUE, FALSE)", true],
+  ["OR(FALSE, TRUE)", true],
+  ["OR(FALSE, FALSE)", false],
+  ["XOR(TRUE, TRUE)", false],
+  ["XOR(TRUE, FALSE)", true],
+  ["XOR(FALSE, TRUE)", true],
+  ["XOR(FALSE, FALSE)", false],
+  ["IMPLIES(TRUE, TRUE)", true],
+  ["IMPLIES(TRUE, FALSE)", false],
+  ["IMPLIES(FALSE, TRUE)", true],
   ["IMPLIES(FALSE, FALSE)", true],
+
+  ["NOT(UNKNOWN)", LogicalValue.UNKNOWN_VALUE],
+  ["AND(UNKNOWN, TRUE)", LogicalValue.UNKNOWN_VALUE],
+  ["AND(UNKNOWN, FALSE)", false],
+  ["AND(TRUE, UNKNOWN)", LogicalValue.UNKNOWN_VALUE],
+  ["AND(FALSE, UNKNOWN)", false],
+  ["OR(UNKNOWN, TRUE)", true],
+  ["OR(UNKNOWN, FALSE)", LogicalValue.UNKNOWN_VALUE],
+  ["OR(TRUE, UNKNOWN)", true],
+  ["OR(FALSE, UNKNOWN)", LogicalValue.UNKNOWN_VALUE],
+  ["XOR(UNKNOWN, TRUE)", LogicalValue.UNKNOWN_VALUE],
+  ["XOR(UNKNOWN, FALSE)", LogicalValue.UNKNOWN_VALUE],
+  ["XOR(TRUE, UNKNOWN)", LogicalValue.UNKNOWN_VALUE],
+  ["XOR(FALSE, UNKNOWN)", LogicalValue.UNKNOWN_VALUE],
+  ["IMPLIES(UNKNOWN, TRUE)", true],
+  ["IMPLIES(UNKNOWN, FALSE)", LogicalValue.UNKNOWN_VALUE],
+  ["IMPLIES(TRUE, UNKNOWN)", LogicalValue.UNKNOWN_VALUE],
+  ["IMPLIES(FALSE, UNKNOWN)", true],
+
+  ["!TRUE", false],
+  ["!FALSE", true],
+  ["TRUE && TRUE", true],
+  ["TRUE && FALSE", false],
+  ["TRUE && UNKNOWN", LogicalValue.UNKNOWN_VALUE],
+  ["FALSE && TRUE", false],
+  ["FALSE && FALSE", false],
+  ["FALSE && UNKNOWN", false],
+  ["UNKNOWN && TRUE", LogicalValue.UNKNOWN_VALUE],
+  ["UNKNOWN && FALSE", false],
+  ["UNKNOWN && UNKNOWN", LogicalValue.UNKNOWN_VALUE],
+
+  ["TRUE || TRUE", true],
+  ["TRUE || FALSE", true],
+  ["TRUE || UNKNOWN", true],
+  ["FALSE || TRUE", true],
+  ["FALSE || FALSE", false],
+  ["FALSE || UNKNOWN", LogicalValue.UNKNOWN_VALUE],
+  ["UNKNOWN || TRUE", true],
+  ["UNKNOWN || FALSE", LogicalValue.UNKNOWN_VALUE],
+  ["UNKNOWN || UNKNOWN", LogicalValue.UNKNOWN_VALUE],
+
+  ["TRUE >< TRUE", false],
+  ["TRUE >< FALSE", true],
+  ["TRUE >< UNKNOWN", LogicalValue.UNKNOWN_VALUE],
+  ["FALSE >< TRUE", true],
+  ["FALSE >< FALSE", false],
+  ["FALSE >< UNKNOWN", LogicalValue.UNKNOWN_VALUE],
+  ["UNKNOWN >< TRUE", LogicalValue.UNKNOWN_VALUE],
+  ["UNKNOWN >< FALSE", LogicalValue.UNKNOWN_VALUE],
+  ["UNKNOWN >< UNKNOWN", LogicalValue.UNKNOWN_VALUE],
 
   ["CHOOSE([[TRUE,1],[FALSE,2]],0)", new Decimal(1)],
   ["CHOOSE([[TRUE,1],[TRUE,2]],0)", new Decimal(1)],
@@ -220,6 +286,7 @@ describe.each([
   ["IF(TRUE,1,2)", new Decimal(1)],
   ["IF(FALSE,1,'a')", "a"],
   ["IF(TRUE,FALSE,'a')", false],
+  ["IF(UNKNOWN, 1, 2, 3)", new Decimal(3)],
   ["REGEXREPLACE('C25/30','[C/]','')", "2530"],
   ["REGEXREPLACE('C25/30','[c/]','')", "2530"], //default: case insensitive
   ["REGEXREPLACE('C25\n/30','\\d+','')", "C\n/"], //default: multiline
@@ -489,6 +556,74 @@ describe.each([
     33,
     "IF($property.value() > 100, 'large', 'small')",
     new ExprEvalSuccessObj(StringValue.of("large")),
+    ctxSimple,
+  ],
+  [
+    34,
+    "IF($element.property('Sichtbeton').value(), 'Sichtbeton', 'Kein Sichtbeton')",
+    new ExprEvalSuccessObj(StringValue.of("Sichtbeton")),
+    ctxSimple,
+  ],
+  [
+    35,
+    "IF($element.property('Sichtbeton').value(), 'Sichtbeton', 'Kein Sichtbeton', 'Unbekannt')",
+    new ExprEvalSpuriousFunctionArgumentErrorObj(
+      "Argument unknownValue is not allowed if the argument condition is of type boolean (i.e., can only be true or false)",
+      "IF",
+      "unknownValue",
+      3,
+      TextSpan.of(1, 1, 1, 89)
+    ),
+    ctxSimple,
+  ],
+  [
+    36,
+    "IF($element.property('BelastungstestBestanden').value(), 'bestanden', 'nicht bestanden')",
+    new ExprEvalMissingRequiredFunctionArgumentErrorObj(
+      ExprKind.FUNCTION_ARGUMENTS,
+      "Argument unknownValue is required if the argument condition is of type logical (i.e., can be true, false or unknown)",
+      "IF",
+      "unknownValue",
+      3,
+      TextSpan.of(1, 1, 1, 88)
+    ),
+    ctxSimple,
+  ],
+  [
+    37,
+    "IF($element.property('BelastungstestBestanden').value(), 'bestanden', 'nicht bestanden', 'Unbekannt')",
+    new ExprEvalSuccessObj(StringValue.of("bestanden")),
+    ctxSimple,
+  ],
+  [
+    38,
+    "IF($element.type().property('BelastungstestBestanden').value(), 'bestanden', 'nicht bestanden', 'Unbekannt')",
+    new ExprEvalSuccessObj(StringValue.of("Unbekannt")),
+    ctxSimple,
+  ],
+  [
+    39,
+    "IF($element.type().property('WärmeleitfähigkeitstestBestanden').value(), 'bestanden', 'nicht bestanden')",
+    new ExprEvalFunctionEvaluationObjectNotFoundErrorObj(
+      ExprKind.FUNCTION,
+      ExprEvalStatus.IFC_PROPERTY_NOT_FOUND,
+      "No ifc property found with name 'WärmeleitfähigkeitstestBestanden'",
+      "PROPERTY",
+      "WärmeleitfähigkeitstestBestanden",
+      TextSpan.of(1, 20, 1, 63)
+    ),
+    ctxSimple,
+  ],
+  [
+    40,
+    "IF($element.type().property('WärmeleitfähigkeitstestBestanden').value().toLogical(), 'bestanden', 'nicht bestanden', 'Unbekannt')",
+    new ExprEvalSuccessObj(StringValue.of("Unbekannt")),
+    ctxSimple,
+  ],
+  [
+    41,
+    "IF($element.type().property('WärmeleitfähigkeitstestBestanden').value().notFoundAsUnknown(), 'bestanden', 'nicht bestanden', 'Unbekannt')",
+    new ExprEvalSuccessObj(StringValue.of("Unbekannt")),
     ctxSimple,
   ],
   /*[

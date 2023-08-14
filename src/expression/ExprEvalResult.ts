@@ -22,7 +22,8 @@ export enum ExprEvalStatus {
   MISSING_OPERAND = 2084,
   MISSING_REQUIRED_FUNCTION_ARGUMENT = 2085,
   UNKNOWN_FUNCTION = 2086,
-  WRONG_FUNCTION_ARGUMENT_TYPE = 2088,
+  WRONG_FUNCTION_ARGUMENT_TYPE = 2087,
+  SPURIOUS_FUNCTION_ARGUMENT = 2088,
 }
 
 export function isExprEvalStatus(candidate: number): boolean {
@@ -362,7 +363,7 @@ export class ExprEvalUnknownFunctionErrorObj extends ExprEvalValidationErrorObj 
   }
 }
 
-export class ExprEvalMissingFunctionArgumentErrorObj extends ExprEvalValidationErrorObj {
+export class ExprEvalMissingFunctionArgumentErrorObj extends ExprEvalErrorObj {
   public readonly functionName: string;
   public readonly argumentName: string;
   public readonly argumentIndex: number;
@@ -374,7 +375,36 @@ export class ExprEvalMissingFunctionArgumentErrorObj extends ExprEvalValidationE
     argumentIndex: number,
     textSpan: TextSpan
   ) {
-    super(ExprEvalStatus.MISSING_REQUIRED_FUNCTION_ARGUMENT, message, textSpan);
+    super(
+      ExprKind.FUNCTION_ARGUMENTS,
+      ExprEvalStatus.MISSING_REQUIRED_FUNCTION_ARGUMENT,
+      message,
+      textSpan
+    );
+    this.functionName = functionName;
+    this.argumentName = argumentName;
+    this.argumentIndex = argumentIndex;
+  }
+}
+
+export class ExprEvalSpuriousFunctionArgumentErrorObj extends ExprEvalErrorObj {
+  public readonly functionName: string;
+  public readonly argumentName: string;
+  public readonly argumentIndex: number;
+
+  constructor(
+    message: any,
+    functionName: string,
+    argumentName: string,
+    argumentIndex: number,
+    textSpan: TextSpan
+  ) {
+    super(
+      ExprKind.FUNCTION_ARGUMENTS,
+      ExprEvalStatus.SPURIOUS_FUNCTION_ARGUMENT,
+      message,
+      textSpan
+    );
     this.functionName = functionName;
     this.argumentName = argumentName;
     this.argumentIndex = argumentIndex;

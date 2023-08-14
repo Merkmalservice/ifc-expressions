@@ -8,6 +8,7 @@ import {
   ExprListContext,
   FunctionCallContext,
   LiteralContext,
+  LogicalLiteralContext,
   MethodCallChainEndContext,
   MethodCallChainInnerContext,
   NumLiteralContext,
@@ -61,6 +62,8 @@ import { GreaterThanOrEqual } from "../expression/comparison/GreaterThanOrEqual.
 import { LessThan } from "../expression/comparison/LessThan.js";
 import { LessThanOrEqual } from "../expression/comparison/LessThanOrEqual.js";
 import { ExprManager } from "./ExprManager.js";
+import { LogicalValue } from "../value/LogicalValue";
+import { LogicalLiteralExpr } from "../expression/boolean/LogicalLiteralExpr";
 
 export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
   private readonly methodCallTargetStack = [];
@@ -352,6 +355,14 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
   visitBooleanLiteral: (ctx: BooleanLiteralContext) => Expr<any> = (ctx) => {
     return this.associateContextAndReturn(
       new BooleanLiteralExpr(ctx.BOOLEAN().getText().toUpperCase() === "TRUE"),
+      ctx
+    );
+  };
+
+  visitLogicalLiteral: (ctx: LogicalLiteralContext) => Expr<any> = (ctx) => {
+    // the only literal we recognize is 'UNKNOWN' (true and false are boolean literals)
+    return this.associateContextAndReturn(
+      new LogicalLiteralExpr(LogicalValue.UNKNOWN_VALUE),
       ctx
     );
   };

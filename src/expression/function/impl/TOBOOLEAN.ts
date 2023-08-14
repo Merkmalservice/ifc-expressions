@@ -87,6 +87,6 @@ export class TOBOOLEAN extends Func {
   }
 
   getReturnType(argumentTypes: Array<ExprType>): ExprType {
-    return Type.STRING;
+    return Type.BOOLEAN;
   }
 }

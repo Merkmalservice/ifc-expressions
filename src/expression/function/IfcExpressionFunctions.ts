@@ -20,6 +20,7 @@ import { IF } from "./impl/IF.js";
 import { TONUMERIC } from "./impl/TONUMERIC";
 import { IfcExpressionFunctionConfigException } from "../../error/IfcExpressionFunctionConfigException";
 import { TOBOOLEAN } from "./impl/TOBOOLEAN";
+import { TOLOGICAL } from "./impl/TOLOGICAL";
 
 const builtinFunctions = new Map<string, Func>();
 
@@ -85,13 +86,12 @@ registerFunc(new NOT());
 registerFunc(new TOSTRING());
 registerFunc(new TONUMERIC(), "TONUMBER");
 registerFunc(new TOBOOLEAN());
+registerFunc(new TOLOGICAL(), "NOTFOUNDASUNKNOWN");
 registerFunc(new EXISTS());
-registerFunc(new FuncBooleanBinary("AND", (left, right) => left && right));
-registerFunc(new FuncBooleanBinary("OR", (left, right) => left || right));
-registerFunc(
-  new FuncBooleanBinary("XOR", (left, right) => (left ? !right : right))
-);
-registerFunc(new FuncBooleanBinary("IMPLIES", (left, right) => !left || right));
+registerFunc(new FuncBooleanBinary("AND", "and"));
+registerFunc(new FuncBooleanBinary("OR", "or"));
+registerFunc(new FuncBooleanBinary("XOR", "xor"));
+registerFunc(new FuncBooleanBinary("IMPLIES", "implies"));
 registerFunc(new EQUALS());
 registerFunc(new CompareMagnitudes("GREATERTHAN", (cmp) => cmp > 0));
 registerFunc(new CompareMagnitudes("GREATERTHANOREQUAL", (cmp) => cmp >= 0));

@@ -1,12 +1,11 @@
 import { Func } from "../Func.js";
-import { FuncArgAny } from "../arg/FuncArgAny.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import {
   ExprEvalFunctionEvaluationErrorObj,
   ExprEvalResult,
   ExprEvalStatus,
   ExprEvalSuccessObj,
-  ExprEvalWrongFunctionArgumentTypeErrorObj,
+  isExprEvalError,
 } from "../../ExprEvalResult.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { ExprType } from "../../../type/ExprType.js";
@@ -17,54 +16,56 @@ import { Decimal } from "decimal.js";
 import { BooleanValue } from "../../../value/BooleanValue";
 import { LogicalValue } from "../../../value/LogicalValue";
 import { ReferenceValue } from "../../../value/ReferenceValue";
+import { FuncArgBoolean } from "../arg/FuncArgBoolean";
+import { Expr } from "../../Expr";
 
-export class TONUMERIC extends Func {
+export class TOLOGICAL extends Func {
   private static readonly KEY_OBJECT = "object";
   constructor() {
-    super("TONUMERIC", [new FuncArgAny(true, "object")]);
+    super("TOLOGICAL", [new FuncArgBoolean(true, "object")]);
+  }
+
+  protected transformArguments(
+    callingExpr: Expr<any>,
+    evaluatedArguments: Map<string, ExprEvalResult<ExpressionValue>>
+  ) {
+    const val = evaluatedArguments.get(TOLOGICAL.KEY_OBJECT);
+    if (isExprEvalError(val)) {
+      if (val.status === ExprEvalStatus.IFC_PROPERTY_NOT_FOUND) {
+        evaluatedArguments.set(
+          TOLOGICAL.KEY_OBJECT,
+          new ExprEvalSuccessObj(LogicalValue.unknown())
+        );
+      }
+    } else {
+      evaluatedArguments.set(
+        TOLOGICAL.KEY_OBJECT,
+        new ExprEvalSuccessObj(
+          LogicalValue.of(val.result.getValue() as boolean)
+        )
+      );
+    }
   }
 
   protected calculateResult(
     callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
-    const val = evaluatedArguments.get("object");
+    const val = evaluatedArguments.get(TOLOGICAL.KEY_OBJECT);
     try {
-      return new ExprEvalSuccessObj(NumericValue.of(this.convert(val)));
+      return new ExprEvalSuccessObj(val);
     } catch (e) {
       return new ExprEvalFunctionEvaluationErrorObj(
         callingExpr.getKind(),
-        ExprEvalStatus.MATH_ERROR,
-        `Cannot convert ${val.getValue()} to numeric: ${e.message}`,
+        ExprEvalStatus.ERROR,
+        `Cannot convert ${val.getValue()} to boolean: ${e.message}`,
         this.name,
         callingExpr.getTextSpan()
       );
     }
   }
 
-  private convert(value: ExpressionValue): Decimal {
-    if (value instanceof BooleanValue) {
-      return value.getValue() ? new Decimal(1) : new Decimal(0);
-    }
-    if (value instanceof StringValue || value instanceof ReferenceValue) {
-      return new Decimal(value.getValue());
-    }
-    if (value instanceof NumericValue) {
-      return value.getValue();
-    }
-    if (value instanceof LogicalValue) {
-      return value.getValue() === "UNKNOWN"
-        ? new Decimal(-1)
-        : value.getValue()
-        ? new Decimal(1)
-        : new Decimal(0);
-    }
-    throw new Error(
-      `numeric conversion not implemented for type ${value.constructor.name}`
-    );
-  }
-
   getReturnType(argumentTypes: Array<ExprType>): ExprType {
-    return Type.NUMERIC;
+    return Type.LOGICAL;
   }
 }

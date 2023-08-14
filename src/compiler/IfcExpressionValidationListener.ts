@@ -7,6 +7,7 @@ import {
   ExprListContext,
   FunctionCallContext,
   LiteralContext,
+  LogicalLiteralContext,
   MethodCallChainEndContext,
   MethodCallChainInnerContext,
   NumLiteralContext,
@@ -63,8 +64,8 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   };
 
   exitSEBooleanBinaryOp: (ctx: SEBooleanBinaryOpContext) => void = (ctx) => {
-    this.typeManager.requireBoolean(ctx._left);
-    this.typeManager.requireBoolean(ctx._right);
+    this.typeManager.requireLogicalOrBoolean(ctx._left);
+    this.typeManager.requireLogicalOrBoolean(ctx._right);
     this.typeManager.setType(ctx, Types.boolean());
   };
 
@@ -94,6 +95,10 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     this.typeManager.setType(ctx, Types.boolean());
   };
 
+  exitLogicalLiteral: (ctx: LogicalLiteralContext) => void = (ctx) => {
+    this.typeManager.setType(ctx, Types.logical());
+  };
+
   exitExpr: (ctx: ExprContext) => void = (ctx) => {
     this.typeManager.copyTypeFrom(ctx, ctx.singleExpr());
   };
@@ -117,7 +122,7 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   };
 
   exitSENot: (ctx: SENotContext) => void = (ctx) => {
-    this.typeManager.requireBoolean(ctx._sub);
+    this.typeManager.requireLogicalOrBoolean(ctx._sub);
     this.typeManager.setType(ctx, Types.boolean());
   };
 
@@ -191,6 +196,7 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   exitMethodCallChainEnd: (ctx: MethodCallChainEndContext) => void = (ctx) => {
     this.typeManager.copyTypeFrom(ctx, ctx.functionCall());
   };
+
   exitFunctionCall: (ctx: FunctionCallContext) => void = (ctx) => {
     const func = IfcExpressionFunctions.getFunction(ctx.IDENTIFIER().getText());
     const argumentTypes = this.collectArgumentTypes(ctx.exprList());

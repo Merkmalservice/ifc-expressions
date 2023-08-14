@@ -22,6 +22,8 @@ import { OrExpr } from "./expression/boolean/OrExpr.js";
 import { XorExpr } from "./expression/boolean/XorExpr.js";
 import { BooleanLiteralExpr } from "./expression/boolean/BooleanLiteralExpr.js";
 import { NotExpr } from "./expression/boolean/NotExpr.js";
+import { Logical } from "./value/LogicalValue";
+import { LogicalLiteralExpr } from "./expression/boolean/LogicalLiteralExpr";
 
 export class E {
   public static array(...elements: Array<Expr<any>>): ArrayExpr {
@@ -109,6 +111,9 @@ export class E {
   }
   public static boolean(literal: boolean) {
     return new BooleanLiteralExpr(literal);
+  }
+  public static logical(literal: Logical) {
+    return new LogicalLiteralExpr(literal);
   }
   public static not(booleanExpr: Expr<BooleanValue>): NotExpr {
     return new NotExpr(booleanExpr);

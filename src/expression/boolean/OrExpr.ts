@@ -1,32 +1,19 @@
-import { BooleanValue } from "../../value/BooleanValue.js";
-import { Expr2 } from "../Expr2.js";
-import { ExprKind } from "../ExprKind.js";
-import { Expr } from "../Expr.js";
-import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { ExprEvalError } from "../ExprEvalResult.js";
-import { Type } from "../../type/Types.js";
-import { ExprType } from "../../type/ExprType.js";
-import { ExprStringBuilder } from "../ExprStringBuilder.js";
+import { BinaryBooleanOpExpr } from "./BinaryBooleanOpExpr";
+import { ExprKind } from "../ExprKind";
+import { BooleanValue } from "../../value/BooleanValue";
+import { LogicalValue } from "../../value/LogicalValue";
+import { Expr } from "../Expr";
+import { ExprStringBuilder } from "../ExprStringBuilder";
 
-export class OrExpr extends Expr2<BooleanValue, BooleanValue, BooleanValue> {
-  constructor(left: Expr<BooleanValue>, right: Expr<BooleanValue>) {
-    super(ExprKind.BOOLEAN_OR, left, right);
-  }
-
-  protected calculateResult(
-    ctx: IfcExpressionContext,
-    localCtx: Map<string, any>,
-    leftOperand: BooleanValue,
-    rightOperand: BooleanValue
-  ): ExprEvalError | BooleanValue {
-    return BooleanValue.of(leftOperand.getValue() || rightOperand.getValue());
+export class OrExpr extends BinaryBooleanOpExpr {
+  constructor(
+    left: Expr<BooleanValue | LogicalValue>,
+    right: Expr<BooleanValue | LogicalValue>
+  ) {
+    super(ExprKind.OR, "or", left, right);
   }
 
   protected buildExprString(builder: ExprStringBuilder) {
     builder.appendExpr(this.left).appendString(" || ").appendExpr(this.right);
-  }
-
-  getType(): ExprType {
-    return Type.BOOLEAN;
   }
 }

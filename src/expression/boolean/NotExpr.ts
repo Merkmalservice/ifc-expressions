@@ -7,18 +7,22 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
+import { LogicalValue } from "../../value/LogicalValue";
 
-export class NotExpr extends Expr1<BooleanValue, BooleanValue> {
-  constructor(sub: Expr<BooleanValue>) {
-    super(ExprKind.BOOLEAN_NOT, sub);
+export class NotExpr extends Expr1<
+  BooleanValue | LogicalValue,
+  BooleanValue | LogicalValue
+> {
+  constructor(sub: Expr<BooleanValue | LogicalValue>) {
+    super(ExprKind.NOT, sub);
   }
 
   protected calculateResult(
     ctx: IfcExpressionContext,
     localCtx: Map<string, any>,
-    subExpressionResult: BooleanValue
-  ): ExprEvalError | BooleanValue {
-    return BooleanValue.of(!subExpressionResult.getValue());
+    subExpressionResult: BooleanValue | LogicalValue
+  ): ExprEvalError | BooleanValue | LogicalValue {
+    return subExpressionResult.not();
   }
 
   protected buildExprString(builder: ExprStringBuilder) {
@@ -26,6 +30,6 @@ export class NotExpr extends Expr1<BooleanValue, BooleanValue> {
   }
 
   getType(): ExprType {
-    return Type.BOOLEAN;
+    return this.sub.getType();
   }
 }

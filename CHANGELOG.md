@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- support for logical wherever boolean is allowed
+
 ## 2.0.1-beta.7 - 2023-08-11
 
 ### Added

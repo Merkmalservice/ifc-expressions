@@ -17,6 +17,7 @@ import { WrongFunctionArgumentTypeException } from "../../error/WrongFunctionArg
 import { ExprType } from "../../type/ExprType.js";
 import { ParserRuleContext } from "antlr4";
 import { FunctionExpr } from "./FunctionExpr.js";
+import { Expr } from "../Expr";
 
 export abstract class Func {
   protected name: string;
@@ -121,10 +122,9 @@ export abstract class Func {
    * @protected
    */
   protected transformArguments(
+    callingExpr: Expr<any>,
     evaluatedArguments: Map<string, ExprEvalResult<ExpressionValue>>
-  ): Map<string, ExprEvalResult<ExpressionValue>> {
-    return evaluatedArguments;
-  }
+  ): void {}
 
   /**
    * Gets the argument values from the list of provided arguments in the form of 'name' -> ExprEvalResult (which may contain errors).
@@ -166,8 +166,8 @@ export abstract class Func {
         }
       }
     }
-    const transformedArguments = this.transformArguments(result);
-    return transformedArguments;
+    this.transformArguments(callingExpr, result);
+    return result;
   }
 
   private checkArgs(args: Array<FuncArg<unknown>>): void {

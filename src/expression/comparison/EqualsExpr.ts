@@ -24,7 +24,7 @@ export class EqualsExpr extends Expr2<
     leftOperand: ExpressionValue,
     rightOperand: ExpressionValue
   ): ExprEvalError | BooleanValue {
-    return new BooleanValue(leftOperand.equals(rightOperand));
+    return BooleanValue.of(leftOperand.equals(rightOperand));
   }
 
   protected buildExprString(builder: ExprStringBuilder) {

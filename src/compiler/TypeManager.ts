@@ -47,6 +47,24 @@ export class TypeManager {
     );
   }
 
+  public requireLogicalOrBoolean(ctx: ParserRuleContext) {
+    return this.requireOneOf(ctx, Type.BOOLEAN, Type.LOGICAL);
+  }
+
+  public requireOneOf(ctx: ParserRuleContext, ...types: Array<ExprType>) {
+    const requiredType = Types.or(...types);
+    const actualType = this.types.get(ctx as ParserRuleContext);
+    Types.requireWeakIsAssignableFrom(
+      requiredType,
+      this.types.get(ctx as ParserRuleContext),
+      () =>
+        new ExpressionTypeError(
+          `expected type ${requiredType}, actual type is ${actualType.getName()}`,
+          ctx
+        )
+    );
+  }
+
   public requireNumeric(ctx: ParserRuleContext) {
     const actualType = this.types.get(ctx as ParserRuleContext);
     Types.requireWeakIsAssignableFrom(

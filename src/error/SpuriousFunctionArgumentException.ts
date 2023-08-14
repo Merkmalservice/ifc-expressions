@@ -1,8 +1,7 @@
-import { ValidationException } from "./ValidationException.js";
 import { FunctionArgumentException } from "./FunctionArgumentException";
 import { isNullish } from "../util/IfcExpressionUtils";
 
-export class MissingFunctionArgumentException extends FunctionArgumentException {
+export class SpuriousFunctionArgumentException extends FunctionArgumentException {
   constructor(
     functionName: string,
     argumentName: string,
@@ -11,7 +10,7 @@ export class MissingFunctionArgumentException extends FunctionArgumentException 
     message?: string
   ) {
     super(
-      isNullish(message) ? "Required argument missing" : message,
+      isNullish(message) ? "Spurious function argument" : message,
       functionName,
       argumentName,
       index,
