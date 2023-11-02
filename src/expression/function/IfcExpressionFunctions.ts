@@ -21,6 +21,8 @@ import { TONUMERIC } from "./impl/TONUMERIC";
 import { IfcExpressionFunctionConfigException } from "../../error/IfcExpressionFunctionConfigException";
 import { TOBOOLEAN } from "./impl/TOBOOLEAN";
 import { TOLOGICAL } from "./impl/TOLOGICAL";
+import { TOLOWERCASE } from "./impl/TOLOWERCASE";
+import { TOUPPERCASE } from "./impl/TOUPPERCASE";
 
 const builtinFunctions = new Map<string, Func>();
 
@@ -87,6 +89,8 @@ registerFunc(new TOSTRING());
 registerFunc(new TONUMERIC(), "TONUMBER");
 registerFunc(new TOBOOLEAN());
 registerFunc(new TOLOGICAL(), "NOTFOUNDASUNKNOWN");
+registerFunc(new TOLOWERCASE());
+registerFunc(new TOUPPERCASE());
 registerFunc(new EXISTS());
 registerFunc(new FuncBooleanBinary("AND", "and"));
 registerFunc(new FuncBooleanBinary("OR", "or"));

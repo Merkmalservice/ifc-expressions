@@ -216,6 +216,10 @@ const cases = [
     null,
     Type.NUMERIC,
   ],
+  ["1.toUpperCase()", WrongFunctionArgumentTypeException, null],
+  ["1.toLowerCase()", WrongFunctionArgumentTypeException, null],
+  //["1.toString().toUpperCase()", null, Type.STRING],
+  ["'hallo'.toLowerCase()", null, Type.STRING]
 ];
 
 describe.each(cases)(

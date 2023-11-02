@@ -626,6 +626,18 @@ describe.each([
     new ExprEvalSuccessObj(StringValue.of("Unbekannt")),
     ctxSimple,
   ],
+  [
+    42,
+    "$property.name().toLowerCase()",
+    new ExprEvalSuccessObj(StringValue.of("bewehrungsgrad")),
+    ctxSimple,
+  ],
+  [
+    43,
+    "$property.name().toUpperCase()",
+    new ExprEvalSuccessObj(StringValue.of("BEWEHRUNGSGRAD")),
+    ctxSimple,
+  ],
   /*[
     34,
     "$property.value() + $element.property('zirka Pi').value() * 1000 + $element.property('Tordifferenz').value() * 1000",
