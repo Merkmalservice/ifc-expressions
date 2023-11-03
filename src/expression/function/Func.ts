@@ -18,6 +18,7 @@ import { ExprType } from "../../type/ExprType.js";
 import { ParserRuleContext } from "antlr4";
 import { FunctionExpr } from "./FunctionExpr.js";
 import { Expr } from "../Expr";
+import {SpuriousFunctionArgumentException} from "../../error/SpuriousFunctionArgumentException";
 
 export abstract class Func {
   protected name: string;
@@ -50,6 +51,9 @@ export abstract class Func {
   ): void {
     const numProvided = providedArgumentTypes.length;
     if (!isNullish(this.formalArguments)) {
+      if (numProvided > this.formalArguments.length) {
+        throw new SpuriousFunctionArgumentException(this.name, "[unexpected argument]", this.formalArguments.length, ctx, `Function expects (at most) ${this.formalArguments.length} arguments`  );
+      }
       for (let i = 0; i < this.formalArguments.length; i++) {
         const currentArg: FuncArg<unknown> = this.formalArguments[i];
         if (numProvided > i) {

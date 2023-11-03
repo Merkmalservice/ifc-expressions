@@ -310,6 +310,10 @@ describe.each([
   ["TONUMERIC(1)", new Decimal(1)],
   ["TOBOOLEAN(true)", true],
   ["TOBOOLEAN(false)", false],
+  ["'_%&.;()[]'.toUpperCase()", "_%&.;()[]"],
+  ["'_%&.;()[]'.toLowerCase()", "_%&.;()[]"],
+  ["'äöüß'.toUpperCase()", "ÄÖÜSS"],
+  ["'ÄÖÜSS'.toLowerCase()", "äöüss"],
 ])("ifcExpression (no context)", (input: string, result: any) => {
   it(`evaluate("${input}") = ${result}`, () => {
     const actualResult = IfcExpression.evaluate(input);

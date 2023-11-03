@@ -21,6 +21,6 @@ export class TOLOWERCASE extends Func {
   }
 
   public getReturnType(argumentTypes: ExprType[]): ExprType {
-    throw Type.STRING;
+    return Type.STRING;
   }
 }

@@ -218,8 +218,10 @@ const cases = [
   ],
   ["1.toUpperCase()", WrongFunctionArgumentTypeException, null],
   ["1.toLowerCase()", WrongFunctionArgumentTypeException, null],
-  //["1.toString().toUpperCase()", null, Type.STRING],
-  ["'hallo'.toLowerCase()", null, Type.STRING]
+  ["1.toString().toUpperCase()", null, Type.STRING],
+  ["'hallo'.toLowerCase()", null, Type.STRING],
+  ["TRUE.toLowerCase()", WrongFunctionArgumentTypeException, null],
+  ["toLowerCase('a','b','c')", SpuriousFunctionArgumentException, null]
 ];
 
 describe.each(cases)(
