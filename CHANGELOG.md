@@ -7,9 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-### Fixed
-
-- Add Check for spurious funcion arguments
+## 2.1.0 - 2023-11-03
 
 ### Added
 
@@ -22,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `split(start, end)`
 - Add array access function `at(index)`
 - Add license declaration to package.json
+
+### Fixed
+
+- Add Check for spurious funcion arguments
 
 ## 2.0.1 - 2023-08-23
 
