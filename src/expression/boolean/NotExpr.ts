@@ -4,7 +4,6 @@ import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
-import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
 import { LogicalValue } from "../../value/LogicalValue";

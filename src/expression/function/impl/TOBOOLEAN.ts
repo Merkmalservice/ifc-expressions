@@ -6,7 +6,6 @@ import {
   ExprEvalResult,
   ExprEvalStatus,
   ExprEvalSuccessObj,
-  ExprEvalWrongFunctionArgumentTypeErrorObj,
 } from "../../ExprEvalResult.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { ExprType } from "../../../type/ExprType.js";
@@ -17,7 +16,6 @@ import { Decimal } from "decimal.js";
 import { BooleanValue } from "../../../value/BooleanValue";
 import { LogicalValue } from "../../../value/LogicalValue";
 import { ReferenceValue } from "../../../value/ReferenceValue";
-import { isNullish } from "../../../util/IfcExpressionUtils";
 
 export class TOBOOLEAN extends Func {
   private static readonly KEY_OBJECT = "object";

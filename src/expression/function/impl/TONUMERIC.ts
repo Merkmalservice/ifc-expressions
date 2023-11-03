@@ -6,7 +6,6 @@ import {
   ExprEvalResult,
   ExprEvalStatus,
   ExprEvalSuccessObj,
-  ExprEvalWrongFunctionArgumentTypeErrorObj,
 } from "../../ExprEvalResult.js";
 import { StringValue } from "../../../value/StringValue.js";
 import { ExprType } from "../../../type/ExprType.js";

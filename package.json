@@ -10,6 +10,7 @@
       "require": "./dist/cjs/IfcExpression.js"
     }
   },
+  "license": "Apache-2.0",
   "types": "./dist/IfcExpression.d.ts",
   "files": [
     "./dist/**/*",

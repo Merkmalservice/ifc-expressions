@@ -1,4 +1,3 @@
-import { ValidationException } from "./ValidationException.js";
 import { FunctionArgumentException } from "./FunctionArgumentException";
 import { isNullish } from "../util/IfcExpressionUtils";
 

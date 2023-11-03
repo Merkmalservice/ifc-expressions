@@ -6,7 +6,6 @@ import { BooleanValue } from "../../../value/BooleanValue.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { ParserRuleContext } from "antlr4";
 
 export class EQUALS extends Func {
   protected static readonly KEY_LEFT = "left";

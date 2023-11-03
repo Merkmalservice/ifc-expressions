@@ -1,13 +1,12 @@
 import { BooleanValue } from "../../../value/BooleanValue.js";
 import { Func } from "../Func.js";
-import { FuncArgBoolean } from "../arg/FuncArgBoolean.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
-import { Type, Types } from "../../../type/Types.js";
+import { Types } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
 import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean";
-import { Logical, LogicalValue } from "../../../value/LogicalValue";
+import { LogicalValue } from "../../../value/LogicalValue";
 
 export class FuncBooleanBinary extends Func {
   private static readonly KEY_LEFT = "left";

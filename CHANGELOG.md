@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Add Check for spurious funcion arguments
+
+### Added
+
+- Add string manipulation functions
+  - `toUpperCase()`
+  - `toLowerCase()`
+  - `substring(from, to)`
+  - `substring(from)`
+  - `split(start)`
+  - `split(start, end)`
+- Add array access function `at(index)`
+- Add license declaration to package.json
+
 ## 2.0.1 - 2023-08-23
 
 ## 2.0.1-beta.8 - 2023-08-14

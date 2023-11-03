@@ -1,5 +1,4 @@
 import { LiteralExpr } from "../LiteralExpr.js";
-import { BooleanValue } from "../../value/BooleanValue.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";

@@ -2,7 +2,6 @@ import { ExceptionToExprEvalErrorMapper } from "../ExceptionToExprEvalErrorMappe
 import {
   ExprEvalError,
   ExprEvalMissingFunctionArgumentErrorObj,
-  ExprEvalValidationError,
 } from "../../expression/ExprEvalResult.js";
 import { MissingFunctionArgumentException } from "../MissingFunctionArgumentException.js";
 import { TextSpan } from "../../util/TextSpan.js";

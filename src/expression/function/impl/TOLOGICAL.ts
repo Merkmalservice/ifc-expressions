@@ -7,15 +7,10 @@ import {
   ExprEvalSuccessObj,
   isExprEvalError,
 } from "../../ExprEvalResult.js";
-import { StringValue } from "../../../value/StringValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Type } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { NumericValue } from "../../../value/NumericValue";
-import { Decimal } from "decimal.js";
-import { BooleanValue } from "../../../value/BooleanValue";
 import { LogicalValue } from "../../../value/LogicalValue";
-import { ReferenceValue } from "../../../value/ReferenceValue";
 import { FuncArgBoolean } from "../arg/FuncArgBoolean";
 import { Expr } from "../../Expr";
 
