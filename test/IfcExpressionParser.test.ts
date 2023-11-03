@@ -1,5 +1,5 @@
 import { IfcExpressionErrorListener } from "../src/IfcExpressionErrorListener.js";
-import { IfcExpression } from "../src/IfcExpression.js";
+import { IfcExpression, StringValue } from "../src/IfcExpression.js";
 import { SyntaxErrorException } from "../src/error/SyntaxErrorException.js";
 import { NoSuchFunctionException } from "../src/error/NoSuchFunctionException.js";
 import { InvalidSyntaxException } from "../src/error/InvalidSyntaxException.js";
@@ -10,6 +10,7 @@ import { ExprType } from "../src/type/ExprType.js";
 import { mapException } from "../src/error/ExceptionToExprEvalErrorMapper.js";
 import { MissingFunctionArgumentException } from "../src/error/MissingFunctionArgumentException";
 import { SpuriousFunctionArgumentException } from "../src/error/SpuriousFunctionArgumentException";
+import Decimal from "decimal.js";
 
 const cases = [
   // numeric
@@ -222,6 +223,19 @@ const cases = [
   ["'hallo'.toLowerCase()", null, Type.STRING],
   ["TRUE.toLowerCase()", WrongFunctionArgumentTypeException, null],
   ["toLowerCase('a','b','c')", SpuriousFunctionArgumentException, null],
+  ["'the quick brown fox'.substring(4,9)", null, Type.STRING],
+  ["'the quick brown fox'.substring(10)", null, Type.STRING],
+  ["'the quick brown fox'.substring(100,200)", null, Type.STRING],
+  ["'the quick brown fox'.split(' ')", null, Types.array(Type.STRING)],
+  ["'the quick brown fox'.split(' ',3)", null, Types.array(Type.STRING)],
+  ["[1,2,3].at(0)", null, Type.NUMERIC],
+  ["[1,2,3].at(2)", null, Type.NUMERIC],
+  [
+    "[1,'b',FALSE].at(2)",
+    null,
+    Types.or(Type.BOOLEAN, Type.STRING, Type.NUMERIC),
+  ],
+  ["'the quick brown fox'.split(' ').at(3)", null, Type.STRING],
 ];
 
 describe.each(cases)(

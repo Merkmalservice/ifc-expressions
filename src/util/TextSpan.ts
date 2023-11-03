@@ -1,5 +1,4 @@
 import { TextPosition } from "./TextPosition.js";
-import { isNullish } from "./IfcExpressionUtils.js";
 
 export class TextSpan {
   private _start: TextPosition;

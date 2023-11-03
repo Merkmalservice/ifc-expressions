@@ -4,7 +4,6 @@ import { isNullish } from "../../util/IfcExpressionUtils.js";
 import { FuncArg } from "./FuncArg.js";
 import {
   ExprEvalError,
-  ExprEvalFunctionEvaluationConsequentialErrorObj,
   ExprEvalMissingRequiredFunctionArgumentErrorObj,
   ExprEvalResult,
   ExprEvalSuccessObj,

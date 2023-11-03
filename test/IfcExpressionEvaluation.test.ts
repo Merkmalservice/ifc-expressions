@@ -314,6 +314,25 @@ describe.each([
   ["'_%&.;()[]'.toLowerCase()", "_%&.;()[]"],
   ["'äöüß'.toUpperCase()", "ÄÖÜSS"],
   ["'ÄÖÜSS'.toLowerCase()", "äöüss"],
+  ["'the quick brown fox'.substring(4,9)", "quick"],
+  ["'the quick brown fox'.substring(10)", "brown fox"],
+  ["'the quick brown fox'.substring(100,200)", ""],
+  [
+    "'the quick brown fox'.split(' ')",
+    [
+      StringValue.of("the"),
+      StringValue.of("quick"),
+      StringValue.of("brown"),
+      StringValue.of("fox"),
+    ],
+  ],
+  [
+    "'the quick brown fox'.split(' ',3)",
+    [StringValue.of("the"), StringValue.of("quick"), StringValue.of("brown")],
+  ],
+  ["[1,2,3].at(0)", new Decimal(1)],
+  ["[1,2,3].at(2)", new Decimal(3)],
+  ["'the quick brown fox'.split(' ').at(3)", "fox"],
 ])("ifcExpression (no context)", (input: string, result: any) => {
   it(`evaluate("${input}") = ${result}`, () => {
     const actualResult = IfcExpression.evaluate(input);

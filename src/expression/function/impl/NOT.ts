@@ -1,9 +1,7 @@
 import { BooleanValue } from "../../../value/BooleanValue.js";
 import { Func } from "../Func.js";
-import { FuncArgBoolean } from "../arg/FuncArgBoolean.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
-import { Type } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
 import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean";

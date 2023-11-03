@@ -12,7 +12,6 @@ import { BooleanValue } from "../../../value/BooleanValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Type } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { ParserRuleContext } from "antlr4";
 
 export class CompareMagnitudes extends Func {
   private static readonly KEY_LEFT = "left";
