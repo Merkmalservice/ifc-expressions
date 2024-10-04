@@ -79,7 +79,7 @@ Hints:
 
 The project uses ANTLR4 for parsing. The grammar is in src/grammar/ifcExpression.g4.
 
-The result of expression evaluation is a value of type `string, numeric, boolean, ifcObjectRef`, where `ifcObjectRef` is a reference to some object in the IFC model.
+The result of expression evaluation is a value of type `string, numeric, boolean, ifcObjectRef`, where `ifcObjectRef` is a reference to some object in the IFC model, or a temporal type (`IfcDateTime`, `IfcDate`, `IfcTime`, `IfcDuration`, and `IfcTimeStamp`)
 
 The language allows for specifying _a single expression_. There are no control statements and there is no way
 to define custom functions or custom types.
@@ -114,6 +114,14 @@ An expression can be
   - '+': string concatenation
 
 ### Functions
+
+#### conversion functions
+
+`toString(a)`, `toNumeric(a)`, `toIfcDateTime(a)`, etc.
+
+#### temporal functions
+
+`addDuration(IfcTimeStamp|IfcDateTime, IfcDuration)`
 
 #### comparison functions
 

@@ -6,7 +6,7 @@ import { NumericValue } from "../src/value/NumericValue.js";
 import { BooleanValue } from "../src/value/BooleanValue.js";
 import { IfcElementAccessor } from "../src/context/IfcElementAccessor.js";
 import { IfcTypeObjectAccessor } from "../src/context/IfcTypeObjectAccessor.js";
-import { LogicalValue } from "../src/value/LogicalValue";
+import { LogicalValue } from "../src/value/LogicalValue.js";
 
 export const ctxSimple: any = {
   psetBetonbau: new (class extends IfcPropertySetAccessor {

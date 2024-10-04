@@ -4,12 +4,12 @@ import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Types } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { FuncArgNumeric } from "../arg/FuncArgNumeric";
-import { NumericValue } from "../../../value/NumericValue";
-import { FuncArgArray } from "../arg/FuncArgArray";
-import { ArrayValue } from "../../../value/ArrayValue";
-import { TupleType } from "../../../type/TupleType";
-import { ArrayType } from "../../../type/ArrayType";
+import { FuncArgNumeric } from "../arg/FuncArgNumeric.js";
+import { NumericValue } from "../../../value/NumericValue.js";
+import { FuncArgArray } from "../arg/FuncArgArray.js";
+import { ArrayValue } from "../../../value/ArrayValue.js";
+import { TupleType } from "../../../type/TupleType.js";
+import { ArrayType } from "../../../type/ArrayType.js";
 
 export class AT extends Func {
   constructor() {

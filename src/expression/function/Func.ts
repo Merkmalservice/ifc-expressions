@@ -16,8 +16,8 @@ import { WrongFunctionArgumentTypeException } from "../../error/WrongFunctionArg
 import { ExprType } from "../../type/ExprType.js";
 import { ParserRuleContext } from "antlr4";
 import { FunctionExpr } from "./FunctionExpr.js";
-import { Expr } from "../Expr";
-import { SpuriousFunctionArgumentException } from "../../error/SpuriousFunctionArgumentException";
+import { Expr } from "../Expr.js";
+import { SpuriousFunctionArgumentException } from "../../error/SpuriousFunctionArgumentException.js";
 
 export abstract class Func {
   protected name: string;
@@ -116,6 +116,7 @@ export abstract class Func {
 
   /**
    * Subclasses must provide the funcation evaluation code here.
+   * @param callingExpr
    * @param evaluatedArguments
    * @protected
    */
@@ -127,6 +128,7 @@ export abstract class Func {
   /**
    * Override to transform individual arguments if needed. After this step, if any of the ExprEvalResult objects in the
    * returned array is an ExprEvalError, the function evaluation fails.
+   * @param callingExpr
    * @param evaluatedArguments
    * @protected
    */
@@ -138,6 +140,7 @@ export abstract class Func {
   /**
    * Gets the argument values from the list of provided arguments in the form of 'name' -> ExprEvalResult (which may contain errors).
    * Generates an error if a required value is missing.
+   * @param callingExpr
    * @param provided
    * @protected
    */

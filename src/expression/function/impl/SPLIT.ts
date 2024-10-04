@@ -6,9 +6,9 @@ import { StringValue } from "../../../value/StringValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Type, Types } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { FuncArgNumeric } from "../arg/FuncArgNumeric";
-import { NumericValue } from "../../../value/NumericValue";
-import { ArrayValue } from "../../../value/ArrayValue";
+import { FuncArgNumeric } from "../arg/FuncArgNumeric.js";
+import { NumericValue } from "../../../value/NumericValue.js";
+import { ArrayValue } from "../../../value/ArrayValue.js";
 
 export class SPLIT extends Func {
   constructor() {

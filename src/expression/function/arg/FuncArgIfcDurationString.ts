@@ -9,11 +9,17 @@ import {
 import { FunctionExpr } from "../FunctionExpr.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprKind } from "../../ExprKind.js";
-import { isNullish } from "../../../util/IfcExpressionUtils.js";
+import { ExprType } from "../../../type/ExprType.js";
+import { Type } from "../../../type/Types.js";
+import { IfcDurationValue } from "../../../value/IfcDurationValue.js";
 
-export class FuncArgRegexFlag extends FuncArgString {
-  constructor(required: boolean, name: string, defaultValue: StringValue) {
+export class FuncArgIfcDurationString extends FuncArgString {
+  constructor(required: boolean, name: string, defaultValue?: StringValue) {
     super(required, name, defaultValue);
+  }
+
+  getType(): ExprType {
+    return Type.STRING;
   }
 
   protected transformForTypeCheck(
@@ -25,16 +31,11 @@ export class FuncArgRegexFlag extends FuncArgString {
       return val;
     }
     const stringValue = val.result.getValue() as string;
-    if (
-      isNullish(stringValue.match(/^[imguv]*$/)) || // allowed flags not found
-      !isNullish(stringValue.match(/^.*([imguv]).*\1.*$/))
-    ) {
-      /* duplicated flags found */ return new ExprEvalTypeErrorObj(
+    if (!IfcDurationValue.isValidStringRepresentation(stringValue)) {
+      return new ExprEvalTypeErrorObj(
         ExprKind.FUNCTION_ARGUMENTS,
-        `Argument ${this.name} is a possibly empty collection of 'flags' for a javascript ` +
-          `regular expression. Order does not matter, duplicate flags are not allowed. ` +
-          `The flags are: 'g','i','m','s','u' and 'v'. The provided value, '${stringValue}' is not allowed. ` +
-          `By the way the default value is '${this.defaultValue.getValue()}'`,
+        `Argument ${this.name} is an IfcDate of the form 'YYYY-MM-DD'.` +
+          `The provided value, '${stringValue}' is not allowed. `,
         callingExpr.getTextSpan()
       );
     }

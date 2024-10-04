@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Add temporal types representing
+  - IfcDate
+  - IfcDateTime
+  - IfcTime
+  - IfcDuration
+  - IfcTimeStamp
+- Add 'TO'-methods to create temporal values.
+
 ## 2.1.1 - 2023-11-03
 
 ### Fixed

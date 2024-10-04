@@ -62,8 +62,8 @@ import { GreaterThanOrEqual } from "../expression/comparison/GreaterThanOrEqual.
 import { LessThan } from "../expression/comparison/LessThan.js";
 import { LessThanOrEqual } from "../expression/comparison/LessThanOrEqual.js";
 import { ExprManager } from "./ExprManager.js";
-import { LogicalValue } from "../value/LogicalValue";
-import { LogicalLiteralExpr } from "../expression/boolean/LogicalLiteralExpr";
+import { LogicalValue } from "../value/LogicalValue.js";
+import { LogicalLiteralExpr } from "../expression/boolean/LogicalLiteralExpr.js";
 
 export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
   private readonly methodCallTargetStack = [];

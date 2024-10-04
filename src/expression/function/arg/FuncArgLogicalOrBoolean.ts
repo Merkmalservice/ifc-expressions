@@ -10,7 +10,7 @@ import { BooleanValue } from "../../../value/BooleanValue.js";
 import { Type, Types } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { LogicalValue } from "../../../value/LogicalValue";
+import { LogicalValue } from "../../../value/LogicalValue.js";
 
 export class FuncArgLogicalOrBoolean extends FuncArgBase<
   BooleanValue | LogicalValue

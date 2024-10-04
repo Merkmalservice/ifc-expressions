@@ -5,8 +5,8 @@ import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { Types } from "../../../type/Types.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean";
-import { LogicalValue } from "../../../value/LogicalValue";
+import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean.js";
+import { LogicalValue } from "../../../value/LogicalValue.js";
 
 export class FuncBooleanBinary extends Func {
   private static readonly KEY_LEFT = "left";

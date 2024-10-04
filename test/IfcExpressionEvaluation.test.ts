@@ -22,7 +22,12 @@ import { NumericLiteralExpr } from "../src/expression/numeric/NumericLiteralExpr
 import { PlusExpr } from "../src/expression/numeric/PlusExpr.js";
 import { E } from "../src/E.js";
 import { TextSpan } from "../src/util/TextSpan.js";
-import { IF } from "../src/expression/function/impl/IF";
+import { IF } from "../src/expression/function/impl/IF.js";
+import { IfcTimeStampValue } from "../src/value/IfcTimeStampValue.js";
+import { IfcDateValue } from "../src/value/IfcDateValue.js";
+import { IfcDateTimeValue } from "../src/value/IfcDateTimeValue.js";
+import { IfcDurationValue } from "../src/value/IfcDurationValue.js";
+import { IfcTimeValue } from "../src/value/IfcTimeValue.js";
 
 describe.each([
   ["!UNKNOWN", LogicalValue.UNKNOWN_VALUE],
@@ -310,6 +315,171 @@ describe.each([
   ["TONUMERIC(1)", new Decimal(1)],
   ["TOBOOLEAN(true)", true],
   ["TOBOOLEAN(false)", false],
+  ["TOIFCDATE('1959-01-07')", new IfcDateValue("1959-01-07")],
+  ["TOIFCDATE('2024-10-02-0200')", new IfcDateValue("2024-10-02-0200")],
+  ["TOIFCDATE('1959-01-07') > TOIFCDATE('1959-01-07+01:00')", true],
+  ["TOIFCDATE('1959-01-07') < TOIFCDATE('1959-01-07-01:00')", true],
+  ["TOIFCDATE('1959-01-07') == TOIFCDATE('1959-01-07-01:00')", false],
+  ["TOIFCDATE('1959-01-07-01:00') == TOIFCDATE('1959-01-07-01:00')", true],
+  ["TOIFCDATE('1959-01-07') >= TOIFCDATE('1959-01-07+01:00')", true],
+  ["TOIFCDATE('1959-01-07') <= TOIFCDATE('1959-01-07-01:00')", true],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00')",
+    new IfcDateTimeValue("1959-01-07T17:21:00"),
+  ],
+  [
+    "TOIFCDATETIME('2024-10-02T17:21:00-0200')",
+    new IfcDateTimeValue("2024-10-02T17:21:00-0200"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00') > TOIFCDATETIME('1959-01-07T17:21:00+01:00')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00') < TOIFCDATETIME('1959-01-07T17:21:01')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00') == TOIFCDATETIME('1959-01-07T17:21:00Z')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00.01') < TOIFCDATETIME('1959-01-07T17:21:00.5')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00') >= TOIFCDATETIME('1959-01-07T17:20:00')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00') <= TOIFCDATETIME('1959-01-07T17:21:00-0100')",
+    true,
+  ],
+  [
+    "TOIFCDURATION('P1Y2M3W4DT5H6M7.0000000001S') < TOIFCDURATION('P1Y2M3W4DT5H6M7.0000000002S') ",
+    true,
+  ],
+  [
+    "TOIFCDURATION('P1Y2M3W4DT5H6M7.000000000000001S') == TOIFCDURATION('P1Y2M3W4DT5H6M7.000000000000002S') ",
+    true,
+  ], // Decimal.js default precision exceeded
+  ["TOIFCDURATION('P12M') == TOIFCDURATION('P1Y') ", true],
+  ["TOIFCDURATION('PT1M') == TOIFCDURATION('PT60S') ", true],
+  ["TOIFCDURATION('PT1H') == TOIFCDURATION('PT60M') ", true],
+  ["TOIFCDURATION('P1D') == TOIFCDURATION('PT24H') ", true],
+  ["TOIFCDURATION('P1W') == TOIFCDURATION('P7D')", true],
+  ["TOIFCDURATION('P1M') > TOIFCDURATION('P30D') ", true],
+  ["TOIFCDURATION('P1M') < TOIFCDURATION('P31D') ", true],
+  ["TOIFCDURATION('P1M') > TOIFCDURATION('P4W') ", true],
+  ["TOIFCDURATION('P1M') < TOIFCDURATION('P5W') ", true],
+  ["TOIFCDURATION('P1Y') > TOIFCDURATION('P52W') ", true],
+  ["TOIFCDURATION('P1Y')", new IfcDurationValue("P1Y")],
+  ["TOIFCDURATION('P1YT1S')", new IfcDurationValue("P1YT1S")],
+  [
+    "TOIFCDURATION('P1Y2M3W4DT5H6M7.0001S')",
+    new IfcDurationValue("P1Y2M3W4DT5H6M7.0001S"),
+  ],
+  ["'P1Y1M'.toIfcDuration() > 'P12M'.toIfcDuration()", true],
+  ["TOIFCTIMESTAMP(0)", new IfcTimeStampValue(0)],
+  ["0.toIfcTimeStamp()", new IfcTimeStampValue(0)],
+  ["TOIFCTIMESTAMP(1727959984) > TOIFCTIMESTAMP(1727959983)", true],
+  ["TOIFCTIMESTAMP(1727959984) == TOIFCTIMESTAMP(1727959984)", true],
+  [
+    "TOIFCTIMESTAMP(1727959984) < TOIFCTIMESTAMP(TONUMERIC('1727959985'))",
+    true,
+  ],
+  ["TOIFCTIME('17:21:00')", new IfcTimeValue("17:21:00")],
+  ["TOIFCTIME('17:21:00-0200')", new IfcTimeValue("17:21:00-0200")],
+  ["TOIFCTIME('17:21:00') > TOIFCTIME('17:21:00+01:00')", true],
+  ["TOIFCTIME('17:21:00') < TOIFCTIME('17:21:01')", true],
+  ["TOIFCTIME('17:21:00') == TOIFCTIME('17:21:00Z')", true],
+  ["TOIFCTIME('17:21:00.01') < TOIFCTIME('17:21:00.5')", true],
+  ["TOIFCTIME('17:21:00') >= TOIFCTIME('17:20:00')", true],
+  ["TOIFCTIME('17:21:00') <= TOIFCTIME('17:21:00-0100')", true],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').toIfcDate()",
+    new IfcDateValue("1959-01-07+01:00"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00').toIfcTimeStamp() == -346574340.toIfcTimeStamp()",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00').toIfcTimeStamp().toIfcDateTime() == TOIFCDATETIME('1959-01-07T17:21:00')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').toIfcTimeStamp().toIfcDateTime() == TOIFCDATETIME('1959-01-07T16:21:00')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').toIfcTimeStamp().toIfcDateTime() == TOIFCDATETIME('1959-01-07T16:21:00Z')",
+    true,
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').toIfcTime()",
+    new IfcTimeValue("17:21:00+01:00"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration(toIfcDuration('P1M'))",
+    new IfcDateTimeValue("1959-02-07T17:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P20Y')",
+    new IfcDateTimeValue("1979-01-07T17:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P20.5Y')",
+    new IfcDateTimeValue("1979-07-09T08:21:00+01:00"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P1M')",
+    new IfcDateTimeValue("1959-02-07T17:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P1.5M')",
+    new IfcDateTimeValue("1959-02-22T22:36:00+01:00"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P1W')",
+    new IfcDateTimeValue("1959-01-14T17:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P1.5W')",
+    new IfcDateTimeValue("1959-01-18T05:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P1D')",
+    new IfcDateTimeValue("1959-01-08T17:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('P1.5D')",
+    new IfcDateTimeValue("1959-01-09T05:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('PT1H')",
+    new IfcDateTimeValue("1959-01-07T18:21:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('PT1.5H')",
+    new IfcDateTimeValue("1959-01-07T18:51:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('PT1M')",
+    new IfcDateTimeValue("1959-01-07T17:22:00+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('PT100.5M')",
+    new IfcDateTimeValue("1959-01-07T19:01:30+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').addDuration('PT1.5S')",
+    new IfcDateTimeValue("1959-01-07T17:21:01.5+0100"),
+  ],
+  [
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').toIfcTimeStamp().addDuration('PT1.5S')",
+    new IfcDateTimeValue("1959-01-07T17:21:01.5+0100").toIfcTimeStampValue(),
+  ],
   ["'_%&.;()[]'.toUpperCase()", "_%&.;()[]"],
   ["'_%&.;()[]'.toLowerCase()", "_%&.;()[]"],
   ["'äöüß'.toUpperCase()", "ÄÖÜSS"],
@@ -333,13 +503,17 @@ describe.each([
   ["[1,2,3].at(0)", new Decimal(1)],
   ["[1,2,3].at(2)", new Decimal(3)],
   ["'the quick brown fox'.split(' ').at(3)", "fox"],
-])("ifcExpression (no context)", (input: string, result: any) => {
-  it(`evaluate("${input}") = ${result}`, () => {
+])("ifcExpression (no context)", (input: string, expectedResult: any) => {
+  it(`evaluate("${input}") = ${expectedResult}`, () => {
     const actualResult = IfcExpression.evaluate(input);
-    expect(isExprEvalSuccess(actualResult)).toBe(true);
+    if (!isExprEvalSuccess(actualResult)) {
+      throw new Error(
+        `Expected success result but got: ${JSON.stringify(actualResult)}`
+      );
+    }
     expect(
       (actualResult as ExprEvalSuccess<any>).result.getValue()
-    ).toStrictEqual(result);
+    ).toStrictEqual(expectedResult);
   });
 });
 

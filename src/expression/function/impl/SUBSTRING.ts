@@ -6,8 +6,8 @@ import { StringValue } from "../../../value/StringValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Type } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { FuncArgNumeric } from "../arg/FuncArgNumeric";
-import { NumericValue } from "../../../value/NumericValue";
+import { FuncArgNumeric } from "../arg/FuncArgNumeric.js";
+import { NumericValue } from "../../../value/NumericValue.js";
 
 export class SUBSTRING extends Func {
   constructor() {

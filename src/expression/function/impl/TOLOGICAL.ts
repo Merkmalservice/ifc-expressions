@@ -10,9 +10,9 @@ import {
 import { ExprType } from "../../../type/ExprType.js";
 import { Type } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { LogicalValue } from "../../../value/LogicalValue";
-import { FuncArgBoolean } from "../arg/FuncArgBoolean";
-import { Expr } from "../../Expr";
+import { LogicalValue } from "../../../value/LogicalValue.js";
+import { FuncArgBoolean } from "../arg/FuncArgBoolean.js";
+import { Expr } from "../../Expr.js";
 
 export class TOLOGICAL extends Func {
   private static readonly KEY_OBJECT = "object";

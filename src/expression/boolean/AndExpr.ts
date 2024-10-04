@@ -1,9 +1,9 @@
-import { BinaryBooleanOpExpr } from "./BinaryBooleanOpExpr";
-import { ExprKind } from "../ExprKind";
-import { BooleanValue } from "../../value/BooleanValue";
-import { LogicalValue } from "../../value/LogicalValue";
-import { Expr } from "../Expr";
-import { ExprStringBuilder } from "../ExprStringBuilder";
+import { BinaryBooleanOpExpr } from "./BinaryBooleanOpExpr.js";
+import { ExprKind } from "../ExprKind.js";
+import { BooleanValue } from "../../value/BooleanValue.js";
+import { LogicalValue } from "../../value/LogicalValue.js";
+import { Expr } from "../Expr.js";
+import { ExprStringBuilder } from "../ExprStringBuilder.js";
 
 export class AndExpr extends BinaryBooleanOpExpr {
   constructor(

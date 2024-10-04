@@ -1,8 +1,8 @@
-import { BooleanValue } from "../src/value/BooleanValue";
-import { isNullish } from "../src/util/IfcExpressionUtils";
-import { Logical, LogicalValue } from "../src/value/LogicalValue";
-import { Value } from "../src/value/Value";
-import { ExpressionValue } from "../src/IfcExpression";
+import { BooleanValue } from "../src/value/BooleanValue.js";
+import { isNullish } from "../src/util/IfcExpressionUtils.js";
+import { Logical, LogicalValue } from "../src/value/LogicalValue.js";
+import { Value } from "../src/value/Value.js";
+import { ExpressionValue } from "../src/IfcExpression.js";
 
 function p(val: Value<any> | Logical): string {
   if (isNullish(val)) {
