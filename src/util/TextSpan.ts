@@ -150,9 +150,6 @@ export class TextSpan {
       }
     }
     return result.join("\n");
-    throw new Error(
-      "Cannot compute text coverage, this should not have happened. There is a bug in the sanity checks for the start and end positions."
-    );
   }
 
   private underlineOneLine(

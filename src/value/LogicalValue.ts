@@ -1,8 +1,8 @@
 import { Value } from "./Value.js";
 import { ExprType } from "../type/ExprType.js";
 import { Type } from "../type/Types.js";
-import { BooleanValue } from "./BooleanValue";
-import { Comparable } from "./Comparable";
+import { BooleanValue } from "./BooleanValue.js";
+import { Comparable } from "./Comparable.js";
 
 export type Logical = boolean | "UNKNOWN";
 

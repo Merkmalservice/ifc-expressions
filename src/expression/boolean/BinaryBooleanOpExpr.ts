@@ -6,7 +6,7 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprEvalError } from "../ExprEvalResult.js";
 import { Type, Types } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
-import { LogicalValue } from "../../value/LogicalValue";
+import { LogicalValue } from "../../value/LogicalValue.js";
 
 export abstract class BinaryBooleanOpExpr extends Expr2<
   BooleanValue | LogicalValue,

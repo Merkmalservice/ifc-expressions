@@ -4,7 +4,7 @@ import {
   ExprEvalSpuriousFunctionArgumentErrorObj,
 } from "../../expression/ExprEvalResult.js";
 import { TextSpan } from "../../util/TextSpan.js";
-import { SpuriousFunctionArgumentException } from "../SpuriousFunctionArgumentException";
+import { SpuriousFunctionArgumentException } from "../SpuriousFunctionArgumentException.js";
 
 export class SpuriousFunctionArgumentExceptionMapper
   implements ExceptionToExprEvalErrorMapper<SpuriousFunctionArgumentException>

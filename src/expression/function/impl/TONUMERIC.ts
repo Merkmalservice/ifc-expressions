@@ -11,14 +11,13 @@ import { StringValue } from "../../../value/StringValue.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { Type } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { NumericValue } from "../../../value/NumericValue";
+import { NumericValue } from "../../../value/NumericValue.js";
 import { Decimal } from "decimal.js";
-import { BooleanValue } from "../../../value/BooleanValue";
-import { LogicalValue } from "../../../value/LogicalValue";
-import { ReferenceValue } from "../../../value/ReferenceValue";
+import { BooleanValue } from "../../../value/BooleanValue.js";
+import { LogicalValue } from "../../../value/LogicalValue.js";
+import { ReferenceValue } from "../../../value/ReferenceValue.js";
 
 export class TONUMERIC extends Func {
-  private static readonly KEY_OBJECT = "object";
   constructor() {
     super("TONUMERIC", [new FuncArgAny(true, "object")]);
   }

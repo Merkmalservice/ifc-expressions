@@ -4,8 +4,8 @@ import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { ExprEvalResult, ExprEvalSuccessObj } from "../../ExprEvalResult.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean";
-import { LogicalValue } from "../../../value/LogicalValue";
+import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean.js";
+import { LogicalValue } from "../../../value/LogicalValue.js";
 
 export class NOT extends Func {
   private static readonly KEY_ARG = "arg";

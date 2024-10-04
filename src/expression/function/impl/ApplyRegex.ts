@@ -4,8 +4,8 @@ import { FuncArgSimpleRegex } from "../arg/FuncArgSimpleRegex.js";
 import { FuncArgRegex } from "../arg/FuncArgRegex.js";
 import { FuncArgBoolean } from "../arg/FuncArgBoolean.js";
 import { BooleanValue } from "../../../value/BooleanValue.js";
-import { StringValue } from "../../../value/StringValue";
-import { FuncArgRegexFlag } from "../arg/FuncArgRegexFlag";
+import { StringValue } from "../../../value/StringValue.js";
+import { FuncArgRegexFlag } from "../arg/FuncArgRegexFlag.js";
 
 export abstract class ApplyRegex extends Func {
   protected static readonly KEY_INPUT = "input";

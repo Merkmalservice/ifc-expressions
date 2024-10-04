@@ -2,7 +2,7 @@ import { Value } from "./Value.js";
 import { Comparable } from "./Comparable.js";
 import { ExprType } from "../type/ExprType.js";
 import { Type } from "../type/Types.js";
-import { LogicalValue } from "./LogicalValue";
+import { LogicalValue } from "./LogicalValue.js";
 
 export class BooleanValue implements Value<boolean>, Comparable<BooleanValue> {
   private readonly booleanValue: boolean;

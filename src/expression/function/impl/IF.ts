@@ -14,14 +14,14 @@ import { ExprType } from "../../../type/ExprType.js";
 import { Type, Types } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
 import { FuncArgAny } from "../arg/FuncArgAny.js";
-import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean";
+import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean.js";
 import { ParserRuleContext } from "antlr4";
-import { ExprKind } from "../../ExprKind";
-import { SpuriousFunctionArgumentException } from "../../../error/SpuriousFunctionArgumentException";
-import { MissingFunctionArgumentException } from "../../../error/MissingFunctionArgumentException";
-import { Value } from "../../../value/Value";
-import { Expr } from "../../Expr";
-import { LogicalValue } from "../../../value/LogicalValue";
+import { ExprKind } from "../../ExprKind.js";
+import { SpuriousFunctionArgumentException } from "../../../error/SpuriousFunctionArgumentException.js";
+import { MissingFunctionArgumentException } from "../../../error/MissingFunctionArgumentException.js";
+import { Value } from "../../../value/Value.js";
+import { Expr } from "../../Expr.js";
+import { LogicalValue } from "../../../value/LogicalValue.js";
 
 export class IF extends Func {
   private static readonly ARG_NAME_CONDITION = "condition";

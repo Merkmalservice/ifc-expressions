@@ -1,5 +1,5 @@
 import { IfcExpressionErrorListener } from "../src/IfcExpressionErrorListener.js";
-import { IfcExpression, StringValue } from "../src/IfcExpression.js";
+import { IfcExpression } from "../src/IfcExpression.js";
 import { SyntaxErrorException } from "../src/error/SyntaxErrorException.js";
 import { NoSuchFunctionException } from "../src/error/NoSuchFunctionException.js";
 import { InvalidSyntaxException } from "../src/error/InvalidSyntaxException.js";
@@ -7,10 +7,8 @@ import { ExpressionTypeError } from "../src/error/ExpressionTypeError.js";
 import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException.js";
 import { Type, Types } from "../src/type/Types.js";
 import { ExprType } from "../src/type/ExprType.js";
-import { mapException } from "../src/error/ExceptionToExprEvalErrorMapper.js";
-import { MissingFunctionArgumentException } from "../src/error/MissingFunctionArgumentException";
-import { SpuriousFunctionArgumentException } from "../src/error/SpuriousFunctionArgumentException";
-import Decimal from "decimal.js";
+import { MissingFunctionArgumentException } from "../src/error/MissingFunctionArgumentException.js";
+import { SpuriousFunctionArgumentException } from "../src/error/SpuriousFunctionArgumentException.js";
 
 const cases = [
   // numeric
@@ -230,6 +228,19 @@ const cases = [
   ["'the quick brown fox'.split(' ',3)", null, Types.array(Type.STRING)],
   ["[1,2,3].at(0)", null, Type.NUMERIC],
   ["[1,2,3].at(2)", null, Type.NUMERIC],
+  ["TOIFCDATE('01-01-1970')", null, Type.IFC_DATE],
+  ["TOIFCDATE('01-01-1970Z')", null, Type.IFC_DATE],
+  ["TOIFCDATE('01-01-1970-10:00')", null, Type.IFC_DATE],
+  ["TOIFCDATE('01-01-1970abcd')", null, Type.IFC_DATE],
+  ["TOIFCDATETIME('01-01-1970T00:00:00.000')", null, Type.IFC_DATE_TIME],
+  ["TOIFCDATETIME('01-01-1970T09:17:34Z')", null, Type.IFC_DATE_TIME],
+  ["TOIFCDATETIME('01-01-1970T08:15:00-10:00')", null, Type.IFC_DATE_TIME],
+  ["TOIFCDATETIME('01-01-1970abcd')", null, Type.IFC_DATE_TIME],
+  ["TOIFCDATETIME('00:00:00.000')", null, Type.IFC_DATE_TIME],
+  ["TOIFCDATETIME('09:17:34Z')", null, Type.IFC_DATE_TIME],
+  ["TOIFCDATETIME('08:15:00-10:00')", null, Type.IFC_DATE_TIME],
+  ["TOIFCDURATION('P5Y')", null, Type.IFC_DURATION],
+  ["TOIFCDURATION('P1YT1S')", null, Type.IFC_DURATION],
   [
     "[1,'b',FALSE].at(2)",
     null,

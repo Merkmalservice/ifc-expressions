@@ -3,10 +3,12 @@ import {
   ExprEvalError,
   ExprEvalResult,
   ExprEvalSuccess,
+  ExprEvalTypeErrorObj,
   isExprEvalSuccess,
 } from "../../ExprEvalResult.js";
 import { ExpressionValue } from "../../../value/ExpressionValue.js";
 import { FunctionExpr } from "../FunctionExpr.js";
+import { ExprKind, isNullish } from "../../../IfcExpression.js";
 
 export abstract class FuncArgBase<T> extends FuncArg<T> {
   protected constructor(required: boolean, name: string, defaultValue?: T) {
@@ -18,9 +20,29 @@ export abstract class FuncArgBase<T> extends FuncArg<T> {
     invocationValue: ExprEvalResult<ExpressionValue>
   ): ExprEvalResult<ExpressionValue> {
     if (isExprEvalSuccess(invocationValue)) {
-      return this.transformForTypeCheck(callingExpr, invocationValue);
+      return this.errorIfNullish(
+        this.transformForTypeCheck(callingExpr, invocationValue),
+        callingExpr
+      );
     }
-    return this.transformForError(callingExpr, invocationValue);
+    return this.errorIfNullish(
+      this.transformForError(callingExpr, invocationValue),
+      callingExpr
+    );
+  }
+
+  private errorIfNullish(
+    result: ExprEvalResult<ExpressionValue>,
+    callingExpr: FunctionExpr
+  ) {
+    if (isNullish(result)) {
+      return new ExprEvalTypeErrorObj(
+        ExprKind.FUNCTION_ARGUMENTS,
+        `Cannot obtain value of argument ${this.name}`,
+        callingExpr.getTextSpan()
+      );
+    }
+    return result;
   }
 
   /**

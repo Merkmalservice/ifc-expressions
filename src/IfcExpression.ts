@@ -46,7 +46,7 @@ import { mapException } from "./error/ExceptionToExprEvalErrorMapper.js";
 import { NopContext } from "./context/NopContext.js";
 import { ExprToTextInputLinker } from "./compiler/ExprToTextInputLinker.js";
 import { TextSpan } from "./util/TextSpan.js";
-import { ExprFacade } from "./expression/ExprFacade";
+import { ExprFacade } from "./expression/ExprFacade.js";
 
 export {
   IfcElementAccessor,

@@ -1,15 +1,15 @@
-import { FuncArgBase } from "./FuncArgBase";
-import { ArrayValue } from "../../../value/ArrayValue";
-import { ExprType } from "../../../type/ExprType";
-import { Type, Types } from "../../../type/Types";
-import { FunctionExpr } from "../FunctionExpr";
+import { FuncArgBase } from "./FuncArgBase.js";
+import { ArrayValue } from "../../../value/ArrayValue.js";
+import { ExprType } from "../../../type/ExprType.js";
+import { Type, Types } from "../../../type/Types.js";
+import { FunctionExpr } from "../FunctionExpr.js";
 import {
   ExprEvalResult,
   ExprEvalSuccess,
   ExprEvalTypeErrorObj,
-} from "../../ExprEvalResult";
-import { ExpressionValue } from "../../../value/ExpressionValue";
-import { ExprKind } from "../../ExprKind";
+} from "../../ExprEvalResult.js";
+import { ExpressionValue } from "../../../value/ExpressionValue.js";
+import { ExprKind } from "../../ExprKind.js";
 
 export class FuncArgArray extends FuncArgBase<ArrayValue> {
   constructor(required: boolean, name: string, defaultValue?: ArrayValue) {

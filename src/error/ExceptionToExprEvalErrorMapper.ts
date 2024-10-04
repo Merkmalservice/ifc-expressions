@@ -18,8 +18,8 @@ import { WrongFunctionArgumentTypeExceptionMapper } from "./mapper/WrongFunction
 import { InvalidSyntaxException } from "./InvalidSyntaxException.js";
 import { ValidationExceptionMapper } from "./mapper/ValidationExceptionMapper.js";
 import { ValidationException } from "./ValidationException.js";
-import { SpuriousFunctionArgumentExceptionMapper } from "./mapper/SpuriousFunctionArgumentExceptionMapper";
-import { SpuriousFunctionArgumentException } from "./SpuriousFunctionArgumentException";
+import { SpuriousFunctionArgumentExceptionMapper } from "./mapper/SpuriousFunctionArgumentExceptionMapper.js";
+import { SpuriousFunctionArgumentException } from "./SpuriousFunctionArgumentException.js";
 
 export interface ExceptionToExprEvalErrorMapper<T extends Error> {
   mapException(exception: T): ExprEvalError;

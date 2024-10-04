@@ -1,5 +1,5 @@
-import { FunctionArgumentException } from "./FunctionArgumentException";
-import { isNullish } from "../util/IfcExpressionUtils";
+import { FunctionArgumentException } from "./FunctionArgumentException.js";
+import { isNullish } from "../util/IfcExpressionUtils.js";
 
 export class SpuriousFunctionArgumentException extends FunctionArgumentException {
   constructor(

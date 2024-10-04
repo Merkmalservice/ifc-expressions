@@ -11,6 +11,12 @@ export class Type {
   static readonly STRING = new SimpleType("string");
   static readonly LOGICAL = new SimpleType("logical");
   static readonly BOOLEAN = new SimpleType("boolean", Type.LOGICAL);
+  static readonly IFC_DATE = new SimpleType("ifcDate", Type.STRING);
+  static readonly IFC_DATE_TIME = new SimpleType("ifcDateTime", Type.STRING);
+  static readonly IFC_TIME = new SimpleType("ifcTime", Type.STRING);
+  static readonly IFC_DURATION = new SimpleType("ifcDuration", Type.STRING);
+  static readonly IFC_TIME_STAMP = new SimpleType("ifcTimeStamp", Type.NUMERIC);
+
   static readonly IFC_OBJECT_REF = new SimpleType("ifcObjectRef");
   static readonly IFC_ELEMENT_REF = new SimpleType(
     "ifcElementRef",
@@ -57,6 +63,21 @@ export class Types {
   public static isString(actualType: ExprType) {
     return this.isType(actualType, Type.STRING);
   }
+  public static isIfcDate(actualType: ExprType) {
+    return this.isType(actualType, Type.IFC_DATE);
+  }
+  public static isIfcDateTime(actualType: ExprType) {
+    return this.isType(actualType, Type.IFC_DATE_TIME);
+  }
+  public static isIfcTime(actualType: ExprType) {
+    return this.isType(actualType, Type.IFC_TIME);
+  }
+  public static isIfcDuration(actualType: ExprType) {
+    return this.isType(actualType, Type.IFC_DURATION);
+  }
+  public static isIfcTimeStamp(actualType: ExprType) {
+    return this.isType(actualType, Type.IFC_TIME_STAMP);
+  }
   public static isType(actualType: ExprType, type: ExprType) {
     return actualType === type;
   }
@@ -68,6 +89,21 @@ export class Types {
   }
   public static string() {
     return Type.STRING;
+  }
+  public static ifcDate() {
+    return Type.IFC_DATE;
+  }
+  public static ifcDateTime() {
+    return Type.IFC_DATE_TIME;
+  }
+  public static ifcTime() {
+    return Type.IFC_TIME;
+  }
+  public static ifcDuration() {
+    return Type.IFC_DURATION;
+  }
+  public static ifcTimeStamp() {
+    return Type.IFC_TIME_STAMP;
   }
   public static numeric() {
     return Type.NUMERIC;

@@ -6,7 +6,7 @@ import { ExprEvalError } from "../ExprEvalResult.js";
 import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
-import { LogicalValue } from "../../value/LogicalValue";
+import { LogicalValue } from "../../value/LogicalValue.js";
 
 export class NotExpr extends Expr1<
   BooleanValue | LogicalValue,

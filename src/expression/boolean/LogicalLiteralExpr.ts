@@ -5,7 +5,7 @@ import { IfcExpressionContext } from "../../context/IfcExpressionContext.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
-import { Logical, LogicalValue } from "../../value/LogicalValue";
+import { Logical, LogicalValue } from "../../value/LogicalValue.js";
 
 export class LogicalLiteralExpr extends LiteralExpr<Logical, LogicalValue> {
   constructor(value: Logical) {
