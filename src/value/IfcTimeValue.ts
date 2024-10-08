@@ -96,7 +96,7 @@ export class IfcTimeValue
   }
 
   public static isValidStringRepresentation(str: string): boolean {
-    return !isNullish(str.match(this.regex));
+    return this.regex.test(str);
   }
 
   equals(other: Value<any>): boolean {
