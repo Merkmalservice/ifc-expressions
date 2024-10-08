@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Correct handling of local dates/times 
+
 ## 2.3.0-beta.0 - 2024-10-08
 
 ### Fixed

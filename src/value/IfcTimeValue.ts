@@ -13,7 +13,9 @@ export class IfcTimeValue
   private readonly stringRepresentation;
   private readonly originalTimeZoneHours: number; // hours ahead of (+) or behind (-) UTC
   private readonly originalTimeZoneMinutes: number; // minutes ahead of (+) or behind (-) UTC
+  private readonly isLocal: boolean;
   private readonly secondFraction: Decimal;
+
   private static readonly regex =
     /^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|(?<=23:59:)60)(\.\d+)?(Z|([+\-])(0[0-9]|1[0-2])(?::?([0-5][0-9]))?)?$/;
 
@@ -23,6 +25,7 @@ export class IfcTimeValue
     this.originalTimeZoneHours = parsed.originalTimeZoneHours;
     this.originalTimeZoneMinutes = parsed.originalTimeZoneMinutes;
     this.secondFraction = parsed.secondFraction;
+    this.isLocal = parsed.isLocal;
     this.stringRepresentation = value;
   }
 
@@ -31,6 +34,7 @@ export class IfcTimeValue
     secondFraction: Decimal;
     originalTimeZoneHours?: number;
     originalTimeZoneMinutes?: number;
+    isLocal: boolean;
   } {
     let match = value.match(this.regex);
     if (isNullish(match)) {
@@ -47,24 +51,25 @@ export class IfcTimeValue
       timeZoneHours,
       timeZoneMinutes,
     ] = match;
-    var utcDate = new Date(0);
+    const utcDate = new Date(0);
     utcDate.setUTCHours(Number.parseInt(hours));
     utcDate.setUTCMinutes(Number.parseInt(minutes));
     utcDate.setUTCSeconds(Number.parseInt(seconds));
-    var secondFraction = isNullish(fractionSeconds)
+    const secondFraction = isNullish(fractionSeconds)
       ? new Decimal("0")
       : new Decimal("0" + fractionSeconds); //arbitrary precision fractions
-    var originalZoneSign = isNullish(timeZoneSign)
+    const originalZoneSign = isNullish(timeZoneSign)
       ? 0
       : timeZoneSign === "+"
       ? 1
       : -1;
-    var originalTimeZoneHours =
+    const originalTimeZoneHours =
       originalZoneSign *
       (isNullish(timeZoneHours) ? 0 : Number.parseInt(timeZoneHours));
-    var originalTimeZoneMinutes =
+    const originalTimeZoneMinutes =
       originalZoneSign *
       (isNullish(timeZoneMinutes) ? 0 : Number.parseInt(timeZoneMinutes));
+    const isLocal = isNullish(timeZoneWhole);
     utcDate.setUTCHours(utcDate.getUTCHours() - originalTimeZoneHours);
     utcDate.setUTCMinutes(utcDate.getUTCMinutes() - originalTimeZoneMinutes);
     return {
@@ -72,6 +77,7 @@ export class IfcTimeValue
       secondFraction,
       originalTimeZoneHours,
       originalTimeZoneMinutes,
+      isLocal,
     };
   }
 
