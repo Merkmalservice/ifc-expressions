@@ -340,10 +340,6 @@ describe.each([
     true,
   ],
   [
-    "TOIFCDATETIME('1959-01-07T17:21:00') == TOIFCDATETIME('1959-01-07T17:21:00Z')",
-    true,
-  ],
-  [
     "TOIFCDATETIME('1959-01-07T17:21:00.01') < TOIFCDATETIME('1959-01-07T17:21:00.5')",
     true,
   ],
@@ -401,15 +397,11 @@ describe.each([
     new IfcDateValue("1959-01-07+01:00"),
   ],
   [
-    "TOIFCDATETIME('1959-01-07T17:21:00').toIfcTimeStamp() == -346574340.toIfcTimeStamp()",
-    true,
+    "TOIFCDATETIME('1959-01-07T17:21:00Z').toIfcTimeStamp().toIfcDateTime()",
+    new IfcDateTimeValue("1959-01-07T17:21:00Z"),
   ],
   [
-    "TOIFCDATETIME('1959-01-07T17:21:00').toIfcTimeStamp().toIfcDateTime() == TOIFCDATETIME('1959-01-07T17:21:00')",
-    true,
-  ],
-  [
-    "TOIFCDATETIME('1959-01-07T17:21:00+0100').toIfcTimeStamp().toIfcDateTime() == TOIFCDATETIME('1959-01-07T16:21:00')",
+    "TOIFCDATETIME('1959-01-07T17:21:00+0100').toIfcTimeStamp().toIfcDateTime() == TOIFCDATETIME('1959-01-07T16:21:00Z')",
     true,
   ],
   [

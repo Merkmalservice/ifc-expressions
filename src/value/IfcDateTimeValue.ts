@@ -13,10 +13,11 @@ import { IfcDurationValue } from "./IfcDurationValue.js";
 export class IfcDateTimeValue
   implements Value<IfcDateTimeValue>, Comparable<IfcDateTimeValue>
 {
-  private readonly utcDateValue: Date;
+  private readonly utcDate: Date;
   private readonly stringRepresentation;
   private readonly originalTimeZoneHours: number; // hours ahead of (+) or behind (-) UTC
   private readonly originalTimeZoneMinutes: number; // minutes ahead of (+) or behind (-) UTC
+  private readonly isLocal: boolean;
   private readonly secondFraction: Decimal;
   private static readonly regex =
     /^([+\-]?(?:[1-9]\d*)?\d{4}(?<!0000))-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|(?<=23:59:)60)(\.\d+)?(Z|([+\-])(0[0-9]|1[0-2])(?::?([0-5][0-9]))?)?$/;
@@ -26,29 +27,33 @@ export class IfcDateTimeValue
   ) {
     if (typeof value === "string") {
       var parsed = IfcDateTimeValue.parseIfcDate(value);
-      this.utcDateValue = parsed.utcDate;
+      this.utcDate = parsed.utcDate;
       this.originalTimeZoneHours = parsed.originalTimeZoneHours;
       this.originalTimeZoneMinutes = parsed.originalTimeZoneMinutes;
       this.secondFraction = parsed.secondFraction;
+      this.isLocal = parsed.isLocal;
     } else if (typeof value === "number" || value instanceof Decimal) {
       let timeStampSeconds = value;
       if (value instanceof Decimal) {
         timeStampSeconds = (value as Decimal).round().toNumber();
       }
-      this.utcDateValue = new Date(timeStampSeconds as number);
+      this.utcDate = new Date(timeStampSeconds as number);
       this.originalTimeZoneHours = 0;
       this.originalTimeZoneMinutes = 0;
       this.secondFraction = new Decimal(0);
+      this.isLocal = false;
     } else if (value instanceof IfcDateTimeValue) {
-      this.utcDateValue = value.utcDateValue;
+      this.utcDate = value.utcDate;
       this.originalTimeZoneMinutes = value.originalTimeZoneMinutes;
       this.originalTimeZoneHours = value.originalTimeZoneHours;
       this.secondFraction = value.secondFraction;
+      this.isLocal = value.isLocal;
     } else if (isParsedIfcDateTimeValue(value)) {
-      this.utcDateValue = value.utcDate;
+      this.utcDate = value.utcDate;
       this.secondFraction = value.secondFraction;
       this.originalTimeZoneHours = value.originalTimeZoneHours;
       this.originalTimeZoneMinutes = value.originalTimeZoneMinutes;
+      this.isLocal = value.isLocal;
     }
     this.stringRepresentation = this.toCanonicalString();
   }
@@ -80,20 +85,21 @@ export class IfcDateTimeValue
     utcDate.setUTCHours(Number.parseInt(hours));
     utcDate.setUTCMinutes(Number.parseInt(minutes));
     utcDate.setUTCSeconds(Number.parseInt(seconds));
-    var secondFraction = isNullish(fractionSeconds)
+    const secondFraction = isNullish(fractionSeconds)
       ? new Decimal("0")
       : new Decimal("0" + fractionSeconds); //arbitrary precision fractions (to the precision of Decimal.precision)
-    var originalZoneSign = isNullish(timeZoneSign)
+    const originalZoneSign = isNullish(timeZoneSign)
       ? 0
       : timeZoneSign === "+"
       ? 1
       : -1;
-    var originalTimeZoneHours =
+    const originalTimeZoneHours =
       originalZoneSign *
       (isNullish(timeZoneHours) ? 0 : Number.parseInt(timeZoneHours));
-    var originalTimeZoneMinutes =
+    const originalTimeZoneMinutes =
       originalZoneSign *
       (isNullish(timeZoneMinutes) ? 0 : Number.parseInt(timeZoneMinutes));
+    const isLocal = isNullish(timeZoneWhole);
     utcDate.setUTCHours(utcDate.getUTCHours() - originalTimeZoneHours);
     utcDate.setUTCMinutes(utcDate.getUTCMinutes() - originalTimeZoneMinutes);
     return {
@@ -101,6 +107,7 @@ export class IfcDateTimeValue
       secondFraction,
       originalTimeZoneHours,
       originalTimeZoneMinutes,
+      isLocal,
     };
   }
 
@@ -115,10 +122,10 @@ export class IfcDateTimeValue
       ? ""
       : this.secondFraction.toString().substring(1);
     return `${this.pad00(
-      this.utcDateValue.getUTCHours() + this.originalTimeZoneHours
+      this.utcDate.getUTCHours() + this.originalTimeZoneHours
     )}:${this.pad00(
-      this.utcDateValue.getUTCMinutes() + this.originalTimeZoneMinutes
-    )}:${this.pad00(this.utcDateValue.getUTCSeconds())}${fraction}`;
+      this.utcDate.getUTCMinutes() + this.originalTimeZoneMinutes
+    )}:${this.pad00(this.utcDate.getUTCSeconds())}${fraction}`;
   }
 
   private pad00(num: number): string {
@@ -126,12 +133,15 @@ export class IfcDateTimeValue
   }
 
   private getDateAsString() {
-    return `${this.utcDateValue.getUTCFullYear()}-${this.pad00(
-      this.utcDateValue.getUTCMonth() + 1
-    )}-${this.pad00(this.utcDateValue.getUTCDate())}`;
+    return `${this.utcDate.getUTCFullYear()}-${this.pad00(
+      this.utcDate.getUTCMonth() + 1
+    )}-${this.pad00(this.utcDate.getUTCDate())}`;
   }
 
   getTimeZoneAsString(): String {
+    if (this.isLocal) {
+      return "";
+    }
     if (
       this.originalTimeZoneMinutes === 0 &&
       this.originalTimeZoneHours === 0
@@ -148,7 +158,15 @@ export class IfcDateTimeValue
   }
 
   private getTimeStampSeconds(): Decimal {
-    return new Decimal(this.utcDateValue.getTime()).divToInt(1000);
+    const offset = this.isLocal ? new Date().getTimezoneOffset() * 60 : 0;
+    return new Decimal(this.utcDate.getTime()).divToInt(1000).minus(offset);
+  }
+
+  private getTime(): Decimal {
+    const offset = this.isLocal ? new Date().getTimezoneOffset() * 60 : 0;
+    return new Decimal(this.utcDate.getTime())
+      .minus(offset)
+      .plus(this.secondFraction);
   }
 
   getValue(): IfcDateTimeValue {
@@ -174,8 +192,7 @@ export class IfcDateTimeValue
   equals(other: Value<any>): boolean {
     return (
       IfcDateTimeValue.isIfcDateTimeValueType(other) &&
-      this.utcDateValue.getTime() === other.utcDateValue.getTime() &&
-      this.secondFraction.eq(other.secondFraction)
+      this.getTime().eq(other.getTime())
     );
   }
 
@@ -193,11 +210,7 @@ export class IfcDateTimeValue
   }
 
   compareTo(other: IfcDateTimeValue): number {
-    var diff = this.utcDateValue.getTime() - other.utcDateValue.getTime();
-    if (diff != 0) {
-      return diff;
-    }
-    return Decimal.sign(this.secondFraction.minus(other.secondFraction));
+    return Decimal.sign(this.getTime().minus(other.getTime()));
   }
 
   static ofTimeStampSeconds(timeStampSeconds: Decimal | number) {
@@ -222,7 +235,7 @@ export class IfcDateTimeValue
   }
 
   addDuration(duration: IfcDurationValue): IfcDateTimeValue {
-    const resultDate = new Date(this.utcDateValue.getTime());
+    const resultDate = new Date(this.utcDate.getTime());
     const accumulatedFractions = this.secondFraction.add(
       duration.getFractionAsSeconds()
     );
@@ -259,6 +272,7 @@ export class IfcDateTimeValue
       secondFraction: newSecondFraction,
       originalTimeZoneHours: this.originalTimeZoneHours,
       originalTimeZoneMinutes: this.originalTimeZoneMinutes,
+      isLocal: this.isLocal,
     });
   }
 }
@@ -268,6 +282,7 @@ export type ParsedIfcDateTimeValue = {
   secondFraction: Decimal;
   originalTimeZoneHours?: number;
   originalTimeZoneMinutes?: number;
+  isLocal: boolean;
 };
 
 export function isParsedIfcDateTimeValue(
@@ -277,6 +292,7 @@ export function isParsedIfcDateTimeValue(
     !isNullish(arg.utcDate) &&
     !isNullish(arg.secondFraction) &&
     !isNullish(arg.originalTimeZoneHours) &&
-    !isNullish(arg.originalTimeZoneMinutes)
+    !isNullish(arg.originalTimeZoneMinutes) &&
+    !isNullish(arg.isLocal)
   );
 }

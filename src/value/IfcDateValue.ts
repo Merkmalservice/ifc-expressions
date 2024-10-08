@@ -12,6 +12,7 @@ export class IfcDateValue
   private readonly stringRepresentation;
   private readonly originalTimeZoneHours: number; // hours ahead of (+) or behind (-) UTC
   private readonly originalTimeZoneMinutes: number; // minutes ahead of (+) or behind (-) UTC
+  private readonly isLocal: boolean;
   private static readonly regex =
     /^([+\-]?(?:[1-9]\d*)?\d{4}(?<!0000))-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])(Z|([+\-])(0[0-9]|1[0-2])(?::?([0-5][0-9]))?)?$/;
 
@@ -20,6 +21,7 @@ export class IfcDateValue
     this.utcDateValue = parsed.utcDate;
     this.originalTimeZoneHours = parsed.originalTimeZoneHours;
     this.originalTimeZoneMinutes = parsed.originalTimeZoneMinutes;
+    this.isLocal = parsed.isLocal;
     this.stringRepresentation = value;
   }
 
@@ -27,6 +29,7 @@ export class IfcDateValue
     utcDate: Date;
     originalTimeZoneHours?: number;
     originalTimeZoneMinutes?: number;
+    isLocal: boolean;
   } {
     let match = value.match(this.regex);
     if (isNullish(match)) {
@@ -42,24 +45,30 @@ export class IfcDateValue
       timeZoneHours,
       timeZoneMinutes,
     ] = match;
-    var utcDate = new Date(0);
+    const utcDate = new Date(0);
     utcDate.setUTCFullYear(Number.parseInt(year));
     utcDate.setUTCMonth(Number.parseInt(month) - 1);
     utcDate.setUTCDate(Number.parseInt(day));
-    var originalZoneSign = isNullish(timeZoneSign)
+    const originalZoneSign = isNullish(timeZoneSign)
       ? 0
       : timeZoneSign === "+"
       ? -1
       : +1; //why? Beause +1 means 1 hour ahead of UTC, so we have to subtract 1 to get UTC
-    var originalTimeZoneHours =
+    const originalTimeZoneHours =
       originalZoneSign *
       (isNullish(timeZoneHours) ? 0 : Number.parseInt(timeZoneHours));
-    var originalTimeZoneMinutes =
+    const originalTimeZoneMinutes =
       originalZoneSign *
       (isNullish(timeZoneMinutes) ? 0 : Number.parseInt(timeZoneMinutes));
+    const isLocal = isNullish(timeZoneWhole);
     utcDate.setUTCHours(utcDate.getUTCHours() + originalTimeZoneHours);
     utcDate.setUTCMinutes(utcDate.getUTCMinutes() + originalTimeZoneMinutes);
-    return { utcDate: utcDate, originalTimeZoneHours, originalTimeZoneMinutes };
+    return {
+      utcDate: utcDate,
+      originalTimeZoneHours,
+      originalTimeZoneMinutes,
+      isLocal,
+    };
   }
 
   public static of(value: string): IfcDateValue {
