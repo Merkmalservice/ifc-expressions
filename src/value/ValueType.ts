@@ -4,7 +4,7 @@ import { IfcTimeValue } from "./IfcTimeValue.js";
 import { IfcDurationValue } from "./IfcDurationValue.js";
 import { IfcTimeStampValue } from "./IfcTimeStampValue.js";
 
-export type NonBoxedValueTypes =
+export type ValueType =
   | IfcDateValue
   | IfcDateTimeValue
   | IfcTimeValue

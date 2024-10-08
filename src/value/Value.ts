@@ -1,10 +1,10 @@
 import { BoxedValueTypes } from "./BoxedValueTypes.js";
 import { ExprType } from "../type/ExprType.js";
-import { NonBoxedValueTypes } from "./NonBoxedValueTypes.js";
+import { ValueType } from "./ValueType";
 
 export interface Value<
   T extends
-    | NonBoxedValueTypes
+    | ValueType
     | BoxedValueTypes
     | Array<Value<BoxedValueTypes | Array<Value<BoxedValueTypes>>>>
 > {
