@@ -52,6 +52,12 @@ import { IfcDateValue } from "./value/IfcDateValue.js";
 import { IfcDateTimeValue } from "./value/IfcDateTimeValue.js";
 import { IfcTimeValue } from "./value/IfcTimeValue.js";
 import { IfcTimeStampValue } from "./value/IfcTimeStampValue.js";
+import { ArrayType } from "./type/ArrayType.js";
+import { ExprType } from "./type/ExprType.js";
+import { SimpleType } from "./type/SimpleType.js";
+import { TupleType } from "./type/TupleType.js";
+import { TypeDisjunction } from "./type/TypeDisjunction.js";
+import { Types } from "./type/Types.js";
 
 export {
   IfcElementAccessor,
@@ -88,6 +94,12 @@ export {
   isExprEvalSuccess,
   ExprToTextInputLinker,
   ExprFacade,
+  ArrayType,
+  ExprType,
+  SimpleType,
+  TupleType,
+  TypeDisjunction,
+  Types,
 };
 
 export type { BoxedValueTypes };

@@ -6,12 +6,13 @@
   "module": "dist/mjs/IfcExpression.js",
   "exports": {
     ".": {
-      "import": "./dist/mjs/IfcExpression.js",
-      "require": "./dist/cjs/IfcExpression.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
     }
   },
   "license": "Apache-2.0",
-  "types": "./dist/IfcExpression.d.ts",
+  "types": "./dist/index.d.ts",
   "files": [
     "./dist/**/*",
     "./dist/*"
@@ -32,10 +33,9 @@
     "check": "npm run format-check && npm run lint"
   },
   "keywords": [
-    "MMS",
+    "IFC",
     "Expressions",
     "BIM",
-    "Merkmalservice",
     "Formula"
   ],
   "dependencies": {
