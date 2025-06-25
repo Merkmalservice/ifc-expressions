@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 2.3.0 - 2025-06-25
+
 ### Fixed
 
-- Add type declarations in dist/index.d.ts and export them through package.json 
+- Add type declarations in dist/index.d.ts and export them through package.json
 
 ## 2.3.0-beta.1 - 2024-10-08
 
