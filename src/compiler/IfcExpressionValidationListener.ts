@@ -45,7 +45,7 @@ import {
   isBuiltinFunctionDefinition,
   isBuiltinPropertyDefinition,
 } from "../builtin/BuiltinVariableRegistry.js";
-import { BuiltinObjectType } from "../type/BuiltinObjectType.js";
+import { ContextObjectType } from "../type/ContextObjectType.js";
 import { NoSuchMemberException } from "../error/NoSuchMemberException.js";
 import { NoSuchMethodException } from "../error/NoSuchMethodException.js";
 import { WrongFunctionArgumentTypeException } from "../error/WrongFunctionArgumentTypeException.js";
@@ -225,9 +225,11 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
 
   exitMethodFunctionCall: (ctx: MethodFunctionCallContext) => void = (ctx) => {
     this.typeManager.copyTypeFrom(ctx, ctx.functionCall());
-  };  exitMethodPropertyAccess: (ctx: MethodPropertyAccessContext) => void = (ctx) => {
+  };
+
+  exitMethodPropertyAccess: (ctx: MethodPropertyAccessContext) => void = (ctx) => {
     const [_, targetType] = this.popMethodCallTarget(ctx);
-    if (!(targetType instanceof BuiltinObjectType)) {
+    if (!(targetType instanceof ContextObjectType)) {
       throw new NoSuchMemberException(ctx.IDENTIFIER().getText(), targetType.getName(), ctx);
     }
     const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
@@ -248,7 +250,7 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
 
     if (isMethodAccessor) {
       const [targetCtx, targetType] = this.popMethodCallTarget(ctx);
-      if (targetType instanceof BuiltinObjectType) {
+      if (targetType instanceof ContextObjectType) {
         const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
         if (!isBuiltinFunctionDefinition(member)) {
           throw new NoSuchMethodException(
@@ -389,4 +391,6 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     );
   };
 }
+
+
 

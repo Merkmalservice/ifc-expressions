@@ -6,7 +6,7 @@ import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprEvalErrorObj, ExprEvalResult, ExprEvalStatus, isExprEvalError } from "../ExprEvalResult.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
-import { BuiltinObjectValue } from "../../value/BuiltinObjectValue.js";
+import { ContextObjectValue } from "../../value/ContextObjectValue.js";
 import { getBuiltinMemberValue, toExpressionValue, unwrapExpressionValue } from "../../builtin/BuiltinRuntimeValueConverter.js";
 
 export class BuiltinFunctionCallExpr extends ExprBase<ExpressionValue> {
@@ -43,11 +43,11 @@ export class BuiltinFunctionCallExpr extends ExprBase<ExpressionValue> {
     if (isExprEvalError(targetResult)) {
       return targetResult;
     }
-    if (!(targetResult.result instanceof BuiltinObjectValue)) {
+    if (!(targetResult.result instanceof ContextObjectValue)) {
       return new ExprEvalErrorObj(
         this.getKind(),
         ExprEvalStatus.TYPE_ERROR,
-        `Builtin function '${this.name}' requires a builtin object target`,
+        `Builtin function '${this.name}' requires a context object target`,
         this.getTextSpan()
       );
     }
@@ -98,3 +98,4 @@ export class BuiltinFunctionCallExpr extends ExprBase<ExpressionValue> {
     return this.type;
   }
 }
+

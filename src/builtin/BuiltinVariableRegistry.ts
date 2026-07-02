@@ -1,4 +1,4 @@
-import { BuiltinObjectType } from "../type/BuiltinObjectType.js";
+import { ContextObjectType } from "../type/ContextObjectType.js";
 import { IfcExpressionBuiltinConfigException } from "../error/IfcExpressionBuiltinConfigException.js";
 import { ExprType } from "../type/ExprType.js";
 import { Type } from "../type/Types.js";
@@ -114,7 +114,7 @@ export class BuiltinVariableRegistry {
       definition.type ?? (members.size > 0 ? Type.CONTEXT_OBJECT_REF : Type.ANY);
     const resolvedType =
       members.size > 0
-        ? new BuiltinObjectType(definition.name, baseType, members)
+        ? new ContextObjectType(definition.name, baseType, members)
         : baseType;
     this.builtinVariables.set(normalizedName, {
       name: definition.name,
@@ -139,3 +139,4 @@ export class BuiltinVariableRegistry {
     return members;
   }
 }
+

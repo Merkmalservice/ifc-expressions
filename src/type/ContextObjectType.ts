@@ -4,7 +4,7 @@ import {
   RegisteredBuiltinVariableDefinition,
 } from "../builtin/BuiltinVariableRegistry.js";
 
-export class BuiltinObjectType implements ExprType {
+export class ContextObjectType implements ExprType {
   private readonly name: string;
   private readonly baseType: ExprType;
   private readonly members: Map<string, BuiltinMemberDefinition>;
@@ -22,7 +22,7 @@ export class BuiltinObjectType implements ExprType {
   public static fromBuiltinDefinition(
     definition: RegisteredBuiltinVariableDefinition
   ) {
-    return new BuiltinObjectType(definition.name, definition.type, definition.members);
+    return new ContextObjectType(definition.name, definition.type, definition.members);
   }
 
   getMemberDefinition(name: string): BuiltinMemberDefinition | undefined {
@@ -49,7 +49,7 @@ export class BuiltinObjectType implements ExprType {
     if (this.isSameTypeAs(other)) {
       return true;
     }
-    if (other instanceof BuiltinObjectType) {
+    if (other instanceof ContextObjectType) {
       return this.baseType.overlapsWith(other.baseType);
     }
     return this.baseType.overlapsWith(other);

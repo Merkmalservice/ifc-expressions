@@ -71,7 +71,7 @@ import {
   isBuiltinFunctionDefinition,
   isBuiltinPropertyDefinition,
 } from "../builtin/BuiltinVariableRegistry.js";
-import { BuiltinObjectType } from "../type/BuiltinObjectType.js";
+import { ContextObjectType } from "../type/ContextObjectType.js";
 import { BuiltinRootReferenceExpr } from "../expression/reference/BuiltinRootReferenceExpr.js";
 import { BuiltinPropertyAccessExpr } from "../expression/reference/BuiltinPropertyAccessExpr.js";
 import { BuiltinFunctionCallExpr } from "../expression/reference/BuiltinFunctionCallExpr.js";
@@ -208,7 +208,7 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
       ? []
       : this.collectFunctionArguments(ctx.functionCall().exprList());
     const targetType = targetExpr.getType();
-    if (targetType instanceof BuiltinObjectType) {
+    if (targetType instanceof ContextObjectType) {
       const member = targetType.getMemberDefinition(functionName);
       if (isBuiltinFunctionDefinition(member)) {
         return this.associateContextAndReturn(
@@ -234,7 +234,7 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
   ) => {
     const targetExpr = this.methodCallTargetStack.pop();
     const targetType = targetExpr.getType();
-    if (targetType instanceof BuiltinObjectType) {
+    if (targetType instanceof ContextObjectType) {
       const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
       if (isBuiltinPropertyDefinition(member)) {
         return this.associateContextAndReturn(
@@ -477,6 +477,7 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     return this.visit(ctx.getChild(0));
   };
 }
+
 
 
 

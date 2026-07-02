@@ -4,6 +4,7 @@ import {
   isBuiltinPropertyDefinition,
 } from "../src/builtin/BuiltinVariableRegistry.js";
 import { IfcExpressionBuiltinConfigException } from "../src/error/IfcExpressionBuiltinConfigException.js";
+import { ContextObjectType } from "../src/type/ContextObjectType.js";
 import { Type } from "../src/type/Types.js";
 
 describe("BuiltinVariableRegistry", () => {
@@ -66,6 +67,7 @@ describe("BuiltinVariableRegistry", () => {
     expect(registry.isReservedName("theresult")).toBe(true);
 
     const queryDefinition = registry.getDefinition("$thequery");
+    expect(queryDefinition?.type).toBeInstanceOf(ContextObjectType);
     expect(queryDefinition?.type.isSubTypeOf(Type.CONTEXT_OBJECT_REF)).toBe(true);
     expect(queryDefinition?.type.overlapsWith(Type.IFC_OBJECT_REF)).toBe(false);
 

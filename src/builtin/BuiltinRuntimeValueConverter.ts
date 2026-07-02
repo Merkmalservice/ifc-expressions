@@ -1,5 +1,5 @@
 import { ExprType } from "../type/ExprType.js";
-import { BuiltinObjectType } from "../type/BuiltinObjectType.js";
+import { ContextObjectType } from "../type/ContextObjectType.js";
 import { ArrayType } from "../type/ArrayType.js";
 import { TupleType } from "../type/TupleType.js";
 import { Type, Types } from "../type/Types.js";
@@ -11,7 +11,7 @@ import { BooleanValue } from "../value/BooleanValue.js";
 import { LogicalValue } from "../value/LogicalValue.js";
 import { ArrayValue } from "../value/ArrayValue.js";
 import { Value } from "../value/Value.js";
-import { BuiltinObjectValue } from "../value/BuiltinObjectValue.js";
+import { ContextObjectValue } from "../value/ContextObjectValue.js";
 
 function isValue(candidate: unknown): candidate is Value<any> {
   return (
@@ -44,13 +44,13 @@ export function toExpressionValue(
     }
   }
 
-  if (expectedType instanceof BuiltinObjectType) {
+  if (expectedType instanceof ContextObjectType) {
     if (typeof value !== "object" || value === null) {
       throw new Error(
-        `Expected builtin object value for type ${expectedType.getName()}`
+        `Expected context object value for type ${expectedType.getName()}`
       );
     }
-    return new BuiltinObjectValue(value as Record<string, unknown>, expectedType);
+    return new ContextObjectValue(value as Record<string, unknown>, expectedType);
   }
 
   if (expectedType instanceof TupleType) {
@@ -119,9 +119,9 @@ export function inferExpressionValue(
     return ArrayValue.of(value.map((item) => inferExpressionValue(item)));
   }
   if (typeof value === "object" && value !== null) {
-    return new BuiltinObjectValue(value as Record<string, unknown>, fallbackType);
+    return new ContextObjectValue(value as Record<string, unknown>, fallbackType);
   }
-  throw new Error(`Cannot convert runtime builtin value '${value}' to expression value`);
+  throw new Error(`Cannot convert runtime context value '${value}' to expression value`);
 }
 
 export function unwrapExpressionValue(value: ExpressionValue): unknown {
@@ -134,7 +134,7 @@ export function unwrapExpressionValue(value: ExpressionValue): unknown {
 }
 
 export function getBuiltinMemberValue(
-  value: BuiltinObjectValue,
+  value: ContextObjectValue,
   memberName: string
 ): unknown {
   const objectValue = value.getValue();
@@ -149,5 +149,6 @@ export function getBuiltinMemberValue(
     ? undefined
     : objectValue[matchingKey];
 }
+
 
 

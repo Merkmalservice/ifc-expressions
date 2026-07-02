@@ -58,7 +58,7 @@ import { SimpleType } from "./type/SimpleType.js";
 import { TupleType } from "./type/TupleType.js";
 import { TypeDisjunction } from "./type/TypeDisjunction.js";
 import { Types } from "./type/Types.js";
-import { BuiltinObjectType } from "./type/BuiltinObjectType.js";
+import { ContextObjectType } from "./type/ContextObjectType.js";
 import { BuiltinVariableRegistry } from "./builtin/BuiltinVariableRegistry.js";
 import { IfcExpressionOptions } from "./IfcExpressionOptions.js";
 
@@ -103,7 +103,7 @@ export {
   TupleType,
   TypeDisjunction,
   Types,
-  BuiltinObjectType,
+  ContextObjectType,
   BuiltinVariableRegistry,
 };
 
@@ -249,3 +249,9 @@ export class IfcExpression {
     return expr.evaluate(context);
   }
 }
+
+
+
+
+
+

@@ -4,7 +4,7 @@ import { ExprKind } from "../ExprKind.js";
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
-import { BuiltinObjectValue } from "../../value/BuiltinObjectValue.js";
+import { ContextObjectValue } from "../../value/ContextObjectValue.js";
 import { ExprEvalErrorObj, ExprEvalStatus } from "../ExprEvalResult.js";
 import { getBuiltinMemberValue, toExpressionValue } from "../../builtin/BuiltinRuntimeValueConverter.js";
 
@@ -25,11 +25,11 @@ export class BuiltinPropertyAccessExpr extends Expr1<ExpressionValue, Expression
     _localCtx: Map<string, any>,
     subExpressionResult: ExpressionValue
   ): ExpressionValue | ExprEvalErrorObj {
-    if (!(subExpressionResult instanceof BuiltinObjectValue)) {
+    if (!(subExpressionResult instanceof ContextObjectValue)) {
       return new ExprEvalErrorObj(
         this.getKind(),
         ExprEvalStatus.TYPE_ERROR,
-        `Builtin member access '.${this.memberName}' requires a builtin object target`,
+        `Builtin member access '.${this.memberName}' requires a context object target`,
         this.getTextSpan()
       );
     }
@@ -53,3 +53,4 @@ export class BuiltinPropertyAccessExpr extends Expr1<ExpressionValue, Expression
     return this.type;
   }
 }
+
