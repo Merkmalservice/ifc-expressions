@@ -2,6 +2,10 @@ import { ContextObjectType } from "../type/ContextObjectType.js";
 import { IfcExpressionBuiltinConfigException } from "../error/IfcExpressionBuiltinConfigException.js";
 import { ExprType } from "../type/ExprType.js";
 import { Type } from "../type/Types.js";
+import { Expr } from "../expression/Expr.js";
+import { BuiltinRootReferenceExpr } from "../expression/reference/BuiltinRootReferenceExpr.js";
+import { ElemObjectReferenceExpr } from "../expression/reference/ElemObjectReferenceExpr.js";
+import { PropObjectReferenceExpr } from "../expression/reference/PropObjectReferenceExpr.js";
 
 export type BuiltinPropertyDefinition = {
   name: string;
@@ -36,12 +40,14 @@ export type BuiltinVariableDefinition = {
   name: string;
   type?: ExprType;
   members?: Array<BuiltinMemberDefinition>;
+  createReferenceExpr?: () => Expr<any>;
 };
 
 export type RegisteredBuiltinVariableDefinition = {
   name: string;
   type: ExprType;
   members: Map<string, BuiltinMemberDefinition>;
+  createReferenceExpr: () => Expr<any>;
 };
 
 export class BuiltinVariableRegistry {
@@ -49,10 +55,12 @@ export class BuiltinVariableRegistry {
     {
       name: "element",
       type: Type.IFC_ELEMENT_REF,
+      createReferenceExpr: () => new ElemObjectReferenceExpr(),
     },
     {
       name: "property",
       type: Type.IFC_PROPERTY_REF,
+      createReferenceExpr: () => new PropObjectReferenceExpr(),
     },
   ]);
 
@@ -116,10 +124,14 @@ export class BuiltinVariableRegistry {
       members.size > 0
         ? new ContextObjectType(definition.name, baseType, members)
         : baseType;
+    const createReferenceExpr =
+      definition.createReferenceExpr ??
+      (() => new BuiltinRootReferenceExpr(definition.name, resolvedType));
     this.builtinVariables.set(normalizedName, {
       name: definition.name,
       type: resolvedType,
       members,
+      createReferenceExpr,
     });
   }
 
@@ -139,4 +151,3 @@ export class BuiltinVariableRegistry {
     return members;
   }
 }
-

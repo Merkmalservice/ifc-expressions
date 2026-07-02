@@ -39,8 +39,6 @@ import { MinusExpr } from "../expression/numeric/MinusExpr.js";
 import { ParserRuleContext } from "antlr4";
 import { MultiplyExpr } from "../expression/numeric/MultiplyExpr.js";
 import { DivideExpr } from "../expression/numeric/DivideExpr.js";
-import { PropObjectReferenceExpr } from "../expression/reference/PropObjectReferenceExpr.js";
-import { ElemObjectReferenceExpr } from "../expression/reference/ElemObjectReferenceExpr.js";
 import { StringLiteralExpr } from "../expression/string/StringLiteralExpr.js";
 import { ArrayExpr } from "../expression/structure/ArrayExpr.js";
 import { FunctionExpr } from "../expression/function/FunctionExpr.js";
@@ -72,7 +70,6 @@ import {
   isBuiltinPropertyDefinition,
 } from "../builtin/BuiltinVariableRegistry.js";
 import { ContextObjectType } from "../type/ContextObjectType.js";
-import { BuiltinRootReferenceExpr } from "../expression/reference/BuiltinRootReferenceExpr.js";
 import { BuiltinPropertyAccessExpr } from "../expression/reference/BuiltinPropertyAccessExpr.js";
 import { BuiltinFunctionCallExpr } from "../expression/reference/BuiltinFunctionCallExpr.js";
 
@@ -109,17 +106,8 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     const builtin = this.builtinVariableRegistry.getDefinition(
       ctx.IDENTIFIER().getText()
     );
-    if (builtin?.name === "property") {
-      return this.associateContextAndReturn(new PropObjectReferenceExpr(), ctx);
-    }
-    if (builtin?.name === "element") {
-      return this.associateContextAndReturn(new ElemObjectReferenceExpr(), ctx);
-    }
     if (!isNullish(builtin)) {
-      return this.associateContextAndReturn(
-        new BuiltinRootReferenceExpr(builtin.name, builtin.type),
-        ctx
-      );
+      return this.associateContextAndReturn(builtin.createReferenceExpr(), ctx);
     }
     throw new Error(`Parsing error: No variable '${ctx.getText()}' found  `);
   };
@@ -477,6 +465,8 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     return this.visit(ctx.getChild(0));
   };
 }
+
+
 
 
 

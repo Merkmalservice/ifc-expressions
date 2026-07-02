@@ -3,6 +3,7 @@ import {
   isBuiltinFunctionDefinition,
   isBuiltinPropertyDefinition,
 } from "../src/builtin/BuiltinVariableRegistry.js";
+import { ExprKind } from "../src/IfcExpression.js";
 import { IfcExpressionBuiltinConfigException } from "../src/error/IfcExpressionBuiltinConfigException.js";
 import { ContextObjectType } from "../src/type/ContextObjectType.js";
 import { Type } from "../src/type/Types.js";
@@ -18,6 +19,15 @@ describe("BuiltinVariableRegistry", () => {
     expect(BuiltinVariableRegistry.getDefinition("property")?.type).toBe(
       Type.IFC_PROPERTY_REF
     );
+  });
+
+  it("creates reference expressions for built-in IFC roots through the registry", () => {
+    expect(
+      BuiltinVariableRegistry.getDefinition("element")?.createReferenceExpr().getKind()
+    ).toBe(ExprKind.REF_ELEMENT);
+    expect(
+      BuiltinVariableRegistry.getDefinition("property")?.createReferenceExpr().getKind()
+    ).toBe(ExprKind.REF_PROPERTY);
   });
 
   it("normalizes names consistently", () => {
@@ -70,6 +80,9 @@ describe("BuiltinVariableRegistry", () => {
     expect(queryDefinition?.type).toBeInstanceOf(ContextObjectType);
     expect(queryDefinition?.type.isSubTypeOf(Type.CONTEXT_OBJECT_REF)).toBe(true);
     expect(queryDefinition?.type.overlapsWith(Type.IFC_OBJECT_REF)).toBe(false);
+    expect(queryDefinition?.createReferenceExpr().getKind()).toBe(
+      ExprKind.REF_BUILTIN_ROOT
+    );
 
     const propertyMember = queryDefinition?.members.get("PROPERTY");
     const matchesMember = queryDefinition?.members.get("MATCHES");
