@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Add protected client-defined builtins configured through `BuiltinVariableRegistry`
+- Add static typing for dotted builtin member access such as `$result.statusCode` and `$query.matches('name')`
+- Add runtime evaluation for client builtin objects supplied through `IfcExpressionContext.resolveBuiltinVariable(name)`
+- Add `CONTEXT_OBJECT_REF` / `ContextObjectType` for client-supplied evaluation-context objects
+- Add tests covering client builtin parsing, evaluation, and builtin-root compilation
+
+### Changed
+
+- Route `$element` and `$property` through the builtin registry root-resolution mechanism instead of compiler name checks
+- Keep IFC object references distinct from client context-object references
+
 ## 2.3.0 - 2025-06-25
 
 ### Fixed

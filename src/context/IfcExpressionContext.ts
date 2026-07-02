@@ -1,8 +1,9 @@
-import { IfcPropertyAccessor } from "./IfcPropertyAccessor.js";
-import { IfcElementAccessor } from "./IfcElementAccessor.js";
+import { ExprType } from "../type/ExprType.js";
 
 export interface IfcExpressionContext {
-  resolvePropRef(): IfcPropertyAccessor;
+  resolvePropRef();
 
-  resolveElemRef(): IfcElementAccessor;
+  resolveElemRef();
+
+  resolveBuiltinVariable(name: string): unknown;
 }

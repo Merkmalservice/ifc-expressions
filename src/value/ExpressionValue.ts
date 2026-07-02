@@ -10,6 +10,7 @@ import { IfcDateTimeValue } from "./IfcDateTimeValue.js";
 import { IfcTimeValue } from "./IfcTimeValue.js";
 import { IfcDurationValue } from "./IfcDurationValue.js";
 import { IfcTimeStampValue } from "./IfcTimeStampValue.js";
+import { ContextObjectValue } from "./ContextObjectValue.js";
 
 export type ExpressionValue =
   | NumericValue
@@ -23,4 +24,6 @@ export type ExpressionValue =
   | IfcTimeStampValue
   | ReferenceValue
   | ObjectAccessorValue
+  | ContextObjectValue
   | ArrayValue;
+

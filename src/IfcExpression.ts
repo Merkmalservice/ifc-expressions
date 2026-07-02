@@ -58,6 +58,9 @@ import { SimpleType } from "./type/SimpleType.js";
 import { TupleType } from "./type/TupleType.js";
 import { TypeDisjunction } from "./type/TypeDisjunction.js";
 import { Types } from "./type/Types.js";
+import { ContextObjectType } from "./type/ContextObjectType.js";
+import { BuiltinVariableRegistry } from "./builtin/BuiltinVariableRegistry.js";
+import { IfcExpressionOptions } from "./IfcExpressionOptions.js";
 
 export {
   IfcElementAccessor,
@@ -100,19 +103,28 @@ export {
   TupleType,
   TypeDisjunction,
   Types,
+  ContextObjectType,
+  BuiltinVariableRegistry,
 };
 
-export type { BoxedValueTypes };
+export type { BoxedValueTypes, IfcExpressionOptions };
 
 export class IfcExpressionParseResult {
   private readonly _input: string;
   private readonly _typeManager: TypeManager;
   private readonly _parseTree: ParserRuleContext;
+  private readonly _builtinVariableRegistry: BuiltinVariableRegistry;
 
-  constructor(input: string, typeManager: TypeManager, exprContext) {
+  constructor(
+    input: string,
+    typeManager: TypeManager,
+    exprContext,
+    builtinVariableRegistry: BuiltinVariableRegistry
+  ) {
     this._typeManager = typeManager;
     this._parseTree = exprContext;
     this._input = input;
+    this._builtinVariableRegistry = builtinVariableRegistry;
   }
 
   get typeManager(): TypeManager {
@@ -126,20 +138,21 @@ export class IfcExpressionParseResult {
   get input(): string {
     return this._input;
   }
+
+  get builtinVariableRegistry(): BuiltinVariableRegistry {
+    return this._builtinVariableRegistry;
+  }
 }
 
 export class IfcExpression {
-  /**
-   * Parses the input and returns a parse result, which contains the parse tree, the type information per parse tree node, and the input.
-   * @param input
-   * @param errorListener
-   * @return the parse result, which can subequently be compiled into an Expr using compile().
-   */
   public static parse(
     input: string,
-    errorListener?: ErrorListener<Token | number>
+    errorListener?: ErrorListener<Token | number>,
+    options: IfcExpressionOptions = {}
   ): IfcExpressionParseResult {
-    const chars = new CharStream(input); // replace this with a FileStream as required
+    const builtinVariableRegistry =
+      options.builtinVariableRegistry ?? BuiltinVariableRegistry.getDefaultRegistry();
+    const chars = new CharStream(input);
     const lexer = new IfcExpressionLexer(chars);
     const tokens = new CommonTokenStream(lexer);
     const parser = new IfcExpressionParser(tokens);
@@ -154,7 +167,9 @@ export class IfcExpression {
     parser.addErrorListener(myErrorListener);
     let expr;
     expr = parser.expr();
-    const validationListener = new IfcExpressionValidationListener();
+    const validationListener = new IfcExpressionValidationListener(
+      builtinVariableRegistry
+    );
     if (!myErrorListener.isErrorOccurred()) {
       const walker = new ParseTreeWalker();
       try {
@@ -171,19 +186,18 @@ export class IfcExpression {
     return new IfcExpressionParseResult(
       input,
       validationListener.getTypeManager(),
-      expr
+      expr,
+      builtinVariableRegistry
     );
   }
 
-  /**
-   * Compiles the specified parseResult into an Expr.
-   * @param parseResult
-   * @return the Expression (Expr), which can be evaluated to obtain its result.
-   */
   public static compile(
     parseResult: IfcExpressionParseResult
   ): ExprFacade<ExpressionValue> {
-    const compiler = new ExprCompiler(parseResult.typeManager);
+    const compiler = new ExprCompiler(
+      parseResult.typeManager,
+      parseResult.builtinVariableRegistry
+    );
     const expr = compiler.visit(parseResult.parseTree);
     ExprToTextInputLinker.linkTextToExpressions(
       parseResult.input,
@@ -193,20 +207,13 @@ export class IfcExpression {
     return new ExprFacade(expr);
   }
 
-  /**
-   * Evaluates the specified input expression and returns the evaluation result. The parse
-   * and compile steps are done internally.
-   *
-   * @param expression: the input expression
-   * @param context: the context required for accessing the IFC model
-   * @return the result (or an error object).
-   */
   public static evaluate(
     expression: string,
-    context: IfcExpressionContext = new NopContext()
+    context: IfcExpressionContext = new NopContext(),
+    options: IfcExpressionOptions = {}
   ): ExprEvalResult<ExpressionValue> {
     const errorListener = new IfcExpressionErrorListener();
-    const parseResult = IfcExpression.parse(expression, errorListener);
+    const parseResult = IfcExpression.parse(expression, errorListener, options);
     if (errorListener.isErrorOccurred()) {
       return mapException(errorListener.getException());
     }
@@ -242,3 +249,9 @@ export class IfcExpression {
     return expr.evaluate(context);
   }
 }
+
+
+
+
+
+

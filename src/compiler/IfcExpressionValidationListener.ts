@@ -10,6 +10,8 @@ import {
   LogicalLiteralContext,
   MethodCallChainEndContext,
   MethodCallChainInnerContext,
+  MethodFunctionCallContext,
+  MethodPropertyAccessContext,
   NumLiteralContext,
   SEAddSubContext,
   SEArrayExprContext,
@@ -38,13 +40,29 @@ import { ExpressionTypeError } from "../error/ExpressionTypeError.js";
 import { isNullish } from "../util/IfcExpressionUtils.js";
 import { ValidationException } from "../error/ValidationException.js";
 import { ExprType } from "../type/ExprType.js";
+import {
+  BuiltinVariableRegistry,
+  isBuiltinFunctionDefinition,
+  isBuiltinPropertyDefinition,
+} from "../builtin/BuiltinVariableRegistry.js";
+import { ContextObjectType } from "../type/ContextObjectType.js";
+import { NoSuchMemberException } from "../error/NoSuchMemberException.js";
+import { NoSuchMethodException } from "../error/NoSuchMethodException.js";
+import { WrongFunctionArgumentTypeException } from "../error/WrongFunctionArgumentTypeException.js";
+import { MissingFunctionArgumentException } from "../error/MissingFunctionArgumentException.js";
+import { SpuriousFunctionArgumentException } from "../error/SpuriousFunctionArgumentException.js";
 
 export class IfcExpressionValidationListener extends IfcExpressionListener {
   private readonly typeManager: TypeManager;
-  private methodCallTargetStack = [];
-  constructor() {
+  private methodCallTargetStack: Array<[ParserRuleContext, ExprType]> = [];
+  private readonly builtinVariableRegistry: BuiltinVariableRegistry;
+
+  constructor(
+    builtinVariableRegistry: BuiltinVariableRegistry = BuiltinVariableRegistry.getDefaultRegistry()
+  ) {
     super();
     this.typeManager = new TypeManager();
+    this.builtinVariableRegistry = builtinVariableRegistry;
   }
 
   public getTypeManager(): TypeManager {
@@ -53,7 +71,15 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
 
   enterFunctionCall: (ctx: FunctionCallContext) => void = (ctx) => {
     if (!IfcExpressionFunctions.isBuiltinFunction(ctx.IDENTIFIER().getText())) {
-      throw new NoSuchFunctionException(ctx.IDENTIFIER().getText(), ctx);
+      const parent = ctx.parentCtx;
+      const grandParent = parent?.parentCtx;
+      const isMethodAccessor =
+        parent instanceof MethodFunctionCallContext &&
+        (grandParent instanceof MethodCallChainInnerContext ||
+          grandParent instanceof MethodCallChainEndContext);
+      if (!isMethodAccessor) {
+        throw new NoSuchFunctionException(ctx.IDENTIFIER().getText(), ctx);
+      }
     }
   };
 
@@ -127,16 +153,15 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   };
 
   exitSEVariableRef: (ctx: SEVariableRefContext) => void = (ctx) => {
-    switch (ctx._sub.IDENTIFIER().getText()) {
-      case "property":
-        this.typeManager.setType(ctx, Type.IFC_PROPERTY_REF);
-        return;
-      case "element":
-        this.typeManager.setType(ctx, Type.IFC_ELEMENT_REF);
-        return;
+    const builtin = this.builtinVariableRegistry.getDefinition(
+      ctx._sub.IDENTIFIER().getText()
+    );
+    if (builtin) {
+      this.typeManager.setType(ctx, builtin.type);
+      return;
     }
     throw new ValidationException(
-      `Encountered Variable ref that was neither $property nor $element`,
+      `Encountered Variable ref that was neither a built-in variable nor a configured client builtin`,
       ctx
     );
   };
@@ -184,7 +209,7 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   private pushMethodCallTarget(ctx: ParserRuleContext) {
     if (ctx.parentCtx["_target"]) {
       const targetType = this.typeManager.getType(ctx.parentCtx["_target"]);
-      this.methodCallTargetStack.push([ctx, targetType]);
+      this.methodCallTargetStack.push([ctx.parentCtx["_target"], targetType]);
     } else {
       throw new ValidationException(
         "Did not find expected context attribute 'target' in parent rule context",
@@ -194,23 +219,116 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   }
 
   exitMethodCallChainEnd: (ctx: MethodCallChainEndContext) => void = (ctx) => {
+    this.typeManager.copyTypeFrom(ctx, ctx._call);
+  };
+
+
+  exitMethodFunctionCall: (ctx: MethodFunctionCallContext) => void = (ctx) => {
     this.typeManager.copyTypeFrom(ctx, ctx.functionCall());
   };
 
+  exitMethodPropertyAccess: (ctx: MethodPropertyAccessContext) => void = (ctx) => {
+    const [_, targetType] = this.popMethodCallTarget(ctx);
+    if (!(targetType instanceof ContextObjectType)) {
+      throw new NoSuchMemberException(ctx.IDENTIFIER().getText(), targetType.getName(), ctx);
+    }
+    const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
+    if (!isBuiltinPropertyDefinition(member)) {
+      throw new NoSuchMemberException(ctx.IDENTIFIER().getText(), targetType.getName(), ctx);
+    }
+    this.typeManager.setType(ctx, member.valueType);
+  };
+
   exitFunctionCall: (ctx: FunctionCallContext) => void = (ctx) => {
-    const func = IfcExpressionFunctions.getFunction(ctx.IDENTIFIER().getText());
     const argumentTypes = this.collectArgumentTypes(ctx.exprList());
     const parent = ctx.parentCtx;
-    if (
-      parent instanceof MethodCallChainInnerContext ||
-      parent instanceof MethodCallChainEndContext ||
-      parent instanceof SEMethodCallContext
-    ) {
-      argumentTypes.unshift(this.methodCallTargetStack.pop());
+    const grandParent = parent?.parentCtx;
+    const isMethodAccessor =
+      parent instanceof MethodFunctionCallContext &&
+      (grandParent instanceof MethodCallChainInnerContext ||
+        grandParent instanceof MethodCallChainEndContext);
+
+    if (isMethodAccessor) {
+      const [targetCtx, targetType] = this.popMethodCallTarget(ctx);
+      if (targetType instanceof ContextObjectType) {
+        const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
+        if (!isBuiltinFunctionDefinition(member)) {
+          throw new NoSuchMethodException(
+            ctx.IDENTIFIER().getText(),
+            targetType.getName(),
+            ctx
+          );
+        }
+        this.checkBuiltinFunctionArguments(
+          ctx.IDENTIFIER().getText(),
+          member.argumentTypes,
+          argumentTypes,
+          ctx
+        );
+        this.typeManager.setType(ctx, member.returnType);
+        return;
+      }
+      argumentTypes.unshift([targetCtx, targetType]);
+    }
+
+    const func = IfcExpressionFunctions.getFunction(ctx.IDENTIFIER().getText());
+    if (isNullish(func)) {
+      throw new NoSuchFunctionException(ctx.IDENTIFIER().getText(), ctx);
     }
     const returnType = func.checkArgumentsAndGetReturnType(argumentTypes, ctx);
     this.typeManager.setType(ctx, returnType);
   };
+
+  private checkBuiltinFunctionArguments(
+    functionName: string,
+    expectedArgumentTypes: Array<ExprType>,
+    providedArgumentTypes: Array<[ParserRuleContext, ExprType]>,
+    ctx: ParserRuleContext
+  ) {
+    if (providedArgumentTypes.length > expectedArgumentTypes.length) {
+      throw new SpuriousFunctionArgumentException(
+        functionName,
+        "[unexpected argument]",
+        expectedArgumentTypes.length,
+        ctx,
+        `Function expects (at most) ${expectedArgumentTypes.length} arguments`
+      );
+    }
+    for (let i = 0; i < expectedArgumentTypes.length; i++) {
+      if (providedArgumentTypes.length <= i) {
+        throw new MissingFunctionArgumentException(
+          functionName,
+          `[arg${i}]`,
+          i,
+          ctx
+        );
+      }
+      Types.requireWeakIsAssignableFrom(
+        expectedArgumentTypes[i],
+        providedArgumentTypes[i][1],
+        () =>
+          new WrongFunctionArgumentTypeException(
+            functionName,
+            `[arg${i}]`,
+            expectedArgumentTypes[i],
+            providedArgumentTypes[i][1],
+            i,
+            providedArgumentTypes[i][0]
+          )
+      );
+    }
+  }
+
+  private popMethodCallTarget(ctx: ParserRuleContext): [ParserRuleContext, ExprType] {
+    const target = this.methodCallTargetStack.pop();
+    if (isNullish(target)) {
+      throw new ValidationException(
+        "Did not find expected method call target on stack",
+        ctx
+      );
+    }
+    return target;
+  }
 
   private collectArgumentTypes: (
     ctx: ExprListContext,
@@ -263,9 +381,16 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
 
   exitArrayElementList: (ctx: ArrayElementListContext) => void;
   exitVariableRef: (ctx: VariableRefContext) => void = (ctx) => {
+    const builtinTypes = [Type.IFC_PROPERTY_REF, Type.IFC_ELEMENT_REF];
+    const otherBuiltinDefinitions = ["property", "element"]
+      .map((name) => this.builtinVariableRegistry.getDefinition(name)?.type)
+      .filter((type) => !isNullish(type));
     this.typeManager.setType(
       ctx,
-      Types.or(Type.IFC_PROPERTY_REF, Type.IFC_ELEMENT_REF)
+      Types.or(...builtinTypes, ...otherBuiltinDefinitions)
     );
   };
 }
+
+
+

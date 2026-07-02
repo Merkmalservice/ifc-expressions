@@ -20,8 +20,13 @@ singleExpr:
     ;
 
 methodCallChain:
-DOT target=functionCall call=methodCallChain                # methodCallChainInner
-    | DOT call=functionCall                                 # methodCallChainEnd
+DOT target=methodAccessor call=methodCallChain             # methodCallChainInner
+    | DOT call=methodAccessor                              # methodCallChainEnd
+    ;
+
+methodAccessor:
+    functionCall                                           # MethodFunctionCall
+    | IDENTIFIER                                           # MethodPropertyAccess
     ;
 
 functionCall :

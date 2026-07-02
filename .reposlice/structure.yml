@@ -1,0 +1,110 @@
+schema_version: 1
+root:
+  path: .
+  kind: repo
+  direct_file_count: 11
+  children:
+    - path: .github
+      kind: directory
+      direct_file_count: 0
+      children:
+        - path: .github/workflows
+          kind: directory
+          direct_file_count: 1
+          children: []
+    - path: antlr4
+      kind: directory
+      direct_file_count: 1
+      children: []
+    - path: src
+      kind: directory
+      direct_file_count: 4
+      children:
+        - path: src/compiler
+          kind: directory
+          direct_file_count: 5
+          children: []
+        - path: src/context
+          kind: directory
+          direct_file_count: 9
+          children: []
+        - path: src/error
+          kind: directory
+          direct_file_count: 12
+          children:
+            - path: src/error/mapper
+              kind: directory
+              direct_file_count: 6
+              children: []
+            - path: src/error/value
+              kind: directory
+              direct_file_count: 1
+              children: []
+        - path: src/expression
+          kind: directory
+          direct_file_count: 13
+          children:
+            - path: src/expression/boolean
+              kind: directory
+              direct_file_count: 7
+              children: []
+            - path: src/expression/comparison
+              kind: directory
+              direct_file_count: 7
+              children: []
+            - path: src/expression/function
+              kind: directory
+              direct_file_count: 4
+              children:
+                - path: src/expression/function/arg
+                  kind: directory
+                  direct_file_count: 22
+                  children: []
+                - path: src/expression/function/impl
+                  kind: directory
+                  direct_file_count: 31
+                  children: []
+            - path: src/expression/numeric
+              kind: directory
+              direct_file_count: 7
+              children: []
+            - path: src/expression/poly
+              kind: directory
+              direct_file_count: 1
+              children: []
+            - path: src/expression/reference
+              kind: directory
+              direct_file_count: 2
+              children: []
+            - path: src/expression/string
+              kind: directory
+              direct_file_count: 2
+              children: []
+            - path: src/expression/structure
+              kind: directory
+              direct_file_count: 2
+              children: []
+        - path: src/grammar
+          kind: directory
+          direct_file_count: 1
+          children: []
+        - path: src/postprocess
+          kind: directory
+          direct_file_count: 2
+          children: []
+        - path: src/type
+          kind: directory
+          direct_file_count: 6
+          children: []
+        - path: src/util
+          kind: directory
+          direct_file_count: 3
+          children: []
+        - path: src/value
+          kind: directory
+          direct_file_count: 18
+          children: []
+    - path: test
+      kind: directory
+      direct_file_count: 9
+      children: []

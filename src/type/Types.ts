@@ -34,6 +34,7 @@ export class Type {
     "ifcTypeObjectRef",
     Type.IFC_OBJECT_REF
   );
+  static readonly CONTEXT_OBJECT_REF = new SimpleType("contextObjectRef");
   static readonly ARRAY = new SimpleType("array");
 }
 
@@ -111,6 +112,9 @@ export class Types {
   public static ifcObjectRef() {
     return Type.IFC_OBJECT_REF;
   }
+  public static contextObjectRef() {
+    return Type.CONTEXT_OBJECT_REF;
+  }
 
   public static requireIsAssignableFrom(
     expectedType: ExprType,
@@ -122,12 +126,6 @@ export class Types {
     }
   }
 
-  /**
-   * Requires overlap if actual is a disjunction, assignable from if it is a type
-   * @param expectedType
-   * @param actualType
-   * @param exceptionProducer
-   */
   public static requireWeakIsAssignableFrom(
     expectedType: ExprType,
     actualType: ExprType,
