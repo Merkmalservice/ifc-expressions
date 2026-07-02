@@ -28,11 +28,11 @@ describe("BuiltinVariableRegistry", () => {
     );
   });
 
-  it("supports client-defined reserved builtin names with typed members", () => {
+  it("supports context-object builtins with typed members", () => {
     const registry = new BuiltinVariableRegistry([
       {
         name: "$thequery",
-        type: Type.IFC_OBJECT_REF,
+        type: Type.CONTEXT_OBJECT_REF,
         members: [
           {
             name: "property",
@@ -49,7 +49,7 @@ describe("BuiltinVariableRegistry", () => {
       },
       {
         name: "$theresult",
-        type: Type.IFC_OBJECT_REF,
+        type: Type.CONTEXT_OBJECT_REF,
         members: [
           {
             name: "statusCode",
@@ -66,6 +66,9 @@ describe("BuiltinVariableRegistry", () => {
     expect(registry.isReservedName("theresult")).toBe(true);
 
     const queryDefinition = registry.getDefinition("$thequery");
+    expect(queryDefinition?.type.isSubTypeOf(Type.CONTEXT_OBJECT_REF)).toBe(true);
+    expect(queryDefinition?.type.overlapsWith(Type.IFC_OBJECT_REF)).toBe(false);
+
     const propertyMember = queryDefinition?.members.get("PROPERTY");
     const matchesMember = queryDefinition?.members.get("MATCHES");
 
@@ -87,8 +90,8 @@ describe("BuiltinVariableRegistry", () => {
     expect(
       () =>
         new BuiltinVariableRegistry([
-          { name: "$thequery", type: Type.IFC_OBJECT_REF },
-          { name: "thequery", type: Type.IFC_OBJECT_REF },
+          { name: "$thequery", type: Type.CONTEXT_OBJECT_REF },
+          { name: "thequery", type: Type.CONTEXT_OBJECT_REF },
         ])
     ).toThrow(IfcExpressionBuiltinConfigException);
 
@@ -97,7 +100,7 @@ describe("BuiltinVariableRegistry", () => {
         new BuiltinVariableRegistry([
           {
             name: "$theresult",
-            type: Type.IFC_OBJECT_REF,
+            type: Type.CONTEXT_OBJECT_REF,
             members: [
               {
                 name: "statusCode",

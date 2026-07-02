@@ -6,7 +6,14 @@ export interface Value<
   T extends
     | ValueType
     | BoxedValueTypes
-    | Array<Value<BoxedValueTypes | Array<Value<BoxedValueTypes>>>>
+    | Record<string, unknown>
+    | Array<
+        Value<
+          | BoxedValueTypes
+          | Record<string, unknown>
+          | Array<Value<BoxedValueTypes | Record<string, unknown>>>
+        >
+      >
 > {
   getValue(): T;
   equals(other: Value<any>): boolean;

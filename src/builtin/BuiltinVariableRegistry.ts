@@ -1,3 +1,4 @@
+import { BuiltinObjectType } from "../type/BuiltinObjectType.js";
 import { IfcExpressionBuiltinConfigException } from "../error/IfcExpressionBuiltinConfigException.js";
 import { ExprType } from "../type/ExprType.js";
 import { Type } from "../type/Types.js";
@@ -33,14 +34,13 @@ export function isBuiltinFunctionDefinition(
 
 export type BuiltinVariableDefinition = {
   name: string;
-  type: ExprType;
+  type?: ExprType;
   members?: Array<BuiltinMemberDefinition>;
 };
 
-export type RegisteredBuiltinVariableDefinition = Omit<
-  BuiltinVariableDefinition,
-  "members"
-> & {
+export type RegisteredBuiltinVariableDefinition = {
+  name: string;
+  type: ExprType;
   members: Map<string, BuiltinMemberDefinition>;
 };
 
@@ -64,6 +64,10 @@ export class BuiltinVariableRegistry {
   constructor(definitions: Array<BuiltinVariableDefinition> = []) {
     this.builtinVariables = new Map();
     definitions.forEach((definition) => this.register(definition));
+  }
+
+  public static getDefaultRegistry() {
+    return this.defaultRegistry;
   }
 
   public static normalizeName(name: string): string {
@@ -105,9 +109,17 @@ export class BuiltinVariableRegistry {
         `cannot register builtin variable with name '${definition.name}': name already in use`
       );
     }
+    const members = this.registerMembers(definition);
+    const baseType =
+      definition.type ?? (members.size > 0 ? Type.CONTEXT_OBJECT_REF : Type.ANY);
+    const resolvedType =
+      members.size > 0
+        ? new BuiltinObjectType(definition.name, baseType, members)
+        : baseType;
     this.builtinVariables.set(normalizedName, {
-      ...definition,
-      members: this.registerMembers(definition),
+      name: definition.name,
+      type: resolvedType,
+      members,
     });
   }
 

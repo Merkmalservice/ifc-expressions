@@ -180,6 +180,8 @@ export const ctxSimple: any = {
 
   resolvePropRef: () => ctxSimple.propBewehrungsgrad,
 
+  resolveBuiltinVariable: (_name: string) => undefined,
+
   Decke: new (class extends IfcTypeObjectAccessor {
     getDescription(): string {
       return "Decke eines Geschosses";
@@ -337,3 +339,4 @@ export const ctxSimple: any = {
     }
   })(),
 };
+

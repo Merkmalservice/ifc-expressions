@@ -16,4 +16,10 @@ export class NopContext implements IfcExpressionContext {
       "No IfcExpressionContext implementation provided - cannot resolve property reference"
     );
   }
+
+  resolveBuiltinVariable(name: string): unknown {
+    throw new Error(
+      `No IfcExpressionContext implementation provided - cannot resolve builtin variable '${name}'`
+    );
+  }
 }

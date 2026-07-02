@@ -11,6 +11,8 @@ import {
   LogicalLiteralContext,
   MethodCallChainEndContext,
   MethodCallChainInnerContext,
+  MethodFunctionCallContext,
+  MethodPropertyAccessContext,
   NumLiteralContext,
   SEAddSubContext,
   SEArrayExprContext,
@@ -64,17 +66,30 @@ import { LessThanOrEqual } from "../expression/comparison/LessThanOrEqual.js";
 import { ExprManager } from "./ExprManager.js";
 import { LogicalValue } from "../value/LogicalValue.js";
 import { LogicalLiteralExpr } from "../expression/boolean/LogicalLiteralExpr.js";
-import { BuiltinVariableRegistry } from "../builtin/BuiltinVariableRegistry.js";
+import {
+  BuiltinVariableRegistry,
+  isBuiltinFunctionDefinition,
+  isBuiltinPropertyDefinition,
+} from "../builtin/BuiltinVariableRegistry.js";
+import { BuiltinObjectType } from "../type/BuiltinObjectType.js";
+import { BuiltinRootReferenceExpr } from "../expression/reference/BuiltinRootReferenceExpr.js";
+import { BuiltinPropertyAccessExpr } from "../expression/reference/BuiltinPropertyAccessExpr.js";
+import { BuiltinFunctionCallExpr } from "../expression/reference/BuiltinFunctionCallExpr.js";
 
 export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
-  private readonly methodCallTargetStack = [];
+  private readonly methodCallTargetStack: Array<Expr<any>> = [];
   private readonly typeManager: TypeManager;
   private readonly exprManager: ExprManager;
+  private readonly builtinVariableRegistry: BuiltinVariableRegistry;
 
-  constructor(typeManager: TypeManager) {
+  constructor(
+    typeManager: TypeManager,
+    builtinVariableRegistry: BuiltinVariableRegistry = BuiltinVariableRegistry.getDefaultRegistry()
+  ) {
     super();
     this.typeManager = typeManager;
     this.exprManager = new ExprManager();
+    this.builtinVariableRegistry = builtinVariableRegistry;
   }
 
   public getExprManager(): ExprManager {
@@ -85,20 +100,26 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     return this.visit(ctx.singleExpr());
   };
 
-  /*================================================
-   * VariableRef
-   *==============================================*/
-
   private associateContextAndReturn(expr: Expr<any>, ctx: ParserRuleContext) {
     this.exprManager.registerExprWithContext(expr, ctx);
     return expr;
   }
 
   visitVariableRef: (ctx: VariableRefContext) => Expr<any> = (ctx) => {
-    if (ctx.IDENTIFIER().getText().toUpperCase() === "PROPERTY") {
+    const builtin = this.builtinVariableRegistry.getDefinition(
+      ctx.IDENTIFIER().getText()
+    );
+    if (builtin?.name === "property") {
       return this.associateContextAndReturn(new PropObjectReferenceExpr(), ctx);
-    } else if (ctx.IDENTIFIER().getText().toUpperCase() === "ELEMENT") {
+    }
+    if (builtin?.name === "element") {
       return this.associateContextAndReturn(new ElemObjectReferenceExpr(), ctx);
+    }
+    if (!isNullish(builtin)) {
+      return this.associateContextAndReturn(
+        new BuiltinRootReferenceExpr(builtin.name, builtin.type),
+        ctx
+      );
     }
     throw new Error(`Parsing error: No variable '${ctx.getText()}' found  `);
   };
@@ -164,35 +185,71 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     );
   };
 
-  /*================================================
-   * MethodCallChain
-   *==============================================*/
-
   visitMethodCallChainInner: (ctx: MethodCallChainInnerContext) => Expr<any> = (
     ctx
   ) => {
-    const functionExpr = new FunctionExpr(
-      ctx.functionCall().IDENTIFIER().getText(),
-      this.collectFunctionArguments(ctx.functionCall().exprList(), [
-        this.methodCallTargetStack.pop(),
-      ])
-    );
-    this.associateContextAndReturn(functionExpr, ctx.functionCall());
-    this.methodCallTargetStack.push(functionExpr);
-    return this.visit(ctx.methodCallChain());
+    const accessExpr = this.visit(ctx._target);
+    this.methodCallTargetStack.push(accessExpr);
+    return this.visit(ctx._call);
   };
 
   visitMethodCallChainEnd: (ctx: MethodCallChainEndContext) => Expr<any> = (
     ctx
   ) => {
+    return this.visit(ctx._call);
+  };
+
+  visitMethodFunctionCall: (ctx: MethodFunctionCallContext) => Expr<any> = (
+    ctx
+  ) => {
+    const targetExpr = this.methodCallTargetStack.pop();
+    const functionName = ctx.functionCall().IDENTIFIER().getText();
+    const args = isNullish(ctx.functionCall().exprList())
+      ? []
+      : this.collectFunctionArguments(ctx.functionCall().exprList());
+    const targetType = targetExpr.getType();
+    if (targetType instanceof BuiltinObjectType) {
+      const member = targetType.getMemberDefinition(functionName);
+      if (isBuiltinFunctionDefinition(member)) {
+        return this.associateContextAndReturn(
+          new BuiltinFunctionCallExpr(
+            targetExpr,
+            member.name,
+            args,
+            member.returnType,
+            targetType.getName()
+          ),
+          ctx
+        );
+      }
+    }
     return this.associateContextAndReturn(
-      new FunctionExpr(
-        ctx.functionCall().IDENTIFIER().getText(),
-        this.collectFunctionArguments(ctx.functionCall().exprList(), [
-          this.methodCallTargetStack.pop(),
-        ])
-      ),
+      new FunctionExpr(functionName, [targetExpr, ...args]),
       ctx.functionCall()
+    );
+  };
+
+  visitMethodPropertyAccess: (ctx: MethodPropertyAccessContext) => Expr<any> = (
+    ctx
+  ) => {
+    const targetExpr = this.methodCallTargetStack.pop();
+    const targetType = targetExpr.getType();
+    if (targetType instanceof BuiltinObjectType) {
+      const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
+      if (isBuiltinPropertyDefinition(member)) {
+        return this.associateContextAndReturn(
+          new BuiltinPropertyAccessExpr(
+            targetExpr,
+            member.name,
+            member.valueType,
+            targetType.getName()
+          ),
+          ctx
+        );
+      }
+    }
+    throw new Error(
+      `Parsing error: No property '${ctx.getText()}' found for type '${targetType.getName()}'`
     );
   };
 
@@ -262,19 +319,11 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     }
   };
 
-  /*================================================
-   * StringExpr
-   *===============================================*/
-
   visitStringLiteral: (ctx: StringLiteralContext) => Expr<any> = (ctx) => {
     const quotedString = ctx.QUOTED_STRING().getText();
     const text = quotedString.substring(1, quotedString.length - 1);
     return this.associateContextAndReturn(new StringLiteralExpr(text), ctx);
   };
-
-  /*================================================
-   * NumExpr
-   *===============================================*/
 
   visitNumLiteral: (ctx: NumLiteralContext) => Expr<any> = (ctx) => {
     let val = ctx.INT();
@@ -311,10 +360,6 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
       ctx
     );
   };
-
-  /*================================================
-   * BooleanExpr
-   *===============================================*/
 
   visitSEBooleanBinaryOp: (ctx: SEBooleanBinaryOpContext) => Expr<any> = (
     ctx
@@ -361,7 +406,6 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
   };
 
   visitLogicalLiteral: (ctx: LogicalLiteralContext) => Expr<any> = (ctx) => {
-    // the only literal we recognize is 'UNKNOWN' (true and false are boolean literals)
     return this.associateContextAndReturn(
       new LogicalLiteralExpr(LogicalValue.UNKNOWN_VALUE),
       ctx
@@ -374,10 +418,6 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
       ctx
     );
   };
-
-  /*================================================
-   * ArrayExpr
-   *===============================================*/
 
   visitArrayExpr: (ctx: ArrayExprContext) => Expr<any> = (ctx) => {
     return this.associateContextAndReturn(
@@ -401,10 +441,6 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     }
     return [];
   };
-
-  /*================================================
-   * FuncExpr
-   *===============================================*/
 
   visitFunctionCall: (ctx: FunctionCallContext) => Expr<any> = (ctx) => {
     const args = isNullish(ctx.exprList())
@@ -441,4 +477,8 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     return this.visit(ctx.getChild(0));
   };
 }
+
+
+
+
 
