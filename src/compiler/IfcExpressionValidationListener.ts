@@ -38,6 +38,7 @@ import { ExpressionTypeError } from "../error/ExpressionTypeError.js";
 import { isNullish } from "../util/IfcExpressionUtils.js";
 import { ValidationException } from "../error/ValidationException.js";
 import { ExprType } from "../type/ExprType.js";
+import { BuiltinVariableRegistry } from "../builtin/BuiltinVariableRegistry.js";
 
 export class IfcExpressionValidationListener extends IfcExpressionListener {
   private readonly typeManager: TypeManager;
@@ -269,3 +270,4 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     );
   };
 }
+

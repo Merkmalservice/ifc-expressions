@@ -64,6 +64,7 @@ import { LessThanOrEqual } from "../expression/comparison/LessThanOrEqual.js";
 import { ExprManager } from "./ExprManager.js";
 import { LogicalValue } from "../value/LogicalValue.js";
 import { LogicalLiteralExpr } from "../expression/boolean/LogicalLiteralExpr.js";
+import { BuiltinVariableRegistry } from "../builtin/BuiltinVariableRegistry.js";
 
 export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
   private readonly methodCallTargetStack = [];
@@ -440,3 +441,4 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     return this.visit(ctx.getChild(0));
   };
 }
+
