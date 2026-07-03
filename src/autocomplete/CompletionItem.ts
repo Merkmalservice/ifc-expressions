@@ -12,10 +12,20 @@ export type CompletionItem = {
   argumentTypeNames?: Array<string>;
   returnTypeName?: string;
   chainable?: boolean;
+  documentation?: string;
+};
+
+export type ActiveHelp = {
+  label: string;
+  documentation: string;
+  activeParameterIndex?: number;
+  activeParameterLabel?: string;
+  activeParameterDocumentation?: string;
 };
 
 export type CompletionResult = {
   items: Array<CompletionItem>;
   replaceFrom: number;
   replaceTo: number;
+  activeHelp?: ActiveHelp;
 };

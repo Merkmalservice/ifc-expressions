@@ -6,6 +6,7 @@ import {
 } from "antlr4ng";
 import { CandidatesCollection, CodeCompletionCore, ICandidateRule } from "antlr4-c3";
 import {
+  BuiltinFunctionDefinition,
   BuiltinMemberDefinition,
   BuiltinVariableRegistry,
 } from "../builtin/BuiltinVariableRegistry.js";
@@ -29,9 +30,14 @@ import { IfcExpressionFunctions } from "../expression/function/IfcExpressionFunc
 import { ContextObjectType } from "../type/ContextObjectType.js";
 import { ExprType } from "../type/ExprType.js";
 import { CompletionItem, CompletionResult } from "./CompletionItem.js";
+import {
+  DocumentationLocalizer,
+  resolveLocalizedText,
+} from "../documentation/Documentation.js";
 
 export type IfcExpressionAutocompleteOptions = {
   builtinVariableRegistry?: BuiltinVariableRegistry;
+  localizer?: DocumentationLocalizer;
 };
 
 type CompletedAccessorStep =
@@ -415,7 +421,231 @@ function toFunctionInsertText(name: string): string {
   return `${name}()`;
 }
 
-function toFunctionItem(name: string): CompletionItem {
+function buildSignatureLabel(name: string, argumentLabels: Array<string>): string {
+  return `${name}(${argumentLabels.join(", ")})`;
+}
+
+function buildFunctionDocumentation(
+  name: string,
+  localizer?: DocumentationLocalizer
+): string | undefined {
+  const func = IfcExpressionFunctions.getFunction(name);
+  const documentation = func?.getDocumentation();
+  if (!func || !documentation) {
+    return undefined;
+  }
+
+  const fallback = `${func.getSignatureLabel(name)}: ${documentation.fallback}`;
+  return localizer ? localizer.t(documentation.key, fallback) : fallback;
+}
+
+function buildMemberDocumentation(
+  definition: BuiltinMemberDefinition,
+  localizer?: DocumentationLocalizer
+): string | undefined {
+  if (!definition.documentation) {
+    return undefined;
+  }
+
+  const fallback =
+    definition.kind === "property"
+      ? `${definition.name}: ${definition.documentation.fallback}`
+      : `${buildSignatureLabel(
+          definition.name,
+          (definition.argumentDocumentation ?? []).map((argument, index) =>
+            argument.label.fallback ?? `arg${index}`
+          )
+        )}: ${definition.documentation.fallback}`;
+
+  return localizer
+    ? localizer.t(definition.documentation.key, fallback)
+    : fallback;
+}
+
+function buildRootDocumentation(
+  name: string,
+  documentation,
+  localizer?: DocumentationLocalizer
+): string | undefined {
+  if (!documentation) {
+    return undefined;
+  }
+
+  const fallback = documentation.fallback;
+  return localizer ? localizer.t(documentation.key, fallback) : fallback;
+}
+
+type CallFrame = {
+  kind: "function" | "group" | "array";
+  name?: string;
+  argumentIndex: number;
+  startTokenIndex?: number;
+};
+
+function findActiveCallFrame(
+  tokens: Array<Token>,
+  cursorOffset: number
+): CallFrame | undefined {
+  const stack: Array<CallFrame> = [];
+  let previousSignificantToken: Token | undefined;
+
+  for (const token of tokens) {
+    if (token.type === Token.EOF || token.start >= cursorOffset) {
+      break;
+    }
+
+    if (
+      token.type === IfcExpressionParser.WS ||
+      token.type === IfcExpressionParser.NEWLINE
+    ) {
+      continue;
+    }
+
+    if (token.type === IfcExpressionParser.T__1) {
+      stack.push(
+        previousSignificantToken?.type === IfcExpressionParser.IDENTIFIER
+          ? {
+              kind: "function",
+              name: previousSignificantToken.text ?? undefined,
+              argumentIndex: 0,
+              startTokenIndex: previousSignificantToken.tokenIndex,
+            }
+          : { kind: "group", argumentIndex: 0 }
+      );
+    } else if (token.type === IfcExpressionParser.T__10) {
+      stack.push({ kind: "array", argumentIndex: 0 });
+    } else if (
+      token.type === IfcExpressionParser.T__2 ||
+      token.type === IfcExpressionParser.T__11
+    ) {
+      stack.pop();
+    } else if (token.type === IfcExpressionParser.T__9) {
+      const currentFrame = stack[stack.length - 1];
+      if (currentFrame?.kind === "function") {
+        currentFrame.argumentIndex += 1;
+      }
+    }
+
+    previousSignificantToken = token;
+  }
+
+  for (let i = stack.length - 1; i >= 0; i--) {
+    if (stack[i].kind === "function") {
+      return stack[i];
+    }
+  }
+
+  return undefined;
+}
+
+function buildMemberSignatureLabel(
+  definition: BuiltinFunctionDefinition
+): string {
+  return buildSignatureLabel(
+    definition.name,
+    (definition.argumentDocumentation ?? []).map((argument, index) =>
+      argument.label.fallback ?? `arg${index}`
+    )
+  );
+}
+
+function buildActiveMemberHelp(
+  parseTree: ParserRuleContext,
+  builtinVariableRegistry: BuiltinVariableRegistry,
+  activeFrame: CallFrame,
+  localizer?: DocumentationLocalizer
+): CompletionResult["activeHelp"] {
+  if (activeFrame.startTokenIndex === undefined || !activeFrame.name) {
+    return undefined;
+  }
+
+  const receiverType = findReceiverTypeForMemberSlot(
+    parseTree,
+    activeFrame.startTokenIndex,
+    builtinVariableRegistry
+  );
+  if (!(receiverType instanceof ContextObjectType)) {
+    return undefined;
+  }
+
+  const memberDefinition = receiverType.getMemberDefinition(activeFrame.name);
+  if (memberDefinition?.kind !== "function" || !memberDefinition.documentation) {
+    return undefined;
+  }
+
+  const label = buildMemberSignatureLabel(memberDefinition);
+  const fallback = memberDefinition.documentation.fallback.startsWith(`${label}: `)
+    ? memberDefinition.documentation.fallback
+    : `${label}: ${memberDefinition.documentation.fallback}`;
+  const activeArgument = memberDefinition.argumentDocumentation?.[
+    activeFrame.argumentIndex
+  ];
+
+  return {
+    label,
+    documentation: localizer
+      ? localizer.t(memberDefinition.documentation.key, fallback)
+      : fallback,
+    activeParameterIndex: activeFrame.argumentIndex,
+    activeParameterLabel: activeArgument
+      ? resolveLocalizedText(activeArgument.label, localizer) ??
+        activeArgument.label.fallback
+      : undefined,
+    activeParameterDocumentation: activeArgument
+      ? resolveLocalizedText(activeArgument.documentation, localizer)
+      : undefined,
+  };
+}
+
+function buildActiveHelp(
+  parseTree: ParserRuleContext,
+  builtinVariableRegistry: BuiltinVariableRegistry,
+  tokens: Array<Token>,
+  cursorOffset: number,
+  localizer?: DocumentationLocalizer
+): CompletionResult["activeHelp"] {
+  const activeFrame = findActiveCallFrame(tokens, cursorOffset);
+  if (!activeFrame?.name) {
+    return undefined;
+  }
+
+  const memberHelp = buildActiveMemberHelp(
+    parseTree,
+    builtinVariableRegistry,
+    activeFrame,
+    localizer
+  );
+  if (memberHelp) {
+    return memberHelp;
+  }
+
+  const func = IfcExpressionFunctions.getFunction(activeFrame.name);
+  const documentation = func?.getDocumentation();
+  if (!func || !documentation) {
+    return undefined;
+  }
+
+  const activeArgument = func.getFormalArguments()[activeFrame.argumentIndex];
+  const label = func.getSignatureLabel(activeFrame.name);
+  const fallback = `${label}: ${documentation.fallback}`;
+  return {
+    label,
+    documentation: localizer ? localizer.t(documentation.key, fallback) : fallback,
+    activeParameterIndex: activeFrame.argumentIndex,
+    activeParameterLabel: activeArgument
+      ? resolveLocalizedText(activeArgument.displayLabel, localizer) ??
+        activeArgument.displayLabel?.fallback ??
+        activeArgument.name
+      : undefined,
+    activeParameterDocumentation: activeArgument
+      ? resolveLocalizedText(activeArgument.documentation, localizer)
+      : undefined,
+  };
+}
+function toFunctionItem(
+  name: string,
+  localizer?: DocumentationLocalizer
+): CompletionItem {
   const insertText = toFunctionInsertText(name);
 
   return {
@@ -423,16 +653,21 @@ function toFunctionItem(name: string): CompletionItem {
     label: name,
     insertText,
     cursorOffset: insertText.length - 1,
+    documentation: buildFunctionDocumentation(name, localizer),
   };
 }
 
-function toMemberItem(definition: BuiltinMemberDefinition): CompletionItem {
+function toMemberItem(
+  definition: BuiltinMemberDefinition,
+  localizer?: DocumentationLocalizer
+): CompletionItem {
   if (definition.kind === "property") {
     return {
       kind: "builtinMemberProperty",
       label: definition.name,
       returnTypeName: toCompletionTypeName(definition.valueType),
       chainable: isChainableType(definition.valueType),
+      documentation: buildMemberDocumentation(definition, localizer),
     };
   }
 
@@ -446,6 +681,7 @@ function toMemberItem(definition: BuiltinMemberDefinition): CompletionItem {
     argumentTypeNames: definition.argumentTypes.map((type) => type.getName()),
     returnTypeName: toCompletionTypeName(definition.returnType),
     chainable: isChainableType(definition.returnType),
+    documentation: buildMemberDocumentation(definition, localizer),
   };
 }
 
@@ -497,6 +733,13 @@ export class IfcExpressionAutocomplete {
       parsed.parseTree
     );
     const ruleCandidates = candidates.rules;
+    const activeHelp = buildActiveHelp(
+      parsed.parseTree,
+      builtinVariableRegistry,
+      parsed.tokens,
+      cursorOffset,
+      options.localizer
+    );
 
     const memberCandidate = getMemberRuleCandidate(ruleCandidates);
     if (memberCandidate) {
@@ -506,6 +749,7 @@ export class IfcExpressionAutocomplete {
           items: [],
           replaceFrom: cursorOffset,
           replaceTo: cursorOffset,
+          activeHelp,
         };
       }
 
@@ -519,13 +763,14 @@ export class IfcExpressionAutocomplete {
           items: [],
           replaceFrom: range.from,
           replaceTo: range.to,
+          activeHelp,
         };
       }
 
       const typedPrefix = normalizeForMatch(input.slice(range.from, range.to));
       const items = receiverType
         .getMemberDefinitions()
-        .map(toMemberItem)
+        .map((definition) => toMemberItem(definition, options.localizer))
         .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
         .sort((left, right) => left.label.localeCompare(right.label));
 
@@ -533,6 +778,7 @@ export class IfcExpressionAutocomplete {
         items,
         replaceFrom: range.from,
         replaceTo: range.to,
+        activeHelp,
       };
     }
 
@@ -542,7 +788,7 @@ export class IfcExpressionAutocomplete {
         input.slice(functionRange.from, functionRange.to)
       );
       const items = IfcExpressionFunctions.getBuiltinFunctionNames()
-        .map(toFunctionItem)
+        .map((name) => toFunctionItem(name, options.localizer))
         .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
         .sort((left, right) => left.label.localeCompare(right.label));
 
@@ -551,6 +797,7 @@ export class IfcExpressionAutocomplete {
           items,
           replaceFrom: functionRange.from,
           replaceTo: functionRange.to,
+          activeHelp,
         };
       }
     }
@@ -561,6 +808,7 @@ export class IfcExpressionAutocomplete {
         items: [],
         replaceFrom: cursorOffset,
         replaceTo: cursorOffset,
+        activeHelp,
       };
     }
 
@@ -570,6 +818,11 @@ export class IfcExpressionAutocomplete {
       .map((definition) => ({
         kind: "builtinRoot" as const,
         label: toBuiltinLabel(definition.name),
+        documentation: buildRootDocumentation(
+          definition.name,
+          definition.documentation,
+          options.localizer
+        ),
       }))
       .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
       .sort((left, right) => left.label.localeCompare(right.label));
@@ -578,9 +831,17 @@ export class IfcExpressionAutocomplete {
       items,
       replaceFrom: range.from,
       replaceTo: range.to,
+      activeHelp,
     };
   }
 }
+
+
+
+
+
+
+
 
 
 

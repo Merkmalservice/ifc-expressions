@@ -18,10 +18,12 @@ import { ParserRuleContext } from "antlr4ng";
 import { FunctionExpr } from "./FunctionExpr.js";
 import { Expr } from "../Expr.js";
 import { SpuriousFunctionArgumentException } from "../../error/SpuriousFunctionArgumentException.js";
+import { LocalizedText } from "../../documentation/Documentation.js";
 
 export abstract class Func {
   protected name: string;
   protected formalArguments: Array<FuncArg<unknown>>;
+  protected documentationRef?: LocalizedText;
 
   protected constructor(name: string, args: Array<FuncArg<unknown>>) {
     this.name = name;
@@ -35,6 +37,33 @@ export abstract class Func {
   }
 
   public abstract getReturnType(argumentTypes: Array<ExprType>): ExprType;
+
+  public withDocumentation(documentation: LocalizedText): this {
+    this.documentationRef = documentation;
+    return this;
+  }
+
+  public getDocumentation(): LocalizedText | undefined {
+    return this.documentationRef;
+  }
+
+  public getFormalArguments(): ReadonlyArray<FuncArg<unknown>> {
+    return this.formalArguments;
+  }
+
+  public getSignatureLabel(displayName = this.name): string {
+    const preferredArguments = this.formalArguments.filter(
+      (argument) => argument.displayLabel !== undefined
+    );
+    const signatureArguments =
+      preferredArguments.length > 0
+        ? preferredArguments
+        : this.formalArguments.filter((argument) => argument.required);
+    const labels = signatureArguments.map(
+      (argument) => argument.displayLabel?.fallback ?? argument.name
+    );
+    return `${displayName}(${labels.join(", ")})`;
+  }
 
   public checkArgumentsAndGetReturnType(
     argumentTypes: Array<[ParserRuleContext, ExprType]>,
@@ -114,36 +143,16 @@ export abstract class Func {
     return this.calculateResult(callingExpr, argumentsReadyForUse);
   }
 
-  /**
-   * Subclasses must provide the funcation evaluation code here.
-   * @param callingExpr
-   * @param evaluatedArguments
-   * @protected
-   */
   protected abstract calculateResult(
     callingExpr: FunctionExpr,
     evaluatedArguments: Map<string, ExpressionValue>
   ): ExprEvalResult<ExpressionValue>;
 
-  /**
-   * Override to transform individual arguments if needed. After this step, if any of the ExprEvalResult objects in the
-   * returned array is an ExprEvalError, the function evaluation fails.
-   * @param callingExpr
-   * @param evaluatedArguments
-   * @protected
-   */
   protected transformArguments(
     callingExpr: Expr<any>,
     evaluatedArguments: Map<string, ExprEvalResult<ExpressionValue>>
   ): void {}
 
-  /**
-   * Gets the argument values from the list of provided arguments in the form of 'name' -> ExprEvalResult (which may contain errors).
-   * Generates an error if a required value is missing.
-   * @param callingExpr
-   * @param provided
-   * @protected
-   */
   protected getArgumentValues(
     callingExpr: FunctionExpr,
     provided: Array<ExprEvalResult<ExpressionValue>>
