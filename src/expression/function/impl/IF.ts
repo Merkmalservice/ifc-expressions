@@ -15,7 +15,7 @@ import { Type, Types } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
 import { FuncArgAny } from "../arg/FuncArgAny.js";
 import { FuncArgLogicalOrBoolean } from "../arg/FuncArgLogicalOrBoolean.js";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { ExprKind } from "../../ExprKind.js";
 import { SpuriousFunctionArgumentException } from "../../../error/SpuriousFunctionArgumentException.js";
 import { MissingFunctionArgumentException } from "../../../error/MissingFunctionArgumentException.js";
@@ -142,3 +142,4 @@ export class IF extends Func {
     );
   }
 }
+

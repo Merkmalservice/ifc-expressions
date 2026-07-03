@@ -1,38 +1,37 @@
-import { ErrorListener, RecognitionException, Recognizer, Token } from "antlr4";
+import {
+  BaseErrorListener,
+  RecognitionException,
+  Recognizer,
+  Token,
+} from "antlr4ng";
 import { isNullish, isPresent } from "./util/IfcExpressionUtils.js";
 import { SyntaxErrorException } from "./error/SyntaxErrorException.js";
 import { ValidationException } from "./error/ValidationException.js";
 
-export class IfcExpressionErrorListener extends ErrorListener<Token | number> {
+export class IfcExpressionErrorListener extends BaseErrorListener {
   private exception: SyntaxErrorException | ValidationException;
 
   validationException(validationException: ValidationException) {
     this.exception = validationException;
   }
 
-  syntaxError(
-    recognizer: Recognizer<Token | number>,
-    offendingSymbol: Token | number,
+  override syntaxError<
+    S extends Token,
+    T extends import("antlr4ng").ATNSimulator
+  >(
+    recognizer: Recognizer<T>,
+    offendingSymbol: S | null,
     line: number,
     column: number,
     msg: string,
-    e: RecognitionException | undefined
+    e: RecognitionException | null
   ) {
-    if (typeof offendingSymbol === "number") {
-      this.exception = new SyntaxErrorException(
-        offendingSymbol,
-        line,
-        column,
-        msg
-      );
-    } else {
-      this.exception = new SyntaxErrorException(
-        isNullish(offendingSymbol) ? "[no symbol]" : offendingSymbol.text,
-        line,
-        column,
-        msg
-      );
-    }
+    this.exception = new SyntaxErrorException(
+      isNullish(offendingSymbol) ? "[no symbol]" : offendingSymbol.text,
+      line,
+      column,
+      msg
+    );
   }
 
   public isErrorOccurred(): boolean {

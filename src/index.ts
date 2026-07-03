@@ -41,8 +41,13 @@ export {
   TupleType,
   TypeDisjunction,
   Types,
+  ContextObjectType,
+  BuiltinVariableRegistry,
+  IfcExpressionAutocomplete,
 } from "./IfcExpression.js";
 
-export type { BoxedValueTypes } from "./IfcExpression.js";
+export type { BoxedValueTypes, CompletionItem, CompletionResult, IfcExpressionOptions } from "./IfcExpression.js";
 
 export { E } from "./E.js";
+
+

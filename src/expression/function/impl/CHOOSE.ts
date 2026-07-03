@@ -19,7 +19,7 @@ import { TypeDisjunction } from "../../../type/TypeDisjunction.js";
 import { WrongFunctionArgumentTypeException } from "../../../error/WrongFunctionArgumentTypeException.js";
 import { Type, Types } from "../../../type/Types.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 
 export class CHOOSE extends Func {
   private static readonly ARG_NAME_CASES = "cases";
@@ -126,3 +126,4 @@ export class CHOOSE extends Func {
     return new ExprEvalSuccessObj(defaultValue);
   }
 }
+

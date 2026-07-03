@@ -6,6 +6,7 @@ import { InvalidSyntaxException } from "../src/error/InvalidSyntaxException.js";
 import { ExpressionTypeError } from "../src/error/ExpressionTypeError.js";
 import { WrongFunctionArgumentTypeException } from "../src/error/WrongFunctionArgumentTypeException.js";
 import { Type, Types } from "../src/type/Types.js";
+import { BuiltinVariableRegistry } from "../src/builtin/BuiltinVariableRegistry.js";
 import { ExprType } from "../src/type/ExprType.js";
 import { MissingFunctionArgumentException } from "../src/error/MissingFunctionArgumentException.js";
 import { SpuriousFunctionArgumentException } from "../src/error/SpuriousFunctionArgumentException.js";
@@ -92,8 +93,8 @@ const cases = [
   ["'Hello' + ' ' + 'world'", null, Type.STRING],
 
   // Object reference
-  ["$element", null, Type.IFC_ELEMENT_REF],
-  ["$property", null, Type.IFC_PROPERTY_REF],
+  ["$element", null, BuiltinVariableRegistry.getDefinition("element")!.type],
+  ["$property", null, BuiltinVariableRegistry.getDefinition("property")!.type],
   ["$element.ifcClass()", null, Type.STRING],
   ["$element.name()", null, Type.STRING],
   ["$element.description()", null, Type.STRING],
@@ -307,3 +308,5 @@ describe.each(cases)(
     });
   }
 );
+
+

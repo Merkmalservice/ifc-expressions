@@ -1,4 +1,4 @@
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { Expr } from "../expression/Expr.js";
 import { ValidationException } from "../error/ValidationException.js";
 import { isNullish } from "../util/IfcExpressionUtils.js";
@@ -23,3 +23,4 @@ export class ExprManager {
     return this.contextToExpr.get(expr);
   }
 }
+

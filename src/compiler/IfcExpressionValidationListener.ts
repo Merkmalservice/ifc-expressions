@@ -1,4 +1,4 @@
-import IfcExpressionListener from "../gen/parser/IfcExpressionListener.js";
+import { IfcExpressionListener } from "../gen/parser/IfcExpressionListener.js";
 import {
   ArrayElementListContext,
   ArrayExprContext,
@@ -34,7 +34,7 @@ import { IfcExpressionFunctions } from "../expression/function/IfcExpressionFunc
 import { NoSuchFunctionException } from "../error/NoSuchFunctionException.js";
 import { InvalidSyntaxException } from "../error/InvalidSyntaxException.js";
 import { Type, Types } from "../type/Types.js";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { TypeManager } from "./TypeManager.js";
 import { ExpressionTypeError } from "../error/ExpressionTypeError.js";
 import { isNullish } from "../util/IfcExpressionUtils.js";
@@ -71,8 +71,8 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
 
   enterFunctionCall: (ctx: FunctionCallContext) => void = (ctx) => {
     if (!IfcExpressionFunctions.isBuiltinFunction(ctx.IDENTIFIER().getText())) {
-      const parent = ctx.parentCtx;
-      const grandParent = parent?.parentCtx;
+      const parent = ctx.parent;
+      const grandParent = parent?.parent;
       const isMethodAccessor =
         parent instanceof MethodFunctionCallContext &&
         (grandParent instanceof MethodCallChainInnerContext ||
@@ -207,9 +207,9 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   };
 
   private pushMethodCallTarget(ctx: ParserRuleContext) {
-    if (ctx.parentCtx["_target"]) {
-      const targetType = this.typeManager.getType(ctx.parentCtx["_target"]);
-      this.methodCallTargetStack.push([ctx.parentCtx["_target"], targetType]);
+    if (ctx.parent["_target"]) {
+      const targetType = this.typeManager.getType(ctx.parent["_target"]);
+      this.methodCallTargetStack.push([ctx.parent["_target"], targetType]);
     } else {
       throw new ValidationException(
         "Did not find expected context attribute 'target' in parent rule context",
@@ -222,27 +222,36 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     this.typeManager.copyTypeFrom(ctx, ctx._call);
   };
 
-
   exitMethodFunctionCall: (ctx: MethodFunctionCallContext) => void = (ctx) => {
     this.typeManager.copyTypeFrom(ctx, ctx.functionCall());
   };
 
-  exitMethodPropertyAccess: (ctx: MethodPropertyAccessContext) => void = (ctx) => {
+  exitMethodPropertyAccess: (ctx: MethodPropertyAccessContext) => void = (
+    ctx
+  ) => {
     const [_, targetType] = this.popMethodCallTarget(ctx);
     if (!(targetType instanceof ContextObjectType)) {
-      throw new NoSuchMemberException(ctx.IDENTIFIER().getText(), targetType.getName(), ctx);
+      throw new NoSuchMemberException(
+        ctx.IDENTIFIER().getText(),
+        targetType.getName(),
+        ctx
+      );
     }
     const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
     if (!isBuiltinPropertyDefinition(member)) {
-      throw new NoSuchMemberException(ctx.IDENTIFIER().getText(), targetType.getName(), ctx);
+      throw new NoSuchMemberException(
+        ctx.IDENTIFIER().getText(),
+        targetType.getName(),
+        ctx
+      );
     }
     this.typeManager.setType(ctx, member.valueType);
   };
 
   exitFunctionCall: (ctx: FunctionCallContext) => void = (ctx) => {
     const argumentTypes = this.collectArgumentTypes(ctx.exprList());
-    const parent = ctx.parentCtx;
-    const grandParent = parent?.parentCtx;
+    const parent = ctx.parent;
+    const grandParent = parent?.parent;
     const isMethodAccessor =
       parent instanceof MethodFunctionCallContext &&
       (grandParent instanceof MethodCallChainInnerContext ||
@@ -251,7 +260,9 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     if (isMethodAccessor) {
       const [targetCtx, targetType] = this.popMethodCallTarget(ctx);
       if (targetType instanceof ContextObjectType) {
-        const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
+        const member = targetType.getMemberDefinition(
+          ctx.IDENTIFIER().getText()
+        );
         if (!isBuiltinFunctionDefinition(member)) {
           throw new NoSuchMethodException(
             ctx.IDENTIFIER().getText(),
@@ -319,7 +330,9 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     }
   }
 
-  private popMethodCallTarget(ctx: ParserRuleContext): [ParserRuleContext, ExprType] {
+  private popMethodCallTarget(
+    ctx: ParserRuleContext
+  ): [ParserRuleContext, ExprType] {
     const target = this.methodCallTargetStack.pop();
     if (isNullish(target)) {
       throw new ValidationException(
@@ -391,6 +404,3 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     );
   };
 }
-
-
-

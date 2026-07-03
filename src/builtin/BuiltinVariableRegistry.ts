@@ -1,7 +1,7 @@
 import { ContextObjectType } from "../type/ContextObjectType.js";
 import { IfcExpressionBuiltinConfigException } from "../error/IfcExpressionBuiltinConfigException.js";
 import { ExprType } from "../type/ExprType.js";
-import { Type } from "../type/Types.js";
+import { Type, Types } from "../type/Types.js";
 import { Expr } from "../expression/Expr.js";
 import { BuiltinRootReferenceExpr } from "../expression/reference/BuiltinRootReferenceExpr.js";
 import { ElemObjectReferenceExpr } from "../expression/reference/ElemObjectReferenceExpr.js";
@@ -50,16 +50,100 @@ export type RegisteredBuiltinVariableDefinition = {
   createReferenceExpr: () => Expr<any>;
 };
 
+function ifcElementMembers(): Array<BuiltinMemberDefinition> {
+  return [
+    {
+      name: "name",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "guid",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "ifcClass",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "description",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "property",
+      kind: "function",
+      returnType: Type.IFC_PROPERTY_REF,
+      argumentTypes: [Type.STRING],
+    },
+    {
+      name: "propertySet",
+      kind: "function",
+      returnType: Type.IFC_PROPERTY_SET_REF,
+      argumentTypes: [Type.STRING],
+    },
+    {
+      name: "type",
+      kind: "function",
+      returnType: Type.IFC_TYPE_OBJECT_REF,
+      argumentTypes: [],
+    },
+  ];
+}
+
+function ifcPropertyMembers(): Array<BuiltinMemberDefinition> {
+  return [
+    {
+      name: "name",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "ifcClass",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "description",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "propertySet",
+      kind: "function",
+      returnType: Type.IFC_PROPERTY_SET_REF,
+      argumentTypes: [],
+    },
+    {
+      name: "value",
+      kind: "function",
+      returnType: Types.or(Type.STRING, Type.NUMERIC, Type.BOOLEAN, Type.ARRAY),
+      argumentTypes: [],
+    },
+  ];
+}
+
 export class BuiltinVariableRegistry {
   private static readonly defaultRegistry = new BuiltinVariableRegistry([
     {
       name: "element",
       type: Type.IFC_ELEMENT_REF,
+      members: ifcElementMembers(),
       createReferenceExpr: () => new ElemObjectReferenceExpr(),
     },
     {
       name: "property",
       type: Type.IFC_PROPERTY_REF,
+      members: ifcPropertyMembers(),
       createReferenceExpr: () => new PropObjectReferenceExpr(),
     },
   ]);
@@ -108,6 +192,10 @@ export class BuiltinVariableRegistry {
     name: string
   ): RegisteredBuiltinVariableDefinition | undefined {
     return this.builtinVariables.get(BuiltinVariableRegistry.normalizeName(name));
+  }
+
+  public getDefinitions(): Array<RegisteredBuiltinVariableDefinition> {
+    return [...this.builtinVariables.values()];
   }
 
   private register(definition: BuiltinVariableDefinition) {

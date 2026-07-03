@@ -29,6 +29,10 @@ export class ContextObjectType implements ExprType {
     return this.members.get(name?.replace(/^\$/, "").toUpperCase());
   }
 
+  getMemberDefinitions(): Array<BuiltinMemberDefinition> {
+    return [...this.members.values()];
+  }
+
   getName(): string {
     return this.name;
   }

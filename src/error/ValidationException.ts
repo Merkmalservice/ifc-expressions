@@ -1,4 +1,4 @@
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 
 export class ValidationException extends Error {
   public readonly fromLine: number;
@@ -32,3 +32,4 @@ export class ValidationException extends Error {
     }
   }
 }
+

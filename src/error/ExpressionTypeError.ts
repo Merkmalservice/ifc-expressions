@@ -1,4 +1,4 @@
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { ValidationException } from "./ValidationException.js";
 
 export class ExpressionTypeError extends ValidationException {
@@ -6,3 +6,4 @@ export class ExpressionTypeError extends ValidationException {
     super(`Type error: ${message}`, ctx);
   }
 }
+

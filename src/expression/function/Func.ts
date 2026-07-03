@@ -14,7 +14,7 @@ import { Types } from "../../type/Types.js";
 import { MissingFunctionArgumentException } from "../../error/MissingFunctionArgumentException.js";
 import { WrongFunctionArgumentTypeException } from "../../error/WrongFunctionArgumentTypeException.js";
 import { ExprType } from "../../type/ExprType.js";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { FunctionExpr } from "./FunctionExpr.js";
 import { Expr } from "../Expr.js";
 import { SpuriousFunctionArgumentException } from "../../error/SpuriousFunctionArgumentException.js";
@@ -210,3 +210,4 @@ export abstract class Func {
     }
   }
 }
+

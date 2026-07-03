@@ -1,4 +1,4 @@
-import IfcExpressionVisitor from "../gen/parser/IfcExpressionVisitor.js";
+import { IfcExpressionVisitor } from "../gen/parser/IfcExpressionVisitor.js";
 import { NumericLiteralExpr } from "../expression/numeric/NumericLiteralExpr.js";
 import {
   ArrayElementListContext,
@@ -36,7 +36,7 @@ import { isNullish, isPresent } from "../util/IfcExpressionUtils.js";
 import Decimal from "decimal.js";
 import { PlusExpr } from "../expression/numeric/PlusExpr.js";
 import { MinusExpr } from "../expression/numeric/MinusExpr.js";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { MultiplyExpr } from "../expression/numeric/MultiplyExpr.js";
 import { DivideExpr } from "../expression/numeric/DivideExpr.js";
 import { StringLiteralExpr } from "../expression/string/StringLiteralExpr.js";
@@ -74,6 +74,9 @@ import { BuiltinPropertyAccessExpr } from "../expression/reference/BuiltinProper
 import { BuiltinFunctionCallExpr } from "../expression/reference/BuiltinFunctionCallExpr.js";
 
 export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
+  protected defaultResult(): Expr<any> | null {
+    return null;
+  }
   private readonly methodCallTargetStack: Array<Expr<any>> = [];
   private readonly typeManager: TypeManager;
   private readonly exprManager: ExprManager;
@@ -457,7 +460,7 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     return resultSoFar;
   };
 
-  private static failNode(ctx: ParserRuleContext) {
+  private static failNode(ctx: ParserRuleContext): never {
     throw new Error(`Cannot parse (sub)expression ${ctx.getText()}`);
   }
 
@@ -465,11 +468,3 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     return this.visit(ctx.getChild(0));
   };
 }
-
-
-
-
-
-
-
-

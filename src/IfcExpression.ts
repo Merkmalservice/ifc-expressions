@@ -1,11 +1,11 @@
 import {
+  ANTLRErrorListener,
   CharStream,
   CommonTokenStream,
-  ErrorListener,
   ParserRuleContext,
   ParseTreeWalker,
   Token,
-} from "antlr4";
+} from "antlr4ng";
 import { ExprCompiler } from "./compiler/ExprCompiler.js";
 import { IfcExpressionErrorListener } from "./IfcExpressionErrorListener.js";
 import { IfcExpressionValidationListener } from "./compiler/IfcExpressionValidationListener.js";
@@ -26,9 +26,9 @@ import { IfcPropertyAccessor } from "./context/IfcPropertyAccessor.js";
 import { IfcRootObjectAccessor } from "./context/IfcRootObjectAccessor.js";
 import { IfcTypeObjectAccessor } from "./context/IfcTypeObjectAccessor.js";
 import { NamedObjectAccessor } from "./context/NamedObjectAccessor.js";
-import IfcExpressionParser from "./gen/parser/IfcExpressionParser.js";
-import IfcExpressionVisitor from "./gen/parser/IfcExpressionVisitor.js";
-import IfcExpressionLexer from "./gen/parser/IfcExpressionLexer.js";
+import { IfcExpressionParser } from "./gen/parser/IfcExpressionParser.js";
+import { IfcExpressionVisitor } from "./gen/parser/IfcExpressionVisitor.js";
+import { IfcExpressionLexer } from "./gen/parser/IfcExpressionLexer.js";
 import { ObjectAccessor } from "./context/ObjectAccessor.js";
 import { IfcExpressionEvaluationException } from "./expression/IfcExpressionEvaluationException.js";
 import type { ExpressionValue } from "./value/ExpressionValue.js";
@@ -61,6 +61,12 @@ import { Types } from "./type/Types.js";
 import { ContextObjectType } from "./type/ContextObjectType.js";
 import { BuiltinVariableRegistry } from "./builtin/BuiltinVariableRegistry.js";
 import { IfcExpressionOptions } from "./IfcExpressionOptions.js";
+import { IfcExpressionAutocomplete } from "./autocomplete/IfcExpressionAutocomplete.js";
+import type {
+  CompletionItem,
+  CompletionResult,
+} from "./autocomplete/CompletionItem.js";
+import type { IfcExpressionAutocompleteOptions } from "./autocomplete/IfcExpressionAutocomplete.js";
 
 export {
   IfcElementAccessor,
@@ -105,9 +111,16 @@ export {
   Types,
   ContextObjectType,
   BuiltinVariableRegistry,
+  IfcExpressionAutocomplete,
 };
 
-export type { BoxedValueTypes, IfcExpressionOptions };
+export type {
+  BoxedValueTypes,
+  IfcExpressionOptions,
+  CompletionItem,
+  CompletionResult,
+  IfcExpressionAutocompleteOptions,
+};
 
 export class IfcExpressionParseResult {
   private readonly _input: string;
@@ -147,12 +160,13 @@ export class IfcExpressionParseResult {
 export class IfcExpression {
   public static parse(
     input: string,
-    errorListener?: ErrorListener<Token | number>,
+    errorListener?: ANTLRErrorListener,
     options: IfcExpressionOptions = {}
   ): IfcExpressionParseResult {
     const builtinVariableRegistry =
-      options.builtinVariableRegistry ?? BuiltinVariableRegistry.getDefaultRegistry();
-    const chars = new CharStream(input);
+      options.builtinVariableRegistry ??
+      BuiltinVariableRegistry.getDefaultRegistry();
+    const chars = CharStream.fromString(input);
     const lexer = new IfcExpressionLexer(chars);
     const tokens = new CommonTokenStream(lexer);
     const parser = new IfcExpressionParser(tokens);
@@ -249,9 +263,3 @@ export class IfcExpression {
     return expr.evaluate(context);
   }
 }
-
-
-
-
-
-
