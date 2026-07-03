@@ -28,4 +28,3 @@ export class WrongFunctionArgumentTypeException extends ExpressionTypeError {
     this.argumentIndex = argumentIndex;
   }
 }
-

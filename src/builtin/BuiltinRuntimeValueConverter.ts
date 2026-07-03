@@ -50,12 +50,17 @@ export function toExpressionValue(
         `Expected context object value for type ${expectedType.getName()}`
       );
     }
-    return new ContextObjectValue(value as Record<string, unknown>, expectedType);
+    return new ContextObjectValue(
+      value as Record<string, unknown>,
+      expectedType
+    );
   }
 
   if (expectedType instanceof TupleType) {
     if (!Array.isArray(value)) {
-      throw new Error(`Expected tuple value for type ${expectedType.getName()}`);
+      throw new Error(
+        `Expected tuple value for type ${expectedType.getName()}`
+      );
     }
     const itemTypes = expectedType.getTypes();
     return ArrayValue.of(
@@ -67,10 +72,14 @@ export function toExpressionValue(
 
   if (expectedType instanceof ArrayType) {
     if (!Array.isArray(value)) {
-      throw new Error(`Expected array value for type ${expectedType.getName()}`);
+      throw new Error(
+        `Expected array value for type ${expectedType.getName()}`
+      );
     }
     return ArrayValue.of(
-      value.map((item) => toExpressionValue(item, expectedType.getElementType()))
+      value.map((item) =>
+        toExpressionValue(item, expectedType.getElementType())
+      )
     );
   }
 
@@ -88,7 +97,9 @@ export function toExpressionValue(
   }
   if (expectedType.isSameTypeAs(Type.ARRAY)) {
     if (!Array.isArray(value)) {
-      throw new Error(`Expected array value for type ${expectedType.getName()}`);
+      throw new Error(
+        `Expected array value for type ${expectedType.getName()}`
+      );
     }
     return ArrayValue.of(value.map((item) => inferExpressionValue(item)));
   }
@@ -119,9 +130,14 @@ export function inferExpressionValue(
     return ArrayValue.of(value.map((item) => inferExpressionValue(item)));
   }
   if (typeof value === "object" && value !== null) {
-    return new ContextObjectValue(value as Record<string, unknown>, fallbackType);
+    return new ContextObjectValue(
+      value as Record<string, unknown>,
+      fallbackType
+    );
   }
-  throw new Error(`Cannot convert runtime context value '${value}' to expression value`);
+  throw new Error(
+    `Cannot convert runtime context value '${value}' to expression value`
+  );
 }
 
 export function unwrapExpressionValue(value: ExpressionValue): unknown {
@@ -149,6 +165,3 @@ export function getBuiltinMemberValue(
     ? undefined
     : objectValue[matchingKey];
 }
-
-
-

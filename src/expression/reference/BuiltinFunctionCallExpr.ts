@@ -3,11 +3,20 @@ import { ExprBase } from "../ExprBase.js";
 import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExpressionValue } from "../../value/ExpressionValue.js";
-import { ExprEvalErrorObj, ExprEvalResult, ExprEvalStatus, isExprEvalError } from "../ExprEvalResult.js";
+import {
+  ExprEvalErrorObj,
+  ExprEvalResult,
+  ExprEvalStatus,
+  isExprEvalError,
+} from "../ExprEvalResult.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
 import { ContextObjectValue } from "../../value/ContextObjectValue.js";
-import { getBuiltinMemberValue, toExpressionValue, unwrapExpressionValue } from "../../builtin/BuiltinRuntimeValueConverter.js";
+import {
+  getBuiltinMemberValue,
+  toExpressionValue,
+  unwrapExpressionValue,
+} from "../../builtin/BuiltinRuntimeValueConverter.js";
 
 export class BuiltinFunctionCallExpr extends ExprBase<ExpressionValue> {
   private readonly target: Expr<ExpressionValue>;
@@ -83,7 +92,9 @@ export class BuiltinFunctionCallExpr extends ExprBase<ExpressionValue> {
         this.getTextSpan()
       );
     }
-    return this.wrapInResultIfNecessary(toExpressionValue(rawResult, this.type));
+    return this.wrapInResultIfNecessary(
+      toExpressionValue(rawResult, this.type)
+    );
   }
 
   protected buildExprString(builder: ExprStringBuilder): void {
@@ -98,4 +109,3 @@ export class BuiltinFunctionCallExpr extends ExprBase<ExpressionValue> {
     return this.type;
   }
 }
-

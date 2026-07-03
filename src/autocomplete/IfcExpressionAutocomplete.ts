@@ -4,7 +4,11 @@ import {
   ParserRuleContext,
   Token,
 } from "antlr4ng";
-import { CandidatesCollection, CodeCompletionCore, ICandidateRule } from "antlr4-c3";
+import {
+  CandidatesCollection,
+  CodeCompletionCore,
+  ICandidateRule,
+} from "antlr4-c3";
 import {
   BuiltinFunctionDefinition,
   BuiltinMemberDefinition,
@@ -421,7 +425,10 @@ function toFunctionInsertText(name: string): string {
   return `${name}()`;
 }
 
-function buildSignatureLabel(name: string, argumentLabels: Array<string>): string {
+function buildSignatureLabel(
+  name: string,
+  argumentLabels: Array<string>
+): string {
   return `${name}(${argumentLabels.join(", ")})`;
 }
 
@@ -452,8 +459,8 @@ function buildMemberDocumentation(
       ? `${definition.name}: ${definition.documentation.fallback}`
       : `${buildSignatureLabel(
           definition.name,
-          (definition.argumentDocumentation ?? []).map((argument, index) =>
-            argument.label.fallback ?? `arg${index}`
+          (definition.argumentDocumentation ?? []).map(
+            (argument, index) => argument.label.fallback ?? `arg${index}`
           )
         )}: ${definition.documentation.fallback}`;
 
@@ -543,8 +550,8 @@ function buildMemberSignatureLabel(
 ): string {
   return buildSignatureLabel(
     definition.name,
-    (definition.argumentDocumentation ?? []).map((argument, index) =>
-      argument.label.fallback ?? `arg${index}`
+    (definition.argumentDocumentation ?? []).map(
+      (argument, index) => argument.label.fallback ?? `arg${index}`
     )
   );
 }
@@ -569,17 +576,21 @@ function buildActiveMemberHelp(
   }
 
   const memberDefinition = receiverType.getMemberDefinition(activeFrame.name);
-  if (memberDefinition?.kind !== "function" || !memberDefinition.documentation) {
+  if (
+    memberDefinition?.kind !== "function" ||
+    !memberDefinition.documentation
+  ) {
     return undefined;
   }
 
   const label = buildMemberSignatureLabel(memberDefinition);
-  const fallback = memberDefinition.documentation.fallback.startsWith(`${label}: `)
+  const fallback = memberDefinition.documentation.fallback.startsWith(
+    `${label}: `
+  )
     ? memberDefinition.documentation.fallback
     : `${label}: ${memberDefinition.documentation.fallback}`;
-  const activeArgument = memberDefinition.argumentDocumentation?.[
-    activeFrame.argumentIndex
-  ];
+  const activeArgument =
+    memberDefinition.argumentDocumentation?.[activeFrame.argumentIndex];
 
   return {
     label,
@@ -630,7 +641,9 @@ function buildActiveHelp(
   const fallback = `${label}: ${documentation.fallback}`;
   return {
     label,
-    documentation: localizer ? localizer.t(documentation.key, fallback) : fallback,
+    documentation: localizer
+      ? localizer.t(documentation.key, fallback)
+      : fallback,
     activeParameterIndex: activeFrame.argumentIndex,
     activeParameterLabel: activeArgument
       ? resolveLocalizedText(activeArgument.displayLabel, localizer) ??
@@ -835,14 +848,3 @@ export class IfcExpressionAutocomplete {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -8,4 +8,3 @@ export class InvalidSyntaxException extends ValidationException {
     this.offendingInput = offendingInput;
   }
 }
-

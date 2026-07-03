@@ -6,4 +6,3 @@ export class ExpressionTypeError extends ValidationException {
     super(`Type error: ${message}`, ctx);
   }
 }
-

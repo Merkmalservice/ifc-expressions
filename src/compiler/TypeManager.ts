@@ -132,4 +132,3 @@ export class TypeManager {
     return this.overlapsWith(Type.NUMERIC, ...ctxs);
   }
 }
-

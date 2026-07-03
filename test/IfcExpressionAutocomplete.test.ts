@@ -37,7 +37,8 @@ const registry = new BuiltinVariableRegistry([
     type: Type.CONTEXT_OBJECT_REF,
     documentation: {
       key: "builtin.$query.summary",
-      fallback: "$query: client-provided query object from the evaluation context",
+      fallback:
+        "$query: client-provided query object from the evaluation context",
     },
     members: [
       {
@@ -126,19 +127,27 @@ function complete(
   const text =
     cursor === -1
       ? textWithCursorMarker
-      : `${textWithCursorMarker.slice(0, cursor)}${textWithCursorMarker.slice(cursor + 1)}`;
+      : `${textWithCursorMarker.slice(0, cursor)}${textWithCursorMarker.slice(
+          cursor + 1
+        )}`;
 
-  return IfcExpressionAutocomplete.complete(text, cursor === -1 ? text.length : cursor, {
-    builtinVariableRegistry: registry,
-    ...options,
-  });
+  return IfcExpressionAutocomplete.complete(
+    text,
+    cursor === -1 ? text.length : cursor,
+    {
+      builtinVariableRegistry: registry,
+      ...options,
+    }
+  );
 }
 
 function completeLabels(
   textWithCursorMarker: string,
   options: IfcExpressionAutocompleteOptions = {}
 ) {
-  return complete(textWithCursorMarker, options).items.map((item) => item.label);
+  return complete(textWithCursorMarker, options).items.map(
+    (item) => item.label
+  );
 }
 
 const propertyMemberLabels = [
@@ -491,27 +500,27 @@ const builtinFunctionCoverageCases: Array<BuiltinFunctionCoverageCase> = [
 
 describe("IfcExpressionAutocomplete", () => {
   describe.each(completionCases)("complete('$text')", ({ text, expected }) => {
-    it(
-      `returns ${expected === null ? "no suggestions" : "the expected suggestions"}`,
-      () => {
-        expect(completeLabels(text)).toEqual(expected ?? []);
-      }
-    );
+    it(`returns ${
+      expected === null ? "no suggestions" : "the expected suggestions"
+    }`, () => {
+      expect(completeLabels(text)).toEqual(expected ?? []);
+    });
   });
 
   describe.each(builtinFunctionCoverageCases)(
     "builtin function coverage for $functionName",
     ({ functionName, text, expected }) => {
       it("uses a real builtin function name", () => {
-        expect(IfcExpressionFunctions.isBuiltinFunction(functionName)).toBe(true);
+        expect(IfcExpressionFunctions.isBuiltinFunction(functionName)).toBe(
+          true
+        );
       });
 
-      it(
-        `completes '${text}' to ${expected === null ? "nothing" : JSON.stringify(expected)}`,
-        () => {
-          expect(completeLabels(text)).toEqual(expected ?? []);
-        }
-      );
+      it(`completes '${text}' to ${
+        expected === null ? "nothing" : JSON.stringify(expected)
+      }`, () => {
+        expect(completeLabels(text)).toEqual(expected ?? []);
+      });
     }
   );
 
@@ -536,20 +545,27 @@ describe("IfcExpressionAutocomplete", () => {
   it("keeps builtin root metadata plain", () => {
     const result = complete("$");
 
-    expect(result.items.every((item) => item.kind === "builtinRoot")).toBe(true);
-    expect(result.items.every((item) => item.insertText === undefined)).toBe(true);
-    expect(result.items.every((item) => item.argumentTypeNames === undefined)).toBe(
+    expect(result.items.every((item) => item.kind === "builtinRoot")).toBe(
       true
     );
-    expect(result.items.every((item) => item.returnTypeName === undefined)).toBe(
+    expect(result.items.every((item) => item.insertText === undefined)).toBe(
       true
     );
-    expect(result.items.every((item) => item.chainable === undefined)).toBe(true);
-    expect(result.items.every((item) => item.cursorOffset === undefined)).toBe(true);
+    expect(
+      result.items.every((item) => item.argumentTypeNames === undefined)
+    ).toBe(true);
+    expect(
+      result.items.every((item) => item.returnTypeName === undefined)
+    ).toBe(true);
+    expect(result.items.every((item) => item.chainable === undefined)).toBe(
+      true
+    );
+    expect(result.items.every((item) => item.cursorOffset === undefined)).toBe(
+      true
+    );
     expect(result.replaceFrom).toBe(0);
     expect(result.replaceTo).toBe(1);
   });
-
 
   it("includes localized documentation for builtin function suggestions", () => {
     const result = complete("REP", { localizer });
@@ -642,8 +658,7 @@ describe("IfcExpressionAutocomplete", () => {
       documentation:
         "[builtin.$element.property.summary] property(name): property of the current IFC element by name",
       activeParameterIndex: 0,
-      activeParameterLabel:
-        "[builtin.$element.property.arg.name.label] name",
+      activeParameterLabel: "[builtin.$element.property.arg.name.label] name",
       activeParameterDocumentation:
         "[builtin.$element.property.arg.name.summary] The name of the property to resolve",
     });
@@ -671,9 +686,9 @@ describe("IfcExpressionAutocomplete", () => {
       const items = complete(text, { localizer }).items;
 
       expect(items.map((item) => item.label)).toEqual(labels);
-      expect(items.every((item) => item.documentation?.startsWith("[builtin."))).toBe(
-        true
-      );
+      expect(
+        items.every((item) => item.documentation?.startsWith("[builtin."))
+      ).toBe(true);
     });
   });
 
@@ -703,9 +718,3 @@ describe("IfcExpressionAutocomplete", () => {
     expect(result.replaceTo).toBe(8);
   });
 });
-
-
-
-
-
-
