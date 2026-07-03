@@ -38,6 +38,38 @@ const result2 = IfcExpression.evaluate(
 );
 ```
 
+## Plain JS Value Unwrapping
+
+`IfcExpression.evaluate(...)` returns library value objects such as `NumericValue`, `StringValue`, `LogicalValue`, `ContextObjectValue`, or IFC object references.
+If you want a plain value structure for downstream code, use `IfcExpression.unwrapValue(...)` on the successful result value.
+
+```ts
+import { IfcExpression, isExprEvalSuccess } from "ifc-expression";
+
+const evaluation = IfcExpression.evaluate("$result.statusCode", ctx, {
+  builtinVariableRegistry,
+});
+
+if (isExprEvalSuccess(evaluation)) {
+  const value = IfcExpression.unwrapValue(evaluation.result);
+  // value is a Decimal here
+}
+```
+
+`unwrapValue` preserves the expression model's precision and nullability semantics:
+
+- `NumericValue` and raw JS `number` values inside client builtin objects become `Decimal`
+- `StringValue` becomes `string`
+- `BooleanValue` becomes `boolean`
+- `LogicalValue.UNKNOWN` becomes `undefined`
+- `IfcTimeStampValue` becomes `Decimal`
+- `IfcDateValue`, `IfcDateTimeValue`, `IfcTimeValue`, and `IfcDurationValue` become their canonical string representation
+- arrays are unwrapped recursively
+- client builtin objects are unwrapped recursively to plain JS object structures
+- IFC object references such as `$element` and `$property` are unwrapped to plain objects containing their addressable attributes
+
+For IFC object references, unwrapping currently includes object attributes only. It does not recursively expand nested IFC object relations such as property sets or parent/child IFC objects.
+
 ## Client Builtins
 
 In addition to the built-in IFC roots `$element` and `$property`, clients can register their own reserved builtins.
@@ -130,6 +162,89 @@ const ctx: IfcExpressionContext = {
 
 `CONTEXT_OBJECT_REF` is intended for client-supplied evaluation-context objects.
 `IFC_OBJECT_REF` and its subtypes remain reserved for actual objects addressable in the IFC model.
+
+## Autocomplete
+
+`ifc-expressions` exposes autocomplete through `IfcExpressionAutocomplete.complete(input, cursorOffset, options)`.
+The autocompleter is aware of builtin roots, builtin functions, typed dotted member access, and function argument help.
+
+```ts
+import {
+  BuiltinVariableRegistry,
+  IfcExpressionAutocomplete,
+  Type,
+} from "ifc-expression";
+
+const builtinVariableRegistry = new BuiltinVariableRegistry([
+  {
+    name: "$query",
+    type: Type.CONTEXT_OBJECT_REF,
+    members: [
+      {
+        name: "property",
+        kind: "property",
+        valueType: Type.STRING,
+      },
+      {
+        name: "matches",
+        kind: "function",
+        argumentTypes: [Type.STRING],
+        returnType: Type.BOOLEAN,
+      },
+    ],
+  },
+]);
+
+const completion = IfcExpressionAutocomplete.complete("$query.mat", 10, {
+  builtinVariableRegistry,
+});
+
+console.log(completion.items);
+```
+
+The returned `CompletionResult` contains:
+
+- `items`: completion items for builtin roots, builtin functions, builtin member properties, and builtin member functions
+- `replaceFrom` and `replaceTo`: the text range to replace when applying a completion
+- `activeHelp`: optional signature help for the function or member function currently being typed
+
+Each `CompletionItem` can include:
+
+- `label`: the completion label
+- `insertText`: text to insert, for example `REPLACE()`
+- `cursorOffset`: where to place the cursor after insertion
+- `argumentTypeNames`: argument types for callable member suggestions
+- `returnTypeName`: return type for typed member suggestions
+- `chainable`: whether the suggested member returns another object that can be accessed with `...`
+- `documentation`: a localized one-line description
+
+### Autocomplete Hooks
+
+The autocomplete surface is shaped by two inputs:
+
+- `builtinVariableRegistry`: supplies reserved builtin roots and the typed member tree used for dotted access completion
+- `localizer`: translates builtin, member, and function documentation plus active argument help
+
+That means the same builtin definitions you use for parsing and evaluation also drive autocomplete. If a client registers `$thequery` or `$theresult`, those exact reserved names, their typed members, and their member functions participate in completion automatically.
+
+Example with localization:
+
+```ts
+const completion = IfcExpressionAutocomplete.complete("REP", 3, {
+  localizer: {
+    t(key, fallback) {
+      return translations[key] ?? fallback;
+    },
+  },
+});
+
+console.log(completion.items[0].label);
+// REPLACE
+console.log(completion.items[0].documentation);
+// e.g. "REPLACE(input, pattern, replacement): replace <pattern> in <input> with <replacement>"
+```
+
+When the cursor is inside a function call, `activeHelp` contains the current signature and the active parameter's label and documentation when available. This works for both global builtin functions and typed builtin member functions.
 
 ## Quick Reference
 
