@@ -1,7 +1,0 @@
-schema_version: 1
-config_fingerprint: '{"slice_patterns":[],"ignore_patterns":[]}'
-repo:
-  path: .
-  kind: repo
-  head_tree: 33d9db543727a0d2c55f88a3cfb3c65d73031132
-slices: []

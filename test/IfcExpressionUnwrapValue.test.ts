@@ -55,7 +55,9 @@ describe("IfcExpression.unwrapValue", () => {
   });
 
   it("unwraps IFC timestamps to Decimal", () => {
-    const unwrapped = IfcExpression.unwrapValue(IfcTimeStampValue.of("1727959984"));
+    const unwrapped = IfcExpression.unwrapValue(
+      IfcTimeStampValue.of("1727959984")
+    );
 
     expectDecimalEqual(unwrapped, "1727959984");
   });
@@ -148,9 +150,13 @@ describe("IfcExpression.unwrapValue", () => {
         },
       },
     });
-    expectDecimalEqual((unwrapped as Record<string, unknown>).statusCode, "200");
+    expectDecimalEqual(
+      (unwrapped as Record<string, unknown>).statusCode,
+      "200"
+    );
 
-    const payload = (unwrapped as Record<string, Record<string, unknown>>).payload;
+    const payload = (unwrapped as Record<string, Record<string, unknown>>)
+      .payload;
     expectDecimalEqual(payload.retries, "3");
 
     const tags = (unwrapped as Record<string, unknown[]>).tags;

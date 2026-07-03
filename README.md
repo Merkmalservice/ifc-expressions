@@ -86,11 +86,7 @@ Client builtins support:
 Example:
 
 ```ts
-import {
-  BuiltinVariableRegistry,
-  IfcExpression,
-  Type,
-} from "ifc-expression";
+import { BuiltinVariableRegistry, IfcExpression, Type } from "ifc-expression";
 
 const builtinVariableRegistry = new BuiltinVariableRegistry([
   {
@@ -123,9 +119,13 @@ const builtinVariableRegistry = new BuiltinVariableRegistry([
   },
 ]);
 
-const parseResult = IfcExpression.parse("$query.matches('name') && $result.statusCode == 200", undefined, {
-  builtinVariableRegistry,
-});
+const parseResult = IfcExpression.parse(
+  "$query.matches('name') && $result.statusCode == 200",
+  undefined,
+  {
+    builtinVariableRegistry,
+  }
+);
 ```
 
 At evaluation time, the context supplies the values for those builtins:

@@ -22,7 +22,11 @@ export class ContextObjectType implements ExprType {
   public static fromBuiltinDefinition(
     definition: RegisteredBuiltinVariableDefinition
   ) {
-    return new ContextObjectType(definition.name, definition.type, definition.members);
+    return new ContextObjectType(
+      definition.name,
+      definition.type,
+      definition.members
+    );
   }
 
   getMemberDefinition(name: string): BuiltinMemberDefinition | undefined {
@@ -46,7 +50,9 @@ export class ContextObjectType implements ExprType {
   }
 
   isSubTypeOf(other: ExprType): boolean {
-    return this.baseType.isSameTypeAs(other) || this.baseType.isSubTypeOf(other);
+    return (
+      this.baseType.isSameTypeAs(other) || this.baseType.isSubTypeOf(other)
+    );
   }
 
   overlapsWith(other: ExprType): boolean {

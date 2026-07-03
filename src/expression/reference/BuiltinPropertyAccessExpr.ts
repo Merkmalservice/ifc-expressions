@@ -6,14 +6,25 @@ import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
 import { ContextObjectValue } from "../../value/ContextObjectValue.js";
 import { ExprEvalErrorObj, ExprEvalStatus } from "../ExprEvalResult.js";
-import { getBuiltinMemberValue, toExpressionValue } from "../../builtin/BuiltinRuntimeValueConverter.js";
+import {
+  getBuiltinMemberValue,
+  toExpressionValue,
+} from "../../builtin/BuiltinRuntimeValueConverter.js";
 
-export class BuiltinPropertyAccessExpr extends Expr1<ExpressionValue, ExpressionValue> {
+export class BuiltinPropertyAccessExpr extends Expr1<
+  ExpressionValue,
+  ExpressionValue
+> {
   private readonly memberName: string;
   private readonly targetName: string;
   private readonly type: ExprType;
 
-  constructor(target: any, memberName: string, type: ExprType, targetName: string) {
+  constructor(
+    target: any,
+    memberName: string,
+    type: ExprType,
+    targetName: string
+  ) {
     super(ExprKind.REF_BUILTIN_MEMBER, target);
     this.memberName = memberName;
     this.targetName = targetName;
@@ -33,7 +44,10 @@ export class BuiltinPropertyAccessExpr extends Expr1<ExpressionValue, Expression
         this.getTextSpan()
       );
     }
-    const rawValue = getBuiltinMemberValue(subExpressionResult, this.memberName);
+    const rawValue = getBuiltinMemberValue(
+      subExpressionResult,
+      this.memberName
+    );
     if (rawValue === undefined || rawValue === null) {
       return new ExprEvalErrorObj(
         this.getKind(),
@@ -53,4 +67,3 @@ export class BuiltinPropertyAccessExpr extends Expr1<ExpressionValue, Expression
     return this.type;
   }
 }
-
