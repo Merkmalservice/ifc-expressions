@@ -17,7 +17,7 @@ import { Types } from "../../../type/Types.js";
 import { TypeDisjunction } from "../../../type/TypeDisjunction.js";
 import { WrongFunctionArgumentTypeException } from "../../../error/WrongFunctionArgumentTypeException.js";
 import { FunctionExpr } from "../FunctionExpr.js";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 
 export class MAP extends Func {
   private static readonly ARG_NAME_MAPPINGS = "mappings";
@@ -120,3 +120,4 @@ export class MAP extends Func {
     return new ExprEvalSuccessObj(defaultValue);
   }
 }
+

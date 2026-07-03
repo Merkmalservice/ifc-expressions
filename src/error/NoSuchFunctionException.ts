@@ -1,4 +1,4 @@
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { ValidationException } from "./ValidationException.js";
 
 export class NoSuchFunctionException extends ValidationException {
@@ -8,3 +8,4 @@ export class NoSuchFunctionException extends ValidationException {
     this.functionName = functionName;
   }
 }
+

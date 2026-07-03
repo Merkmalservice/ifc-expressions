@@ -4,11 +4,14 @@ import { isNullish } from "../../util/IfcExpressionUtils.js";
 import { Type } from "../../type/Types.js";
 import { ExprType } from "../../type/ExprType.js";
 import { FunctionExpr } from "./FunctionExpr.js";
+import { LocalizedText } from "../../documentation/Documentation.js";
 
 export class FuncArg<T> {
   protected _required: boolean;
   protected _name: string;
   protected _defaultValue?: T;
+  protected _displayLabel?: LocalizedText;
+  protected _documentation?: LocalizedText;
 
   constructor(required: boolean, name: string, defaultValue?: T) {
     this._required = required;
@@ -20,11 +23,15 @@ export class FuncArg<T> {
     return Type.ANY;
   }
 
-  /**
-   * For the value provided for a specific invocation of the function, return an appropriate result (maybe some kind of type conversion or type check might happen here)
-   *
-   * @param invocationValue
-   */
+  public withDocumentation(
+    displayLabel: LocalizedText,
+    documentation: LocalizedText
+  ): this {
+    this._displayLabel = displayLabel;
+    this._documentation = documentation;
+    return this;
+  }
+
   public transformValue(
     callingExpr: FunctionExpr,
     invocationValue: ExprEvalResult<ExpressionValue>
@@ -42,6 +49,14 @@ export class FuncArg<T> {
 
   get defaultValue(): T | undefined {
     return this._defaultValue;
+  }
+
+  get displayLabel(): LocalizedText | undefined {
+    return this._displayLabel;
+  }
+
+  get documentation(): LocalizedText | undefined {
+    return this._documentation;
   }
 
   hasDefaultValue(): boolean {

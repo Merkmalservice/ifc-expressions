@@ -1,11 +1,12 @@
 import {
+  ANTLRErrorListener,
   CharStream,
   CommonTokenStream,
-  ErrorListener,
   ParserRuleContext,
   ParseTreeWalker,
   Token,
-} from "antlr4";
+} from "antlr4ng";
+import Decimal from "decimal.js";
 import { ExprCompiler } from "./compiler/ExprCompiler.js";
 import { IfcExpressionErrorListener } from "./IfcExpressionErrorListener.js";
 import { IfcExpressionValidationListener } from "./compiler/IfcExpressionValidationListener.js";
@@ -26,13 +27,15 @@ import { IfcPropertyAccessor } from "./context/IfcPropertyAccessor.js";
 import { IfcRootObjectAccessor } from "./context/IfcRootObjectAccessor.js";
 import { IfcTypeObjectAccessor } from "./context/IfcTypeObjectAccessor.js";
 import { NamedObjectAccessor } from "./context/NamedObjectAccessor.js";
-import IfcExpressionParser from "./gen/parser/IfcExpressionParser.js";
-import IfcExpressionVisitor from "./gen/parser/IfcExpressionVisitor.js";
-import IfcExpressionLexer from "./gen/parser/IfcExpressionLexer.js";
+import { IfcExpressionParser } from "./gen/parser/IfcExpressionParser.js";
+import { IfcExpressionVisitor } from "./gen/parser/IfcExpressionVisitor.js";
+import { IfcExpressionLexer } from "./gen/parser/IfcExpressionLexer.js";
 import { ObjectAccessor } from "./context/ObjectAccessor.js";
 import { IfcExpressionEvaluationException } from "./expression/IfcExpressionEvaluationException.js";
 import type { ExpressionValue } from "./value/ExpressionValue.js";
 import type { BoxedValueTypes } from "./value/BoxedValueTypes.js";
+import { ArrayValue } from "./value/ArrayValue.js";
+import { ContextObjectValue } from "./value/ContextObjectValue.js";
 import {
   ExprEvalError,
   ExprEvalResult,
@@ -61,6 +64,13 @@ import { Types } from "./type/Types.js";
 import { ContextObjectType } from "./type/ContextObjectType.js";
 import { BuiltinVariableRegistry } from "./builtin/BuiltinVariableRegistry.js";
 import { IfcExpressionOptions } from "./IfcExpressionOptions.js";
+import { IfcExpressionAutocomplete } from "./autocomplete/IfcExpressionAutocomplete.js";
+import type {
+  CompletionItem,
+  CompletionResult,
+} from "./autocomplete/CompletionItem.js";
+import type { IfcExpressionAutocompleteOptions } from "./autocomplete/IfcExpressionAutocomplete.js";
+import { ObjectAccessorValue } from "./value/ObjectAccessorValue.js";
 
 export {
   IfcElementAccessor,
@@ -105,9 +115,24 @@ export {
   Types,
   ContextObjectType,
   BuiltinVariableRegistry,
+  IfcExpressionAutocomplete,
 };
 
-export type { BoxedValueTypes, IfcExpressionOptions };
+export type {
+  BoxedValueTypes,
+  IfcExpressionOptions,
+  CompletionItem,
+  CompletionResult,
+  IfcExpressionAutocompleteOptions,
+};
+
+export type UnwrappedExpressionValue =
+  | string
+  | boolean
+  | Decimal
+  | undefined
+  | UnwrappedExpressionValue[]
+  | { [key: string]: UnwrappedExpressionValue };
 
 export class IfcExpressionParseResult {
   private readonly _input: string;
@@ -147,12 +172,13 @@ export class IfcExpressionParseResult {
 export class IfcExpression {
   public static parse(
     input: string,
-    errorListener?: ErrorListener<Token | number>,
+    errorListener?: ANTLRErrorListener,
     options: IfcExpressionOptions = {}
   ): IfcExpressionParseResult {
     const builtinVariableRegistry =
-      options.builtinVariableRegistry ?? BuiltinVariableRegistry.getDefaultRegistry();
-    const chars = new CharStream(input);
+      options.builtinVariableRegistry ??
+      BuiltinVariableRegistry.getDefaultRegistry();
+    const chars = CharStream.fromString(input);
     const lexer = new IfcExpressionLexer(chars);
     const tokens = new CommonTokenStream(lexer);
     const parser = new IfcExpressionParser(tokens);
@@ -248,10 +274,99 @@ export class IfcExpression {
   ) {
     return expr.evaluate(context);
   }
+
+  public static unwrapValue(value: ExpressionValue): UnwrappedExpressionValue {
+    return this.unwrapUnknownValue(value);
+  }
+
+  private static unwrapUnknownValue(value: unknown): UnwrappedExpressionValue {
+    if (value instanceof StringValue || value instanceof BooleanValue) {
+      return value.getValue();
+    }
+    if (value instanceof NumericValue) {
+      return value.getValue();
+    }
+    if (value instanceof LogicalValue) {
+      return value.isUnknown() ? undefined : value.getValue();
+    }
+    if (value instanceof ReferenceValue) {
+      return value.getValue();
+    }
+    if (value instanceof IfcTimeStampValue) {
+      return value.getTimeStampSeconds();
+    }
+    if (
+      value instanceof IfcDateValue ||
+      value instanceof IfcDateTimeValue ||
+      value instanceof IfcTimeValue ||
+      value instanceof IfcDurationValue
+    ) {
+      return value.toString();
+    }
+    if (value instanceof ArrayValue) {
+      return value.getValue().map((entry) => this.unwrapUnknownValue(entry));
+    }
+    if (value instanceof ObjectAccessorValue) {
+      return this.unwrapObjectAccessor(value.getValue());
+    }
+    if (value instanceof ContextObjectValue) {
+      return this.unwrapPlainObject(value.getValue());
+    }
+    if (Decimal.isDecimal(value)) {
+      return value;
+    }
+    if (typeof value === "number") {
+      return NumericValue.of(value).getValue();
+    }
+    if (
+      typeof value === "string" ||
+      typeof value === "boolean" ||
+      typeof value === "undefined"
+    ) {
+      return value;
+    }
+    if (Array.isArray(value)) {
+      return value.map((entry) => this.unwrapUnknownValue(entry));
+    }
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+    if (this.isPlainObject(value)) {
+      return this.unwrapPlainObject(value);
+    }
+    return undefined;
+  }
+
+  private static unwrapObjectAccessor(
+    objectAccessor: ObjectAccessor
+  ): { [key: string]: UnwrappedExpressionValue } {
+    const result: { [key: string]: UnwrappedExpressionValue } = {};
+    for (const attributeName of objectAccessor.listAttributes()) {
+      const attributeValue = objectAccessor.getAttribute(attributeName);
+      if (typeof attributeValue !== "undefined") {
+        result[attributeName] = this.unwrapUnknownValue(attributeValue);
+      }
+    }
+    return result;
+  }
+
+  private static unwrapPlainObject(
+    value: Record<string, unknown>
+  ): { [key: string]: UnwrappedExpressionValue } {
+    const result: { [key: string]: UnwrappedExpressionValue } = {};
+    for (const [key, nestedValue] of Object.entries(value)) {
+      result[key] = this.unwrapUnknownValue(nestedValue);
+    }
+    return result;
+  }
+
+  private static isPlainObject(
+    value: unknown
+  ): value is Record<string, unknown> {
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      Object.getPrototypeOf(value) === Object.prototype
+    );
+  }
 }
-
-
-
-
-
-

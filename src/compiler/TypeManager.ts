@@ -1,4 +1,4 @@
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { Type, Types } from "../type/Types.js";
 import { ExpressionTypeError } from "../error/ExpressionTypeError.js";
 import { ExprType } from "../type/ExprType.js";
@@ -132,3 +132,4 @@ export class TypeManager {
     return this.overlapsWith(Type.NUMERIC, ...ctxs);
   }
 }
+

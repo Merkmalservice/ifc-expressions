@@ -1,5 +1,5 @@
 import { ExpressionTypeError } from "./ExpressionTypeError.js";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { ExprType } from "../type/ExprType.js";
 
 export class WrongFunctionArgumentTypeException extends ExpressionTypeError {
@@ -28,3 +28,4 @@ export class WrongFunctionArgumentTypeException extends ExpressionTypeError {
     this.argumentIndex = argumentIndex;
   }
 }
+

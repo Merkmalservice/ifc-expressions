@@ -15,13 +15,42 @@ export class ReplacePattern extends ApplyRegex {
 
   constructor(name: string, simplePattern: boolean) {
     super(name, simplePattern, false);
+    this.formalArguments[0].withDocumentation(
+      { key: `function.${name}.arg.input.label`, fallback: "input" },
+      {
+        key: `function.${name}.arg.input.summary`,
+        fallback: "The source string",
+      }
+    );
+    this.formalArguments[1].withDocumentation(
+      { key: `function.${name}.arg.pattern.label`, fallback: "pattern" },
+      {
+        key: `function.${name}.arg.pattern.summary`,
+        fallback: "The pattern to replace",
+      }
+    );
     this.formalArguments.splice(
       2,
       0,
-      simplePattern
+      (simplePattern
         ? new FuncArgString(true, ReplacePattern.KEY_REPLACE)
         : new FuncArgRegex(true, ReplacePattern.KEY_REPLACE)
+      ).withDocumentation(
+        {
+          key: `function.${name}.arg.replacement.label`,
+          fallback: "replacement",
+        },
+        {
+          key: `function.${name}.arg.replacement.summary`,
+          fallback: "The replacement string",
+        }
+      )
     );
+    this.withDocumentation({
+      key: `function.${name}.summary`,
+      fallback:
+        "replace pattern occurrences in input with replacement",
+    });
   }
 
   getReturnType(argumentTypes: Array<ExprType>): ExprType {
