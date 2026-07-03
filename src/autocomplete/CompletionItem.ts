@@ -1,5 +1,6 @@
 export type CompletionItemKind =
   | "builtinRoot"
+  | "builtinFunction"
   | "builtinMemberProperty"
   | "builtinMemberFunction";
 

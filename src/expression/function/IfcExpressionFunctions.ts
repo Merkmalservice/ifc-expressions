@@ -74,6 +74,12 @@ export class IfcExpressionFunctions {
     }
     return builtinFunctions.get(this.normalizeName(name));
   }
+
+  public static getBuiltinFunctionNames(): Array<string> {
+    return [...builtinFunctions.keys()].sort((left, right) =>
+      left.localeCompare(right)
+    );
+  }
 }
 
 registerFunc(new MAP());
@@ -125,3 +131,5 @@ registerFunc(new MatchesPattern("REGEXCONTAINS", false, false));
 registerFunc(new MatchesPattern("REGEXMATCHES", false, true));
 registerFunc(new ReplacePattern("REPLACE", true));
 registerFunc(new ReplacePattern("REGEXREPLACE", false));
+
+

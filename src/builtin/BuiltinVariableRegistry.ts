@@ -50,7 +50,88 @@ export type RegisteredBuiltinVariableDefinition = {
   createReferenceExpr: () => Expr<any>;
 };
 
-function ifcElementMembers(): Array<BuiltinMemberDefinition> {
+function normalizeBuiltinName(name: string): string {
+  return name?.replace(/^\$/, "").toUpperCase();
+}
+
+type StandardIfcObjectTypes = {
+  elementType: ContextObjectType;
+  propertyType: ContextObjectType;
+  propertySetType: ContextObjectType;
+  typeObjectType: ContextObjectType;
+};
+
+function createStandardIfcObjectTypes(): StandardIfcObjectTypes {
+  const elementMembers = new Map<string, BuiltinMemberDefinition>();
+  const propertyMembers = new Map<string, BuiltinMemberDefinition>();
+  const propertySetMembers = new Map<string, BuiltinMemberDefinition>();
+  const typeObjectMembers = new Map<string, BuiltinMemberDefinition>();
+
+  const propertyType = new ContextObjectType(
+    Type.IFC_PROPERTY_REF.getName(),
+    Type.IFC_PROPERTY_REF,
+    propertyMembers
+  );
+  const propertySetType = new ContextObjectType(
+    Type.IFC_PROPERTY_SET_REF.getName(),
+    Type.IFC_PROPERTY_SET_REF,
+    propertySetMembers
+  );
+  const typeObjectType = new ContextObjectType(
+    Type.IFC_TYPE_OBJECT_REF.getName(),
+    Type.IFC_TYPE_OBJECT_REF,
+    typeObjectMembers
+  );
+  const elementType = new ContextObjectType(
+    Type.IFC_ELEMENT_REF.getName(),
+    Type.IFC_ELEMENT_REF,
+    elementMembers
+  );
+
+  standardIfcElementMembers({
+    elementType,
+    propertyType,
+    propertySetType,
+    typeObjectType,
+  }).forEach((member) => {
+    elementMembers.set(normalizeBuiltinName(member.name), member);
+  });
+  standardIfcPropertyMembers({
+    elementType,
+    propertyType,
+    propertySetType,
+    typeObjectType,
+  }).forEach((member) => {
+    propertyMembers.set(normalizeBuiltinName(member.name), member);
+  });
+  standardIfcPropertySetMembers({
+    elementType,
+    propertyType,
+    propertySetType,
+    typeObjectType,
+  }).forEach((member) => {
+    propertySetMembers.set(normalizeBuiltinName(member.name), member);
+  });
+  standardIfcTypeObjectMembers({
+    elementType,
+    propertyType,
+    propertySetType,
+    typeObjectType,
+  }).forEach((member) => {
+    typeObjectMembers.set(normalizeBuiltinName(member.name), member);
+  });
+
+  return {
+    elementType,
+    propertyType,
+    propertySetType,
+    typeObjectType,
+  };
+}
+
+function standardIfcElementMembers(
+  types: StandardIfcObjectTypes
+): Array<BuiltinMemberDefinition> {
   return [
     {
       name: "name",
@@ -79,25 +160,27 @@ function ifcElementMembers(): Array<BuiltinMemberDefinition> {
     {
       name: "property",
       kind: "function",
-      returnType: Type.IFC_PROPERTY_REF,
+      returnType: types.propertyType,
       argumentTypes: [Type.STRING],
     },
     {
       name: "propertySet",
       kind: "function",
-      returnType: Type.IFC_PROPERTY_SET_REF,
+      returnType: types.propertySetType,
       argumentTypes: [Type.STRING],
     },
     {
       name: "type",
       kind: "function",
-      returnType: Type.IFC_TYPE_OBJECT_REF,
+      returnType: types.typeObjectType,
       argumentTypes: [],
     },
   ];
 }
 
-function ifcPropertyMembers(): Array<BuiltinMemberDefinition> {
+function standardIfcPropertyMembers(
+  types: StandardIfcObjectTypes
+): Array<BuiltinMemberDefinition> {
   return [
     {
       name: "name",
@@ -120,7 +203,7 @@ function ifcPropertyMembers(): Array<BuiltinMemberDefinition> {
     {
       name: "propertySet",
       kind: "function",
-      returnType: Type.IFC_PROPERTY_SET_REF,
+      returnType: types.propertySetType,
       argumentTypes: [],
     },
     {
@@ -132,18 +215,88 @@ function ifcPropertyMembers(): Array<BuiltinMemberDefinition> {
   ];
 }
 
+function standardIfcPropertySetMembers(
+  types: StandardIfcObjectTypes
+): Array<BuiltinMemberDefinition> {
+  return [
+    {
+      name: "name",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "guid",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "description",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "property",
+      kind: "function",
+      returnType: types.propertyType,
+      argumentTypes: [Type.STRING],
+    },
+  ];
+}
+
+function standardIfcTypeObjectMembers(
+  types: StandardIfcObjectTypes
+): Array<BuiltinMemberDefinition> {
+  return [
+    {
+      name: "name",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "guid",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "description",
+      kind: "function",
+      returnType: Type.STRING,
+      argumentTypes: [],
+    },
+    {
+      name: "property",
+      kind: "function",
+      returnType: types.propertyType,
+      argumentTypes: [Type.STRING],
+    },
+    {
+      name: "propertySet",
+      kind: "function",
+      returnType: types.propertySetType,
+      argumentTypes: [Type.STRING],
+    },
+  ];
+}
+
+const standardIfcObjectTypes = createStandardIfcObjectTypes();
+
 export class BuiltinVariableRegistry {
   private static readonly defaultRegistry = new BuiltinVariableRegistry([
     {
       name: "element",
       type: Type.IFC_ELEMENT_REF,
-      members: ifcElementMembers(),
+      members: standardIfcElementMembers(standardIfcObjectTypes),
       createReferenceExpr: () => new ElemObjectReferenceExpr(),
     },
     {
       name: "property",
       type: Type.IFC_PROPERTY_REF,
-      members: ifcPropertyMembers(),
+      members: standardIfcPropertyMembers(standardIfcObjectTypes),
       createReferenceExpr: () => new PropObjectReferenceExpr(),
     },
   ]);
@@ -181,7 +334,9 @@ export class BuiltinVariableRegistry {
   }
 
   public isBuiltinVariable(name: string): boolean {
-    return this.builtinVariables.has(BuiltinVariableRegistry.normalizeName(name));
+    return this.builtinVariables.has(
+      BuiltinVariableRegistry.normalizeName(name)
+    );
   }
 
   public isReservedName(name: string): boolean {
@@ -191,7 +346,9 @@ export class BuiltinVariableRegistry {
   public getDefinition(
     name: string
   ): RegisteredBuiltinVariableDefinition | undefined {
-    return this.builtinVariables.get(BuiltinVariableRegistry.normalizeName(name));
+    return this.builtinVariables.get(
+      BuiltinVariableRegistry.normalizeName(name)
+    );
   }
 
   public getDefinitions(): Array<RegisteredBuiltinVariableDefinition> {
@@ -199,7 +356,9 @@ export class BuiltinVariableRegistry {
   }
 
   private register(definition: BuiltinVariableDefinition) {
-    const normalizedName = BuiltinVariableRegistry.normalizeName(definition.name);
+    const normalizedName = BuiltinVariableRegistry.normalizeName(
+      definition.name
+    );
     if (this.builtinVariables.has(normalizedName)) {
       throw new IfcExpressionBuiltinConfigException(
         `cannot register builtin variable with name '${definition.name}': name already in use`
@@ -207,7 +366,8 @@ export class BuiltinVariableRegistry {
     }
     const members = this.registerMembers(definition);
     const baseType =
-      definition.type ?? (members.size > 0 ? Type.CONTEXT_OBJECT_REF : Type.ANY);
+      definition.type ??
+      (members.size > 0 ? Type.CONTEXT_OBJECT_REF : Type.ANY);
     const resolvedType =
       members.size > 0
         ? new ContextObjectType(definition.name, baseType, members)

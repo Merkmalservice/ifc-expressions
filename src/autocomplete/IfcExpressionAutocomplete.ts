@@ -1,10 +1,31 @@
-import { CharStream, CommonTokenStream, ParserRuleContext } from "antlr4ng";
+import {
+  CharStream,
+  CommonTokenStream,
+  ParserRuleContext,
+  Token,
+} from "antlr4ng";
+import { CandidatesCollection, CodeCompletionCore, ICandidateRule } from "antlr4-c3";
 import {
   BuiltinMemberDefinition,
   BuiltinVariableRegistry,
 } from "../builtin/BuiltinVariableRegistry.js";
 import { IfcExpressionLexer } from "../gen/parser/IfcExpressionLexer.js";
-import { IfcExpressionParser } from "../gen/parser/IfcExpressionParser.js";
+import {
+  ExprListContext,
+  FunctionCallContext,
+  IfcExpressionParser,
+  MethodAccessorContext,
+  MethodCallChainContext,
+  MethodCallChainEndContext,
+  MethodCallChainInnerContext,
+  MethodFunctionCallContext,
+  MethodPropertyAccessContext,
+  SEMethodCallContext,
+  SEParenthesisContext,
+  SEVariableRefContext,
+  SingleExprContext,
+} from "../gen/parser/IfcExpressionParser.js";
+import { IfcExpressionFunctions } from "../expression/function/IfcExpressionFunctions.js";
 import { ContextObjectType } from "../type/ContextObjectType.js";
 import { ExprType } from "../type/ExprType.js";
 import { CompletionItem, CompletionResult } from "./CompletionItem.js";
@@ -13,36 +34,35 @@ export type IfcExpressionAutocompleteOptions = {
   builtinVariableRegistry?: BuiltinVariableRegistry;
 };
 
-type PathSegment =
+type CompletedAccessorStep =
   | {
       name: string;
       kind: "property";
+      startTokenIndex: number;
     }
   | {
       name: string;
       kind: "function";
       argumentCount: number;
+      startTokenIndex: number;
     };
 
-const AUTOCOMPLETE_CURSOR_IDENTIFIER = "__IFC_AUTOCOMPLETE_CURSOR__";
+type MethodAccessorStep =
+  | CompletedAccessorStep
+  | {
+      kind: "incomplete";
+      startTokenIndex: number;
+    };
+
+type ParsedAutocompleteInput = {
+  parser: IfcExpressionParser;
+  parseTree: ParserRuleContext;
+  tokens: Array<Token>;
+  caretTokenIndex: number;
+};
 
 function isIdentifierChar(char: string | undefined): boolean {
   return typeof char === "string" && /[a-zA-Z0-9_\-$&]/.test(char);
-}
-
-function isQuoted(char: string, quoteChar: string, input: string, index: number) {
-  if (char !== quoteChar) {
-    return false;
-  }
-
-  let backslashCount = 0;
-  let i = index - 1;
-  while (i >= 0 && input[i] === "\\") {
-    backslashCount++;
-    i--;
-  }
-
-  return backslashCount % 2 === 0;
 }
 
 function toBuiltinLabel(name: string): string {
@@ -59,6 +79,68 @@ function toCompletionTypeName(type: ExprType): string {
 
 function isChainableType(type: ExprType): boolean {
   return type instanceof ContextObjectType;
+}
+
+function isExtendableTokenType(tokenType: number): boolean {
+  return tokenType === IfcExpressionParser.IDENTIFIER;
+}
+
+function findCaretTokenIndex(
+  tokens: Array<Token>,
+  cursorOffset: number
+): number {
+  if (tokens.length === 0) {
+    return 0;
+  }
+
+  const cursor = Math.max(0, cursorOffset);
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+    if (token.type === Token.EOF) {
+      return token.tokenIndex;
+    }
+
+    if (cursor < token.start) {
+      return token.tokenIndex;
+    }
+
+    if (cursor <= token.stop) {
+      return token.tokenIndex;
+    }
+
+    if (cursor === token.stop + 1) {
+      if (isExtendableTokenType(token.type)) {
+        return token.tokenIndex;
+      }
+
+      const nextToken = tokens[i + 1];
+      return nextToken?.tokenIndex ?? token.tokenIndex;
+    }
+  }
+
+  return tokens[tokens.length - 1].tokenIndex;
+}
+
+function parseAutocompleteInput(
+  input: string,
+  cursorOffset: number
+): ParsedAutocompleteInput {
+  const chars = CharStream.fromString(input);
+  const lexer = new IfcExpressionLexer(chars);
+  const tokenStream = new CommonTokenStream(lexer);
+  const parser = new IfcExpressionParser(tokenStream);
+  lexer.removeErrorListeners();
+  parser.removeErrorListeners();
+  const parseTree = parser.expr();
+  tokenStream.fill();
+  const tokens = tokenStream.getTokens();
+
+  return {
+    parser,
+    parseTree,
+    tokens,
+    caretTokenIndex: findCaretTokenIndex(tokens, cursorOffset),
+  };
 }
 
 function findBuiltinRootReplaceRange(
@@ -79,10 +161,10 @@ function findBuiltinRootReplaceRange(
   return undefined;
 }
 
-function createMemberCompletionProbe(
+function findIdentifierReplaceRange(
   input: string,
   cursorOffset: number
-): { probeInput: string; from: number; to: number } | undefined {
+): { from: number; to: number } {
   const cursor = Math.max(0, Math.min(cursorOffset, input.length));
   let from = cursor;
 
@@ -90,142 +172,113 @@ function createMemberCompletionProbe(
     from--;
   }
 
-  if (from === 0 || input[from - 1] !== ".") {
-    return undefined;
-  }
-
-  let tokenEnd = cursor;
-  while (tokenEnd < input.length && isIdentifierChar(input[tokenEnd])) {
-    tokenEnd++;
-  }
-
   return {
-    probeInput:
-      input.slice(0, from) +
-      AUTOCOMPLETE_CURSOR_IDENTIFIER +
-      input.slice(tokenEnd),
     from,
     to: cursor,
   };
 }
 
-function methodAccessorText(methodAccessor: any): string | undefined {
-  switch (methodAccessor?.constructor?.name) {
-    case "MethodPropertyAccessContext":
-      return methodAccessor.IDENTIFIER()?.getText();
-    case "MethodFunctionCallContext":
-      return methodAccessor.functionCall()?.getText();
-    default:
-      return undefined;
-  }
-}
-
-function collectMethodAccessorTexts(methodCallChain: any): Array<string> | undefined {
-  if (!methodCallChain) {
-    return undefined;
-  }
-
-  switch (methodCallChain.constructor?.name) {
-    case "MethodCallChainEndContext": {
-      const text = methodAccessorText(methodCallChain.methodAccessor());
-      return text ? [text] : undefined;
-    }
-    case "MethodCallChainInnerContext": {
-      const current = methodAccessorText(methodCallChain.methodAccessor());
-      const rest = collectMethodAccessorTexts(methodCallChain.methodCallChain());
-      if (!current || !rest) {
-        return undefined;
-      }
-      return [current, ...rest];
-    }
-    default:
-      return undefined;
-  }
-}
-
-function extractBuiltinObjectPathFromSingleExpr(singleExpr: any): string | undefined {
-  switch (singleExpr?.constructor?.name) {
-    case "SEVariableRefContext": {
-      const identifier = singleExpr.variableRef()?.IDENTIFIER()?.getText();
-      return identifier ? `$${identifier}` : undefined;
-    }
-    case "SEMethodCallContext": {
-      const base = extractBuiltinObjectPathFromSingleExpr(singleExpr.singleExpr());
-      const accessors = collectMethodAccessorTexts(singleExpr.methodCallChain());
-      if (!base || !accessors) {
-        return undefined;
-      }
-      return [base, ...accessors].join(".");
-    }
-    default:
-      return undefined;
-  }
-}
-
-function findMemberAccessContextByParser(
+function findMemberReplaceRange(
   input: string,
   cursorOffset: number
-): { objectPath: string; from: number; to: number } | undefined {
-  const probe = createMemberCompletionProbe(input, cursorOffset);
-  if (!probe) {
+): { from: number; to: number } | undefined {
+  const range = findIdentifierReplaceRange(input, cursorOffset);
+
+  if (range.from === 0 || input[range.from - 1] !== ".") {
     return undefined;
   }
 
-  try {
-    const chars = CharStream.fromString(probe.probeInput);
-    const lexer = new IfcExpressionLexer(chars);
-    const tokens = new CommonTokenStream(lexer);
-    const parser = new IfcExpressionParser(tokens);
-    lexer.removeErrorListeners();
-    parser.removeErrorListeners();
-    const parseTree = parser.expr();
-    const objectPath = findCompletionObjectPath(parseTree);
+  return range;
+}
 
-    if (!objectPath) {
+function findFunctionReplaceRange(
+  input: string,
+  cursorOffset: number
+): { from: number; to: number } | undefined {
+  const range = findIdentifierReplaceRange(input, cursorOffset);
+  const prefixChar = range.from > 0 ? input[range.from - 1] : undefined;
+  const hasIdentifierFragment =
+    range.from < range.to || isIdentifierChar(input[Math.max(0, range.to)]);
+
+  if (!hasIdentifierFragment || prefixChar === "." || prefixChar === "$") {
+    return undefined;
+  }
+
+  return range;
+}
+
+function countExprListArguments(exprList: ExprListContext | undefined): number {
+  if (!exprList) {
+    return 0;
+  }
+
+  const rest = exprList.exprList();
+  return 1 + (rest ? countExprListArguments(rest) : 0);
+}
+
+function toMethodAccessorStep(
+  methodAccessor: MethodAccessorContext
+): CompletedAccessorStep | undefined {
+  if (methodAccessor instanceof MethodPropertyAccessContext) {
+    const identifier = methodAccessor.IDENTIFIER()?.getText();
+    if (!identifier) {
       return undefined;
     }
 
     return {
-      objectPath,
-      from: probe.from,
-      to: probe.to,
+      name: identifier,
+      kind: "property",
+      startTokenIndex: methodAccessor.start?.tokenIndex ?? -1,
     };
-  } catch {
-    return undefined;
-  }
-}
-
-function findCompletionObjectPath(node: ParserRuleContext): string | undefined {
-  if (node.constructor?.name === "SEMethodCallContext") {
-    const accessors = collectMethodAccessorTexts((node as any).methodCallChain());
-    if (accessors?.at(-1) === AUTOCOMPLETE_CURSOR_IDENTIFIER) {
-      const base = extractBuiltinObjectPathFromSingleExpr((node as any).singleExpr());
-      if (!base) {
-        return undefined;
-      }
-
-      return [base, ...accessors.slice(0, -1)].join(".");
-    }
   }
 
-  for (let i = 0; i < node.getChildCount(); i++) {
-    const child = node.getChild(i);
-    if (child instanceof ParserRuleContext) {
-      const objectPath = findCompletionObjectPath(child);
-      if (objectPath) {
-        return objectPath;
-      }
+  if (methodAccessor instanceof MethodFunctionCallContext) {
+    const functionCall = methodAccessor.functionCall();
+    const name = functionCall.IDENTIFIER()?.getText();
+    if (!name) {
+      return undefined;
     }
+
+    return {
+      name,
+      kind: "function",
+      argumentCount: countExprListArguments(functionCall.exprList()),
+      startTokenIndex: functionCall.start?.tokenIndex ?? -1,
+    };
   }
 
   return undefined;
 }
 
-function findMemberAccessContext(
-  input: string,
-  cursorOffset: number
-): { objectPath: string; from: number; to: number } | undefined {
-  return findMemberAccessContextByParser(input, cursorOffset);
+function collectMethodCallChainSteps(
+  methodCallChain: MethodCallChainContext
+): Array<MethodAccessorStep> | undefined {
+  if (methodCallChain instanceof MethodCallChainInnerContext) {
+    const current = toMethodAccessorStep(methodCallChain.methodAccessor());
+    const rest = collectMethodCallChainSteps(methodCallChain.methodCallChain());
+    if (!current || !rest) {
+      return undefined;
+    }
+
+    return [current, ...rest];
+  }
+
+  if (methodCallChain instanceof MethodCallChainEndContext) {
+    const current = toMethodAccessorStep(methodCallChain.methodAccessor());
+    return current ? [current] : undefined;
+  }
+
+  const dot = methodCallChain.getToken(IfcExpressionParser.DOT, 0);
+  if (dot) {
+    return [
+      {
+        kind: "incomplete",
+        startTokenIndex: dot.symbol.tokenIndex + 1,
+      },
+    ];
+  }
+
+  return [];
 }
 
 function getMemberResultType(definition: BuiltinMemberDefinition): ExprType {
@@ -234,234 +287,143 @@ function getMemberResultType(definition: BuiltinMemberDefinition): ExprType {
     : definition.returnType;
 }
 
-function splitObjectPath(objectPath: string): Array<string> | undefined {
-  const segments: Array<string> = [];
-  let current = "";
-  let singleQuoted = false;
-  let doubleQuoted = false;
-  let parenthesisDepth = 0;
-
-  for (let i = 0; i < objectPath.length; i++) {
-    const char = objectPath[i];
-
-    if (singleQuoted) {
-      current += char;
-      if (isQuoted(char, "'", objectPath, i)) {
-        singleQuoted = false;
-      }
-      continue;
-    }
-
-    if (doubleQuoted) {
-      current += char;
-      if (isQuoted(char, '"', objectPath, i)) {
-        doubleQuoted = false;
-      }
-      continue;
-    }
-
-    if (isQuoted(char, "'", objectPath, i)) {
-      singleQuoted = true;
-      current += char;
-      continue;
-    }
-
-    if (isQuoted(char, '"', objectPath, i)) {
-      doubleQuoted = true;
-      current += char;
-      continue;
-    }
-
-    if (char === "(") {
-      parenthesisDepth++;
-      current += char;
-      continue;
-    }
-
-    if (char === ")") {
-      if (parenthesisDepth === 0) {
-        return undefined;
-      }
-      parenthesisDepth--;
-      current += char;
-      continue;
-    }
-
-    if (char === "." && parenthesisDepth === 0) {
-      const trimmed = current.trim();
-      if (trimmed.length === 0) {
-        return undefined;
-      }
-      segments.push(trimmed);
-      current = "";
-      continue;
-    }
-
-    current += char;
-  }
-
-  if (singleQuoted || doubleQuoted || parenthesisDepth !== 0) {
+function resolveCompletedAccessorStep(
+  currentType: ExprType,
+  step: CompletedAccessorStep
+): ExprType | undefined {
+  if (!(currentType instanceof ContextObjectType)) {
     return undefined;
   }
 
-  const trimmed = current.trim();
-  if (trimmed.length > 0) {
-    segments.push(trimmed);
+  const memberDefinition = currentType.getMemberDefinition(step.name);
+  if (!memberDefinition) {
+    return undefined;
   }
 
-  return segments;
+  if (step.kind === "property") {
+    return memberDefinition.kind === "property"
+      ? memberDefinition.valueType
+      : undefined;
+  }
+
+  if (memberDefinition.kind !== "function") {
+    return undefined;
+  }
+
+  if (memberDefinition.argumentTypes.length !== step.argumentCount) {
+    return undefined;
+  }
+
+  return memberDefinition.returnType;
 }
 
-function countCallArguments(argumentList: string): number | undefined {
-  const trimmed = argumentList.trim();
-  if (trimmed.length === 0) {
-    return 0;
-  }
-
-  let count = 1;
-  let singleQuoted = false;
-  let doubleQuoted = false;
-  let parenthesisDepth = 0;
-  let bracketDepth = 0;
-
-  for (let i = 0; i < argumentList.length; i++) {
-    const char = argumentList[i];
-
-    if (singleQuoted) {
-      if (isQuoted(char, "'", argumentList, i)) {
-        singleQuoted = false;
-      }
-      continue;
-    }
-
-    if (doubleQuoted) {
-      if (isQuoted(char, '"', argumentList, i)) {
-        doubleQuoted = false;
-      }
-      continue;
-    }
-
-    if (isQuoted(char, "'", argumentList, i)) {
-      singleQuoted = true;
-      continue;
-    }
-
-    if (isQuoted(char, '"', argumentList, i)) {
-      doubleQuoted = true;
-      continue;
-    }
-
-    if (char === "(") {
-      parenthesisDepth++;
-      continue;
-    }
-
-    if (char === ")") {
-      if (parenthesisDepth === 0) {
-        return undefined;
-      }
-      parenthesisDepth--;
-      continue;
-    }
-
-    if (char === "[") {
-      bracketDepth++;
-      continue;
-    }
-
-    if (char === "]") {
-      if (bracketDepth === 0) {
-        return undefined;
-      }
-      bracketDepth--;
-      continue;
-    }
-
-    if (char === "," && parenthesisDepth === 0 && bracketDepth === 0) {
-      count++;
-    }
-  }
-
-  if (singleQuoted || doubleQuoted || parenthesisDepth !== 0 || bracketDepth !== 0) {
-    return undefined;
-  }
-
-  return count;
-}
-
-function parsePathSegment(segment: string): PathSegment | undefined {
-  const propertyMatch = /^(?<name>[a-zA-Z0-9_\-$&]+)$/.exec(segment);
-  if (propertyMatch?.groups?.name) {
-    return {
-      name: propertyMatch.groups.name,
-      kind: "property",
-    };
-  }
-
-  const functionMatch = /^(?<name>[a-zA-Z0-9_\-$&]+)\((?<args>.*)\)$/.exec(segment);
-  if (!functionMatch?.groups?.name || functionMatch.groups.args === undefined) {
-    return undefined;
-  }
-
-  const argumentCount = countCallArguments(functionMatch.groups.args);
-  if (argumentCount === undefined) {
-    return undefined;
-  }
-
-  return {
-    name: functionMatch.groups.name,
-    kind: "function",
-    argumentCount,
-  };
-}
-
-function resolveObjectPathType(
-  objectPath: string,
+function resolveSingleExprType(
+  singleExpr: SingleExprContext,
   builtinVariableRegistry: BuiltinVariableRegistry
 ): ExprType | undefined {
-  const pathParts = splitObjectPath(objectPath);
-  if (!pathParts || pathParts.length === 0) {
-    return undefined;
+  if (singleExpr instanceof SEVariableRefContext) {
+    const identifier = singleExpr.variableRef()?.IDENTIFIER()?.getText();
+    return identifier
+      ? builtinVariableRegistry.getDefinition(`$${identifier}`)?.type
+      : undefined;
   }
 
-  let currentType = builtinVariableRegistry.getDefinition(pathParts[0])?.type;
-  for (const rawPart of pathParts.slice(1)) {
-    if (!(currentType instanceof ContextObjectType)) {
+  if (singleExpr instanceof SEParenthesisContext) {
+    return resolveSingleExprType(
+      singleExpr.singleExpr(),
+      builtinVariableRegistry
+    );
+  }
+
+  if (singleExpr instanceof SEMethodCallContext) {
+    const baseType = resolveSingleExprType(
+      singleExpr.singleExpr(),
+      builtinVariableRegistry
+    );
+    const steps = collectMethodCallChainSteps(singleExpr.methodCallChain());
+    if (!baseType || !steps) {
       return undefined;
     }
 
-    const pathSegment = parsePathSegment(rawPart);
-    if (!pathSegment) {
-      return undefined;
-    }
-
-    const memberDefinition = currentType.getMemberDefinition(pathSegment.name);
-    if (!memberDefinition) {
-      return undefined;
-    }
-
-    if (pathSegment.kind === "property" && memberDefinition.kind === "function") {
-      return undefined;
-    }
-
-    if (pathSegment.kind === "function") {
-      if (memberDefinition.kind !== "function") {
+    let currentType: ExprType | undefined = baseType;
+    for (const step of steps) {
+      if (step.kind === "incomplete") {
         return undefined;
       }
 
-      if (memberDefinition.argumentTypes.length !== pathSegment.argumentCount) {
+      currentType = resolveCompletedAccessorStep(currentType, step);
+      if (!currentType) {
         return undefined;
       }
     }
 
-    currentType = getMemberResultType(memberDefinition);
+    return currentType;
   }
 
-  return currentType;
+  return undefined;
+}
+
+function findReceiverTypeForMemberSlot(
+  node: ParserRuleContext,
+  startTokenIndex: number,
+  builtinVariableRegistry: BuiltinVariableRegistry
+): ExprType | undefined {
+  if (node instanceof SEMethodCallContext) {
+    const steps = collectMethodCallChainSteps(node.methodCallChain());
+    if (steps) {
+      const slotIndex = steps.findIndex(
+        (step) => step.startTokenIndex === startTokenIndex
+      );
+
+      if (slotIndex >= 0) {
+        let currentType = resolveSingleExprType(
+          node.singleExpr(),
+          builtinVariableRegistry
+        );
+
+        for (const step of steps.slice(0, slotIndex)) {
+          if (!currentType || step.kind === "incomplete") {
+            return undefined;
+          }
+
+          currentType = resolveCompletedAccessorStep(currentType, step);
+        }
+
+        return currentType;
+      }
+    }
+  }
+
+  for (let i = 0; i < node.getChildCount(); i++) {
+    const child = node.getChild(i);
+    if (child instanceof ParserRuleContext) {
+      const receiverType = findReceiverTypeForMemberSlot(
+        child,
+        startTokenIndex,
+        builtinVariableRegistry
+      );
+      if (receiverType) {
+        return receiverType;
+      }
+    }
+  }
+
+  return undefined;
 }
 
 function toFunctionInsertText(name: string): string {
   return `${name}()`;
+}
+
+function toFunctionItem(name: string): CompletionItem {
+  const insertText = toFunctionInsertText(name);
+
+  return {
+    kind: "builtinFunction",
+    label: name,
+    insertText,
+    cursorOffset: insertText.length - 1,
+  };
 }
 
 function toMemberItem(definition: BuiltinMemberDefinition): CompletionItem {
@@ -487,6 +449,38 @@ function toMemberItem(definition: BuiltinMemberDefinition): CompletionItem {
   };
 }
 
+function collectRuleCandidates(
+  parser: IfcExpressionParser,
+  caretTokenIndex: number,
+  parseTree: ParserRuleContext
+): CandidatesCollection {
+  const completionCore = new CodeCompletionCore(parser);
+  completionCore.preferredRules = new Set([
+    IfcExpressionParser.RULE_variableRef,
+    IfcExpressionParser.RULE_methodAccessor,
+  ]);
+
+  return completionCore.collectCandidates(caretTokenIndex, parseTree);
+}
+
+function getMemberRuleCandidate(
+  ruleCandidates: Map<number, ICandidateRule>
+): ICandidateRule | undefined {
+  return ruleCandidates.get(IfcExpressionParser.RULE_methodAccessor);
+}
+
+function hasBuiltinRootRuleCandidate(
+  ruleCandidates: Map<number, ICandidateRule>
+): boolean {
+  return ruleCandidates.has(IfcExpressionParser.RULE_variableRef);
+}
+
+function hasIdentifierTokenCandidate(
+  tokenCandidates: Map<number, Array<number>>
+): boolean {
+  return tokenCandidates.has(IfcExpressionParser.IDENTIFIER);
+}
+
 export class IfcExpressionAutocomplete {
   public static complete(
     input: string,
@@ -494,26 +488,42 @@ export class IfcExpressionAutocomplete {
     options: IfcExpressionAutocompleteOptions = {}
   ): CompletionResult {
     const builtinVariableRegistry =
-      options.builtinVariableRegistry ?? BuiltinVariableRegistry.getDefaultRegistry();
+      options.builtinVariableRegistry ??
+      BuiltinVariableRegistry.getDefaultRegistry();
+    const parsed = parseAutocompleteInput(input, cursorOffset);
+    const candidates = collectRuleCandidates(
+      parsed.parser,
+      parsed.caretTokenIndex,
+      parsed.parseTree
+    );
+    const ruleCandidates = candidates.rules;
 
-    const memberContext = findMemberAccessContext(input, cursorOffset);
-    if (memberContext) {
-      const objectType = resolveObjectPathType(
-        memberContext.objectPath,
-        builtinVariableRegistry
-      );
-      if (!(objectType instanceof ContextObjectType)) {
+    const memberCandidate = getMemberRuleCandidate(ruleCandidates);
+    if (memberCandidate) {
+      const range = findMemberReplaceRange(input, cursorOffset);
+      if (!range) {
         return {
           items: [],
-          replaceFrom: memberContext.from,
-          replaceTo: memberContext.to,
+          replaceFrom: cursorOffset,
+          replaceTo: cursorOffset,
         };
       }
 
-      const typedPrefix = normalizeForMatch(
-        input.slice(memberContext.from, memberContext.to)
+      const receiverType = findReceiverTypeForMemberSlot(
+        parsed.parseTree,
+        memberCandidate.startTokenIndex,
+        builtinVariableRegistry
       );
-      const items = objectType
+      if (!(receiverType instanceof ContextObjectType)) {
+        return {
+          items: [],
+          replaceFrom: range.from,
+          replaceTo: range.to,
+        };
+      }
+
+      const typedPrefix = normalizeForMatch(input.slice(range.from, range.to));
+      const items = receiverType
         .getMemberDefinitions()
         .map(toMemberItem)
         .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
@@ -521,13 +531,32 @@ export class IfcExpressionAutocomplete {
 
       return {
         items,
-        replaceFrom: memberContext.from,
-        replaceTo: memberContext.to,
+        replaceFrom: range.from,
+        replaceTo: range.to,
       };
     }
 
+    const functionRange = findFunctionReplaceRange(input, cursorOffset);
+    if (functionRange && hasIdentifierTokenCandidate(candidates.tokens)) {
+      const typedPrefix = normalizeForMatch(
+        input.slice(functionRange.from, functionRange.to)
+      );
+      const items = IfcExpressionFunctions.getBuiltinFunctionNames()
+        .map(toFunctionItem)
+        .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
+        .sort((left, right) => left.label.localeCompare(right.label));
+
+      if (items.length > 0) {
+        return {
+          items,
+          replaceFrom: functionRange.from,
+          replaceTo: functionRange.to,
+        };
+      }
+    }
+
     const range = findBuiltinRootReplaceRange(input, cursorOffset);
-    if (!range) {
+    if (!range || !hasBuiltinRootRuleCandidate(ruleCandidates)) {
       return {
         items: [],
         replaceFrom: cursorOffset,
@@ -536,7 +565,6 @@ export class IfcExpressionAutocomplete {
     }
 
     const typedPrefix = normalizeForMatch(input.slice(range.from, range.to));
-
     const items: Array<CompletionItem> = builtinVariableRegistry
       .getDefinitions()
       .map((definition) => ({
@@ -553,6 +581,7 @@ export class IfcExpressionAutocomplete {
     };
   }
 }
+
 
 
 

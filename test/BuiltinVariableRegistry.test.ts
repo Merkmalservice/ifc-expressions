@@ -11,33 +11,44 @@ import { Type, Types } from "../src/type/Types.js";
 describe("BuiltinVariableRegistry", () => {
   it("resolves the built-in IFC roots", () => {
     const elementDefinition = BuiltinVariableRegistry.getDefinition("element");
-    const propertyDefinition = BuiltinVariableRegistry.getDefinition("property");
+    const propertyDefinition =
+      BuiltinVariableRegistry.getDefinition("property");
 
     expect(BuiltinVariableRegistry.isBuiltinVariable("element")).toBe(true);
     expect(BuiltinVariableRegistry.isBuiltinVariable("property")).toBe(true);
 
     expect(elementDefinition?.type).toBeInstanceOf(ContextObjectType);
-    expect(elementDefinition?.type.isSubTypeOf(Type.IFC_ELEMENT_REF)).toBe(true);
+    expect(elementDefinition?.type.isSubTypeOf(Type.IFC_ELEMENT_REF)).toBe(
+      true
+    );
 
     expect(propertyDefinition?.type).toBeInstanceOf(ContextObjectType);
-    expect(propertyDefinition?.type.isSubTypeOf(Type.IFC_PROPERTY_REF)).toBe(true);
+    expect(propertyDefinition?.type.isSubTypeOf(Type.IFC_PROPERTY_REF)).toBe(
+      true
+    );
   });
 
   it("creates reference expressions for built-in IFC roots through the registry", () => {
     expect(
-      BuiltinVariableRegistry.getDefinition("element")?.createReferenceExpr().getKind()
+      BuiltinVariableRegistry.getDefinition("element")
+        ?.createReferenceExpr()
+        .getKind()
     ).toBe(ExprKind.REF_ELEMENT);
     expect(
-      BuiltinVariableRegistry.getDefinition("property")?.createReferenceExpr().getKind()
+      BuiltinVariableRegistry.getDefinition("property")
+        ?.createReferenceExpr()
+        .getKind()
     ).toBe(ExprKind.REF_PROPERTY);
   });
 
   it("exposes completable member metadata for built-in IFC roots", () => {
     const elementDefinition = BuiltinVariableRegistry.getDefinition("element");
-    const propertyDefinition = BuiltinVariableRegistry.getDefinition("property");
+    const propertyDefinition =
+      BuiltinVariableRegistry.getDefinition("property");
 
     const elementNameMember = elementDefinition?.members.get("NAME");
-    const elementPropertySetMember = elementDefinition?.members.get("PROPERTYSET");
+    const elementPropertySetMember =
+      elementDefinition?.members.get("PROPERTYSET");
     const propertyValueMember = propertyDefinition?.members.get("VALUE");
 
     expect(elementDefinition?.members.size).toBeGreaterThan(0);
@@ -54,7 +65,12 @@ describe("BuiltinVariableRegistry", () => {
       throw new Error("expected element propertySet member definition");
     }
     expect(elementPropertySetMember.argumentTypes).toEqual([Type.STRING]);
-    expect(elementPropertySetMember.returnType).toBe(Type.IFC_PROPERTY_SET_REF);
+    expect(elementPropertySetMember.returnType).toBeInstanceOf(
+      ContextObjectType
+    );
+    expect(
+      elementPropertySetMember.returnType.isSubTypeOf(Type.IFC_PROPERTY_SET_REF)
+    ).toBe(true);
 
     expect(isBuiltinFunctionDefinition(propertyValueMember)).toBe(true);
     if (!isBuiltinFunctionDefinition(propertyValueMember)) {
@@ -66,7 +82,8 @@ describe("BuiltinVariableRegistry", () => {
   });
 
   it("enumerates registered builtin definitions", () => {
-    const definitions = BuiltinVariableRegistry.getDefaultRegistry().getDefinitions();
+    const definitions =
+      BuiltinVariableRegistry.getDefaultRegistry().getDefinitions();
 
     expect(definitions.map((definition) => definition.name)).toEqual(
       expect.arrayContaining(["element", "property"])
@@ -121,7 +138,9 @@ describe("BuiltinVariableRegistry", () => {
 
     const queryDefinition = registry.getDefinition("$thequery");
     expect(queryDefinition?.type).toBeInstanceOf(ContextObjectType);
-    expect(queryDefinition?.type.isSubTypeOf(Type.CONTEXT_OBJECT_REF)).toBe(true);
+    expect(queryDefinition?.type.isSubTypeOf(Type.CONTEXT_OBJECT_REF)).toBe(
+      true
+    );
     expect(queryDefinition?.type.overlapsWith(Type.IFC_OBJECT_REF)).toBe(false);
     expect(queryDefinition?.createReferenceExpr().getKind()).toBe(
       ExprKind.REF_BUILTIN_ROOT
