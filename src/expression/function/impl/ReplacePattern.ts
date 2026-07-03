@@ -48,8 +48,7 @@ export class ReplacePattern extends ApplyRegex {
     );
     this.withDocumentation({
       key: `function.${name}.summary`,
-      fallback:
-        "replace pattern occurrences in input with replacement",
+      fallback: "replace pattern occurrences in input with replacement",
     });
   }
 

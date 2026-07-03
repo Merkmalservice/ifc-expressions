@@ -56,12 +56,18 @@ const registry = new BuiltinVariableRegistry([
 describe("Client builtin member access", () => {
   it("parses typed builtin property access", () => {
     const errorListener = new IfcExpressionErrorListener();
-    const parseResult = IfcExpression.parse("$result.statusCode", errorListener, {
-      builtinVariableRegistry: registry,
-    });
+    const parseResult = IfcExpression.parse(
+      "$result.statusCode",
+      errorListener,
+      {
+        builtinVariableRegistry: registry,
+      }
+    );
 
     expect(errorListener.getException()).toBeUndefined();
-    expect(parseResult.typeManager.getType(parseResult.parseTree)).toBe(Type.NUMERIC);
+    expect(parseResult.typeManager.getType(parseResult.parseTree)).toBe(
+      Type.NUMERIC
+    );
     expect(IfcExpression.compile(parseResult).toExprString()).toBe(
       "$result.statusCode"
     );
@@ -69,12 +75,18 @@ describe("Client builtin member access", () => {
 
   it("parses typed builtin function access", () => {
     const errorListener = new IfcExpressionErrorListener();
-    const parseResult = IfcExpression.parse("$query.matches('name')", errorListener, {
-      builtinVariableRegistry: registry,
-    });
+    const parseResult = IfcExpression.parse(
+      "$query.matches('name')",
+      errorListener,
+      {
+        builtinVariableRegistry: registry,
+      }
+    );
 
     expect(errorListener.getException()).toBeUndefined();
-    expect(parseResult.typeManager.getType(parseResult.parseTree)).toBe(Type.BOOLEAN);
+    expect(parseResult.typeManager.getType(parseResult.parseTree)).toBe(
+      Type.BOOLEAN
+    );
     expect(IfcExpression.compile(parseResult).toExprString()).toBe(
       "$query.matches('name')"
     );
@@ -82,12 +94,18 @@ describe("Client builtin member access", () => {
 
   it("parses chained builtin property access", () => {
     const errorListener = new IfcExpressionErrorListener();
-    const parseResult = IfcExpression.parse("$result.payload.code", errorListener, {
-      builtinVariableRegistry: registry,
-    });
+    const parseResult = IfcExpression.parse(
+      "$result.payload.code",
+      errorListener,
+      {
+        builtinVariableRegistry: registry,
+      }
+    );
 
     expect(errorListener.getException()).toBeUndefined();
-    expect(parseResult.typeManager.getType(parseResult.parseTree)).toBe(Type.STRING);
+    expect(parseResult.typeManager.getType(parseResult.parseTree)).toBe(
+      Type.STRING
+    );
     expect(IfcExpression.compile(parseResult).toExprString()).toBe(
       "$result.payload.code"
     );

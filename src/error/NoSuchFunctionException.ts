@@ -8,4 +8,3 @@ export class NoSuchFunctionException extends ValidationException {
     this.functionName = functionName;
   }
 }
-

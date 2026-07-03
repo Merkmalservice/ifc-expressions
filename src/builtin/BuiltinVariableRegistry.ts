@@ -171,7 +171,8 @@ function standardIfcElementMembers(
       argumentTypes: [],
       documentation: {
         key: "builtin.$element.guid.summary",
-        fallback: "guid(): globally unique identifier of the current IFC element",
+        fallback:
+          "guid(): globally unique identifier of the current IFC element",
       },
     },
     {
@@ -219,7 +220,8 @@ function standardIfcElementMembers(
       argumentTypes: [Type.STRING],
       documentation: {
         key: "builtin.$element.propertySet.summary",
-        fallback: "propertySet(name): property set of the current IFC element by name",
+        fallback:
+          "propertySet(name): property set of the current IFC element by name",
       },
       argumentDocumentation: [
         memberArg(
@@ -284,7 +286,8 @@ function standardIfcPropertyMembers(
       argumentTypes: [],
       documentation: {
         key: "builtin.$property.propertySet.summary",
-        fallback: "propertySet(): property set containing the current IFC property",
+        fallback:
+          "propertySet(): property set containing the current IFC property",
       },
     },
     {
@@ -321,7 +324,8 @@ function standardIfcPropertySetMembers(
       argumentTypes: [],
       documentation: {
         key: "builtin.$propertySet.guid.summary",
-        fallback: "guid(): globally unique identifier of the current IFC property set",
+        fallback:
+          "guid(): globally unique identifier of the current IFC property set",
       },
     },
     {
@@ -341,7 +345,8 @@ function standardIfcPropertySetMembers(
       argumentTypes: [Type.STRING],
       documentation: {
         key: "builtin.$propertySet.property.summary",
-        fallback: "property(name): property of the current IFC property set by name",
+        fallback:
+          "property(name): property of the current IFC property set by name",
       },
       argumentDocumentation: [
         memberArg(
@@ -376,7 +381,8 @@ function standardIfcTypeObjectMembers(
       argumentTypes: [],
       documentation: {
         key: "builtin.$typeObject.guid.summary",
-        fallback: "guid(): globally unique identifier of the current IFC type object",
+        fallback:
+          "guid(): globally unique identifier of the current IFC type object",
       },
     },
     {
@@ -396,7 +402,8 @@ function standardIfcTypeObjectMembers(
       argumentTypes: [Type.STRING],
       documentation: {
         key: "builtin.$typeObject.property.summary",
-        fallback: "property(name): property of the current IFC type object by name",
+        fallback:
+          "property(name): property of the current IFC type object by name",
       },
       argumentDocumentation: [
         memberArg(
@@ -414,7 +421,8 @@ function standardIfcTypeObjectMembers(
       argumentTypes: [Type.STRING],
       documentation: {
         key: "builtin.$typeObject.propertySet.summary",
-        fallback: "propertySet(name): property set of the current IFC type object by name",
+        fallback:
+          "propertySet(name): property set of the current IFC type object by name",
       },
       argumentDocumentation: [
         memberArg(
@@ -553,5 +561,3 @@ export class BuiltinVariableRegistry {
     return members;
   }
 }
-
-

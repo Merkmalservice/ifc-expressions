@@ -337,9 +337,9 @@ export class IfcExpression {
     return undefined;
   }
 
-  private static unwrapObjectAccessor(
-    objectAccessor: ObjectAccessor
-  ): { [key: string]: UnwrappedExpressionValue } {
+  private static unwrapObjectAccessor(objectAccessor: ObjectAccessor): {
+    [key: string]: UnwrappedExpressionValue;
+  } {
     const result: { [key: string]: UnwrappedExpressionValue } = {};
     for (const attributeName of objectAccessor.listAttributes()) {
       const attributeValue = objectAccessor.getAttribute(attributeName);
@@ -350,9 +350,9 @@ export class IfcExpression {
     return result;
   }
 
-  private static unwrapPlainObject(
-    value: Record<string, unknown>
-  ): { [key: string]: UnwrappedExpressionValue } {
+  private static unwrapPlainObject(value: Record<string, unknown>): {
+    [key: string]: UnwrappedExpressionValue;
+  } {
     const result: { [key: string]: UnwrappedExpressionValue } = {};
     for (const [key, nestedValue] of Object.entries(value)) {
       result[key] = this.unwrapUnknownValue(nestedValue);

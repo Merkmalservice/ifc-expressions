@@ -219,4 +219,3 @@ export abstract class Func {
     }
   }
 }
-

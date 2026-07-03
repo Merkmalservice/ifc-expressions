@@ -26,4 +26,3 @@ export type ExpressionValue =
   | ObjectAccessorValue
   | ContextObjectValue
   | ArrayValue;
-

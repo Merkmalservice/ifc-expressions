@@ -1,6 +1,10 @@
 import { IfcExpression } from "../src/IfcExpression.js";
 import { BuiltinVariableRegistry } from "../src/builtin/BuiltinVariableRegistry.js";
-import { ExprEvalStatus, ExprEvalSuccessObj, isExprEvalSuccess } from "../src/expression/ExprEvalResult.js";
+import {
+  ExprEvalStatus,
+  ExprEvalSuccessObj,
+  isExprEvalSuccess,
+} from "../src/expression/ExprEvalResult.js";
 import { ExprKind } from "../src/expression/ExprKind.js";
 import { BooleanValue } from "../src/value/BooleanValue.js";
 import { NumericValue } from "../src/value/NumericValue.js";
@@ -88,11 +92,9 @@ const clientContext = {
 
 describe("Client builtin member evaluation", () => {
   it("evaluates typed builtin property access", () => {
-    const actual = IfcExpression.evaluate(
-      "$result.statusCode",
-      clientContext,
-      { builtinVariableRegistry: registry }
-    );
+    const actual = IfcExpression.evaluate("$result.statusCode", clientContext, {
+      builtinVariableRegistry: registry,
+    });
 
     expect(actual).toStrictEqual(new ExprEvalSuccessObj(NumericValue.of(200)));
   });
