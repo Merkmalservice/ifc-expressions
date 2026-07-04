@@ -91,6 +91,63 @@ function isChainableType(type: ExprType): boolean {
   return type instanceof ContextObjectType;
 }
 
+const unsupportedPrimitiveMethodFunctionNames = new Set([
+  "NAME",
+  "GUID",
+  "IFCCLASS",
+  "DESCRIPTION",
+  "VALUE",
+]);
+
+const preferredMethodLabels = new Map<string, string>([
+  ["MAP", "map"],
+  ["CHOOSE", "choose"],
+  ["AT", "at"],
+  ["IF", "if"],
+  ["ROUND", "round"],
+  ["NAME", "name"],
+  ["GUID", "guid"],
+  ["IFCCLASS", "ifcClass"],
+  ["DESCRIPTION", "description"],
+  ["VALUE", "value"],
+  ["PROPERTYSET", "propertySet"],
+  ["PROPERTY", "property"],
+  ["TYPE", "type"],
+  ["NOT", "not"],
+  ["TOSTRING", "toString"],
+  ["TONUMERIC", "toNumeric"],
+  ["TONUMBER", "toNumber"],
+  ["TOBOOLEAN", "toBoolean"],
+  ["TOLOGICAL", "toLogical"],
+  ["NOTFOUNDASUNKNOWN", "notFoundAsUnknown"],
+  ["TOIFCDATE", "toIfcDate"],
+  ["TOIFCTIME", "toIfcTime"],
+  ["TOIFCDATETIME", "toIfcDateTime"],
+  ["TOIFCDURATION", "toIfcDuration"],
+  ["TOIFCTIMESTAMP", "toIfcTimeStamp"],
+  ["ADDDURATION", "addDuration"],
+  ["TOLOWERCASE", "toLowerCase"],
+  ["TOUPPERCASE", "toUpperCase"],
+  ["SUBSTRING", "substring"],
+  ["SPLIT", "split"],
+  ["EXISTS", "exists"],
+  ["AND", "and"],
+  ["OR", "or"],
+  ["XOR", "xor"],
+  ["IMPLIES", "implies"],
+  ["EQUALS", "equals"],
+  ["GREATERTHAN", "greaterThan"],
+  ["GREATERTHANOREQUAL", "greaterThanOrEqual"],
+  ["LESSTHAN", "lessThan"],
+  ["LESSTHANOREQUAL", "lessThanOrEqual"],
+  ["CONTAINS", "contains"],
+  ["MATCHES", "matches"],
+  ["REGEXCONTAINS", "regexContains"],
+  ["REGEXMATCHES", "regexMatches"],
+  ["REPLACE", "replace"],
+  ["REGEXREPLACE", "regexReplace"],
+]);
+
 function isExtendableTokenType(tokenType: number): boolean {
   return tokenType === IfcExpressionParser.IDENTIFIER;
 }
@@ -434,7 +491,8 @@ function buildSignatureLabel(
 
 function buildFunctionDocumentation(
   name: string,
-  localizer?: DocumentationLocalizer
+  localizer?: DocumentationLocalizer,
+  displayName = name
 ): string | undefined {
   const func = IfcExpressionFunctions.getFunction(name);
   const documentation = func?.getDocumentation();
@@ -442,7 +500,7 @@ function buildFunctionDocumentation(
     return undefined;
   }
 
-  const fallback = `${func.getSignatureLabel(name)}: ${documentation.fallback}`;
+  const fallback = `${func.getSignatureLabel(displayName)}: ${documentation.fallback}`;
   return localizer ? localizer.t(documentation.key, fallback) : fallback;
 }
 
@@ -657,17 +715,52 @@ function buildActiveHelp(
 }
 function toFunctionItem(
   name: string,
-  localizer?: DocumentationLocalizer
+  localizer?: DocumentationLocalizer,
+  label = name
 ): CompletionItem {
-  const insertText = toFunctionInsertText(name);
+  const insertText = toFunctionInsertText(label);
 
   return {
     kind: "builtinFunction",
-    label: name,
+    label,
     insertText,
     cursorOffset: insertText.length - 1,
-    documentation: buildFunctionDocumentation(name, localizer),
+    documentation: buildFunctionDocumentation(name, localizer, label),
   };
+}
+
+function getPreferredMethodLabel(name: string): string {
+  return preferredMethodLabels.get(name) ?? name;
+}
+
+function isApplicablePrimitiveMethodFunction(
+  name: string,
+  receiverType: ExprType
+): boolean {
+  if (unsupportedPrimitiveMethodFunctionNames.has(name)) {
+    return false;
+  }
+
+  const func = IfcExpressionFunctions.getFunction(name);
+  const firstArgument = func?.getFormalArguments()[0];
+  if (!func || !firstArgument) {
+    return false;
+  }
+
+  const firstArgumentType = firstArgument.getType();
+  return (
+    firstArgumentType.isAssignableFrom(receiverType) ||
+    firstArgumentType.overlapsWith(receiverType)
+  );
+}
+
+function getPrimitiveMethodItems(
+  receiverType: ExprType,
+  localizer?: DocumentationLocalizer
+): Array<CompletionItem> {
+  return IfcExpressionFunctions.getBuiltinFunctionNames()
+    .filter((name) => isApplicablePrimitiveMethodFunction(name, receiverType))
+    .map((name) => toFunctionItem(name, localizer, getPreferredMethodLabel(name)));
 }
 
 function toMemberItem(
@@ -771,19 +864,16 @@ export class IfcExpressionAutocomplete {
         memberCandidate.startTokenIndex,
         builtinVariableRegistry
       );
-      if (!(receiverType instanceof ContextObjectType)) {
-        return {
-          items: [],
-          replaceFrom: range.from,
-          replaceTo: range.to,
-          activeHelp,
-        };
-      }
-
       const typedPrefix = normalizeForMatch(input.slice(range.from, range.to));
-      const items = receiverType
-        .getMemberDefinitions()
-        .map((definition) => toMemberItem(definition, options.localizer))
+      const items = (
+        receiverType instanceof ContextObjectType
+          ? receiverType
+              .getMemberDefinitions()
+              .map((definition) => toMemberItem(definition, options.localizer))
+          : receiverType
+          ? getPrimitiveMethodItems(receiverType, options.localizer)
+          : []
+      )
         .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
         .sort((left, right) => left.label.localeCompare(right.label));
 

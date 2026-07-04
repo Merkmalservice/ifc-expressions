@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add `IfcExpressionAutocomplete.complete(input, cursorOffset, options)` for builtin-root, builtin-function, and typed dotted-member completion
+- Add localized completion documentation and active parameter help for builtin functions, builtin members, and builtin roots
+- Add comprehensive autocomplete coverage for builtin functions, client builtins, and standard IFC builtins
+- Add `IfcExpression.unwrapValue(...)` to convert evaluation results to plain JS value structures while preserving `Decimal` precision
+- Add recursive unwrapping for client builtin objects and arrays, including nested plain objects and `LogicalValue.UNKNOWN` as `undefined`
 - Add protected client-defined builtins configured through `BuiltinVariableRegistry`
 - Add static typing for dotted builtin member access such as `$result.statusCode` and `$query.matches('name')`
 - Add runtime evaluation for client builtin objects supplied through `IfcExpressionContext.resolveBuiltinVariable(name)`
@@ -19,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Build autocomplete on `antlr4-c3` and use builtin type metadata as the primary source for dotted-member suggestions
+- Unwrap IFC object references such as `$element` and `$property` to attribute-only plain objects instead of exposing library-specific wrapper logic to consumers
 - Route `$element` and `$property` through the builtin registry root-resolution mechanism instead of compiler name checks
 - Keep IFC object references distinct from client context-object references
 
