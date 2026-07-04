@@ -4,4 +4,4 @@
 /dist
 /*.iml
 /src/gen
-
+.codex-tmp*.*

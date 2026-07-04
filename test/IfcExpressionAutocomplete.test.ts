@@ -272,6 +272,14 @@ const completionCases: Array<CompletionCase> = [
     expected: ["code"],
   },
   {
+    text: "$query.property.toL",
+    expected: ["toLowerCase"],
+  },
+  {
+    text: "$result.statusCode.toIfcTimeS",
+    expected: ["toIfcTimeStamp"],
+  },
+  {
     text: "$element.",
     expected: elementMemberLabels,
   },
@@ -607,6 +615,21 @@ describe("IfcExpressionAutocomplete", () => {
           label: "matches",
           documentation:
             "[builtin.$query.matches.summary] matches(pattern): whether the query matches the provided pattern",
+        }),
+      ])
+    );
+  });
+
+  it("includes localized documentation for primitive method suggestions", () => {
+    const result = complete("$query.property.toL", { localizer });
+
+    expect(result.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: "builtinFunction",
+          label: "toLowerCase",
+          documentation:
+            "[function.TOLOWERCASE.summary] toLowerCase(input): convert a string to lowercase",
         }),
       ])
     );
