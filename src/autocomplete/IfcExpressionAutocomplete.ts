@@ -500,7 +500,9 @@ function buildFunctionDocumentation(
     return undefined;
   }
 
-  const fallback = `${func.getSignatureLabel(displayName)}: ${documentation.fallback}`;
+  const fallback = `${func.getSignatureLabel(displayName)}: ${
+    documentation.fallback
+  }`;
   return localizer ? localizer.t(documentation.key, fallback) : fallback;
 }
 
@@ -760,7 +762,9 @@ function getPrimitiveMethodItems(
 ): Array<CompletionItem> {
   return IfcExpressionFunctions.getBuiltinFunctionNames()
     .filter((name) => isApplicablePrimitiveMethodFunction(name, receiverType))
-    .map((name) => toFunctionItem(name, localizer, getPreferredMethodLabel(name)));
+    .map((name) =>
+      toFunctionItem(name, localizer, getPreferredMethodLabel(name))
+    );
 }
 
 function toMemberItem(
