@@ -823,9 +823,9 @@ function getEmptyExpressionStarterItems(
   builtinVariableRegistry: BuiltinVariableRegistry,
   localizer?: DocumentationLocalizer,
   starterNames: Array<string> = [
-    ...builtinVariableRegistry.getDefinitions().map((definition) =>
-      toBuiltinLabel(definition.name)
-    ),
+    ...builtinVariableRegistry
+      .getDefinitions()
+      .map((definition) => toBuiltinLabel(definition.name)),
     ...emptyExpressionStarterFunctionNames,
   ]
 ): Array<CompletionItem> {

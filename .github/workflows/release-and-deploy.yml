@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.MMS_GITHUB_TOKEN }}   
+          token: ${{ secrets.MMS_GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Set up JDK 11
