@@ -28,13 +28,13 @@ jobs:
         run: |
           echo "⚠️  You are about to **permanently unpublish** the following version:"
           echo ""
-          echo "Package: your-package-name"
+          echo "Package: ifc-expressions"
           echo "Version: ${{ github.event.inputs.version }}"
           echo ""
           echo "This action cannot be undone. The version number cannot be reused."
 
       - name: Unpublish version from npm
-        run: npm unpublish your-package-name@${{ github.event.inputs.version }}
+        run: npm unpublish ifc-expressions@${{ github.event.inputs.version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
 
