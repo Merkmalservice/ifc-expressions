@@ -178,7 +178,38 @@ const typeObjectMemberLabels = [
   "propertySet",
 ];
 
+const emptyExpressionStarterLabels = [
+  "$element",
+  "$property",
+  "$query",
+  "$result",
+  "IF",
+  "EXISTS",
+  "ROUND",
+  "CONTAINS",
+  "MATCHES",
+  "REPLACE",
+  "TOSTRING",
+  "TONUMERIC",
+  "TOBOOLEAN",
+];
+
+const customEmptyExpressionStarterLabels = [
+  "$result",
+  "REPLACE",
+  "$query",
+  "TOBOOLEAN",
+];
+
 const completionCases: Array<CompletionCase> = [
+  {
+    text: "",
+    expected: emptyExpressionStarterLabels,
+  },
+  {
+    text: "   ",
+    expected: emptyExpressionStarterLabels,
+  },
   {
     text: "$",
     expected: ["$element", "$property", "$query", "$result"],
@@ -549,6 +580,35 @@ describe("IfcExpressionAutocomplete", () => {
       });
     }
   );
+
+  it("returns curated starter suggestions for an empty expression", () => {
+    const result = complete("", { localizer });
+
+    expect(result.items.map((item) => item.label)).toEqual(
+      emptyExpressionStarterLabels
+    );
+    expect(result.replaceFrom).toBe(0);
+    expect(result.replaceTo).toBe(0);
+    expect(result.items.every((item) => item.documentation)).toBe(true);
+  });
+
+  it("supports caller-configured starter suggestions for an empty expression", () => {
+    const result = complete("", {
+      localizer,
+      emptyExpressionStarters: [
+        "$result",
+        "REPLACE",
+        "$query",
+        "UNKNOWN",
+        "TOBOOLEAN",
+      ],
+    });
+
+    expect(result.items.map((item) => item.label)).toEqual(
+      customEmptyExpressionStarterLabels
+    );
+    expect(result.items.every((item) => item.documentation)).toBe(true);
+  });
 
   it("keeps builtin root metadata plain", () => {
     const result = complete("$");

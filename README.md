@@ -227,6 +227,19 @@ The autocomplete surface is shaped by two inputs:
 
 That means the same builtin definitions you use for parsing and evaluation also drive autocomplete. If a client registers `$thequery` or `$theresult`, those exact reserved names, their typed members, and their member functions participate in completion automatically.
 
+For empty or whitespace-only expressions, you can also provide a curated starter list with `emptyExpressionStarters`. Use the same names users would type in expressions: builtin roots such as `"$result"` and builtin functions such as `"REPLACE"`.
+Unknown starter names are ignored, and if you omit this option the built-in default starter list is used.
+
+```ts
+const emptyStateCompletion = IfcExpressionAutocomplete.complete("", 0, {
+  builtinVariableRegistry,
+  emptyExpressionStarters: ["$result", "REPLACE", "$query", "TOBOOLEAN"],
+});
+
+console.log(emptyStateCompletion.items.map((item) => item.label));
+// ["$result", "REPLACE", "$query", "TOBOOLEAN"]
+```
+
 Example with localization:
 
 ```ts
