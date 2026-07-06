@@ -3,6 +3,9 @@
 name: Release and deploy to npm repository
 on:
   workflow_dispatch:
+    permissions:
+      contents: write
+      workflows: write
     inputs:
       release-type:
         description: "Release version (such as 3.17.2) or bump type, i.e, one of: patch, minor, major, prepatch, preminor, premajor, or prerelease"
@@ -18,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # Set up java with maven cache
       - name: Set up JDK 11
         uses: actions/setup-java@v3
