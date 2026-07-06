@@ -42,6 +42,7 @@ import {
 export type IfcExpressionAutocompleteOptions = {
   builtinVariableRegistry?: BuiltinVariableRegistry;
   localizer?: DocumentationLocalizer;
+  emptyExpressionStarters?: Array<string>;
 };
 
 type CompletedAccessorStep =
@@ -147,6 +148,18 @@ const preferredMethodLabels = new Map<string, string>([
   ["REPLACE", "replace"],
   ["REGEXREPLACE", "regexReplace"],
 ]);
+
+const emptyExpressionStarterFunctionNames = [
+  "IF",
+  "EXISTS",
+  "ROUND",
+  "CONTAINS",
+  "MATCHES",
+  "REPLACE",
+  "TOSTRING",
+  "TONUMERIC",
+  "TOBOOLEAN",
+] as const;
 
 function isExtendableTokenType(tokenType: number): boolean {
   return tokenType === IfcExpressionParser.IDENTIFIER;
@@ -478,6 +491,10 @@ function findReceiverTypeForMemberSlot(
   return undefined;
 }
 
+function isEmptyExpressionInput(input: string): boolean {
+  return input.trim().length === 0;
+}
+
 function toFunctionInsertText(name: string): string {
   return `${name}()`;
 }
@@ -534,12 +551,11 @@ function buildRootDocumentation(
   documentation,
   localizer?: DocumentationLocalizer
 ): string | undefined {
-  if (!documentation) {
-    return undefined;
-  }
-
-  const fallback = documentation.fallback;
-  return localizer ? localizer.t(documentation.key, fallback) : fallback;
+  const key = documentation?.key ?? `builtin.${name}.summary`;
+  const fallback =
+    documentation?.fallback ??
+    `${name}: built-in value from the evaluation context`;
+  return localizer ? localizer.t(key, fallback) : fallback;
 }
 
 type CallFrame = {
@@ -767,6 +783,59 @@ function getPrimitiveMethodItems(
     );
 }
 
+function toBuiltinRootItem(
+  name: string,
+  builtinVariableRegistry: BuiltinVariableRegistry,
+  localizer?: DocumentationLocalizer
+): CompletionItem | undefined {
+  const normalizedName = name.startsWith("$") ? name : `${name}`;
+  const definition = builtinVariableRegistry.getDefinition(normalizedName);
+  if (!definition) {
+    return undefined;
+  }
+
+  return {
+    kind: "builtinRoot",
+    label: toBuiltinLabel(definition.name),
+    documentation: buildRootDocumentation(
+      definition.name,
+      definition.documentation,
+      localizer
+    ),
+  };
+}
+
+function toEmptyExpressionStarterItem(
+  name: string,
+  builtinVariableRegistry: BuiltinVariableRegistry,
+  localizer?: DocumentationLocalizer
+): CompletionItem | undefined {
+  if (name.startsWith("$")) {
+    return toBuiltinRootItem(name, builtinVariableRegistry, localizer);
+  }
+
+  return IfcExpressionFunctions.getFunction(name)
+    ? toFunctionItem(name, localizer)
+    : undefined;
+}
+
+function getEmptyExpressionStarterItems(
+  builtinVariableRegistry: BuiltinVariableRegistry,
+  localizer?: DocumentationLocalizer,
+  starterNames: Array<string> = [
+    ...builtinVariableRegistry.getDefinitions().map((definition) =>
+      toBuiltinLabel(definition.name)
+    ),
+    ...emptyExpressionStarterFunctionNames,
+  ]
+): Array<CompletionItem> {
+  return starterNames
+    .map((name) =>
+      toEmptyExpressionStarterItem(name, builtinVariableRegistry, localizer)
+    )
+    .filter((item): item is CompletionItem => item !== undefined);
+}
+
 function toMemberItem(
   definition: BuiltinMemberDefinition,
   localizer?: DocumentationLocalizer
@@ -836,6 +905,19 @@ export class IfcExpressionAutocomplete {
     const builtinVariableRegistry =
       options.builtinVariableRegistry ??
       BuiltinVariableRegistry.getDefaultRegistry();
+
+    if (isEmptyExpressionInput(input)) {
+      return {
+        items: getEmptyExpressionStarterItems(
+          builtinVariableRegistry,
+          options.localizer,
+          options.emptyExpressionStarters
+        ),
+        replaceFrom: 0,
+        replaceTo: input.length,
+      };
+    }
+
     const parsed = parseAutocompleteInput(input, cursorOffset);
     const candidates = collectRuleCandidates(
       parsed.parser,
