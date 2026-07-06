@@ -3,9 +3,6 @@
 name: Release and deploy to npm repository
 on:
   workflow_dispatch:
-    permissions:
-      contents: write
-      workflows: write
     inputs:
       release-type:
         description: "Release version (such as 3.17.2) or bump type, i.e, one of: patch, minor, major, prepatch, preminor, premajor, or prerelease"
@@ -19,6 +16,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      workflows: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
