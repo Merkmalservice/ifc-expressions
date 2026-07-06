@@ -1,0 +1,43 @@
+name: Unpublish version from npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to unpublish (e.g. 4.0.0-beta.0)"
+        required: true
+        type: string
+
+jobs:
+  unpublish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: https://registry.npmjs.org/
+
+      - name: Show action details
+        run: |
+          echo "⚠️  You are about to **permanently unpublish** the following version:"
+          echo ""
+          echo "Package: your-package-name"
+          echo "Version: ${{ github.event.inputs.version }}"
+          echo ""
+          echo "This action cannot be undone. The version number cannot be reused."
+
+      - name: Unpublish version from npm
+        run: npm unpublish your-package-name@${{ github.event.inputs.version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
+
+      - name: Print summary
+        run: |
+          echo "🗑️ Unublished version ${{ github.event.inputs.version }} from npm." >> $GITHUB_STEP_SUMMARY
