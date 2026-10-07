@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: src/type
+head_tree: bd6b7390075a5ee7491ca94dc7448285f918c208
+headline: Expression type hierarchy and assignability
+summary_md: |
+  The expression type system is centered on `ExprType`, whose implementations define naming, assignability, subtype/supertype relationships, and overlap. `SimpleType` provides the primitive hierarchy exposed through `Type`; `ContextObjectType` refines a base type with a name and builtin member definitions; arrays, tuples, and disjunctions compose other expression types. `Types` supplies common constructors and compile-time assignability/overlap guards. `ContextObjectType.isSameTypeAs` currently treats equal names as equal, which is relevant when introducing stronger nominal factory identity.

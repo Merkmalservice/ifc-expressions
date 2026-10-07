@@ -1,0 +1,24 @@
+slice_patterns:
+  - .github/workflows
+  - src/autocomplete
+  - src/builtin
+  - src/compiler
+  - src/context
+  - src/error
+  - src/error/mapper
+  - src/expression
+  - src/expression/boolean
+  - src/expression/comparison
+  - src/expression/function
+  - src/expression/function/arg
+  - src/expression/function/impl
+  - src/expression/numeric
+  - src/expression/reference
+  - src/expression/string
+  - src/expression/structure
+  - src/postprocess
+  - src/type
+  - src/util
+  - src/value
+  - test
+ignore_patterns: []

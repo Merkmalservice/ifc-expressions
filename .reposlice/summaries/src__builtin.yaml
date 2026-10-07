@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: src/builtin
+head_tree: 297a3c3935e78fc83f268908fd9616af2218a343
+headline: Typed builtin registration and runtime conversion
+summary_md: |
+  `BuiltinVariableRegistry` defines statically typed builtin roots and their property/function members, constructs `ContextObjectType` instances for member-bearing builtins, and includes the default `$element` and `$property` IFC object surfaces. Member definitions carry argument/return types and localized documentation, so the same definitions support compilation and completion. `BuiltinRuntimeValueConverter` converts host values into expression values according to expected `ExprType`, wrapping object values as `ContextObjectValue`; it also resolves builtin members case-insensitively and unwraps results for clients.

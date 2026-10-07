@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: src/expression/comparison
+head_tree: b9ff344059f8ef73cb780ab759b1dfdefe898884
+headline: Equality and ordered comparison expressions
+summary_md: |
+  Comparison expression nodes implement `==`, `!=`, and ordered comparisons. Equality and inequality accept general `ExpressionValue` operands and delegate to `Value.equals`, with `!=` implemented as its negation. Ordered comparisons share `ComparisonOp`, require values implementing `Comparable`, and evaluate a numeric `compareTo` result. All comparison nodes produce the boolean expression type and retain their operator spelling when rebuilding expression text.

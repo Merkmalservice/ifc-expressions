@@ -1,0 +1,21 @@
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "output": {
+    "style": "xml",
+    "fileSummary": false,
+    "directoryStructure": true,
+    "files": true,
+    "copyToClipboard": false,
+    "includeFullDirectoryStructure": false
+  },
+  "include": ["**/*"],
+  "ignore": {
+    "useGitignore": true,
+    "useDotIgnore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      ".reposlice/**",
+      "**/*.(svg|png|jpg|bmp)"
+    ]
+  }
+}
