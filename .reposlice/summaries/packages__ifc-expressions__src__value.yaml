@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: src/value
+target_path: packages/ifc-expressions/src/value
 head_tree: 8b4a1f99fceb2a2d377bff8c6d9b2d4ca56b15d3
 headline: Boxed expression values and equality semantics
 summary_md: |

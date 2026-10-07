@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: src/type
+target_path: packages/ifc-expressions/src/type
 head_tree: bd6b7390075a5ee7491ca94dc7448285f918c208
 headline: Expression type hierarchy and assignability
 summary_md: |

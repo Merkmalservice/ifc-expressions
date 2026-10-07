@@ -1,0 +1,25 @@
+{
+  "name": "ifc-expressions-units-qudtlib",
+  "version": "0.1.0",
+  "description": "QUDT provider for ifc-expressions-units",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "license": "Apache-2.0",
+  "engines": { "node": ">=14.16" },
+  "peerDependencies": {
+    "ifc-expressions": "^3.0.0",
+    "ifc-expressions-units": "^0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "pack:check": "npm pack --dry-run"
+  },
+  "devDependencies": {
+    "ifc-expressions": "workspace:*",
+    "ifc-expressions-units": "workspace:*",
+    "typescript": "^5.1.3"
+  }
+}

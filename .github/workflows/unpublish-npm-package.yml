@@ -1,10 +1,18 @@
-name: Unpublish version from npm
+name: Unpublish package version from npm
 
 on:
   workflow_dispatch:
     inputs:
+      package:
+        description: Package to unpublish
+        required: true
+        type: choice
+        options:
+          - ifc-expressions
+          - ifc-expressions-units
+          - ifc-expressions-units-qudtlib
       version:
-        description: "Version to unpublish (e.g. 4.0.0-beta.0)"
+        description: Version to unpublish
         required: true
         type: string
 
@@ -13,31 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
           registry-url: https://registry.npmjs.org/
-
-      - name: Show action details
-        run: |
-          echo "⚠️  You are about to **permanently unpublish** the following version:"
-          echo ""
-          echo "Package: ifc-expressions"
-          echo "Version: ${{ github.event.inputs.version }}"
-          echo ""
-          echo "This action cannot be undone. The version number cannot be reused."
-
-      - name: Unpublish version from npm
-        run: npm unpublish ifc-expressions@${{ github.event.inputs.version }}
+      - run: npm unpublish "${{ inputs.package }}@${{ inputs.version }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
-
-      - name: Print summary
-        run: |
-          echo "🗑️ Unublished version ${{ github.event.inputs.version }} from npm." >> $GITHUB_STEP_SUMMARY

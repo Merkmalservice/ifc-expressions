@@ -1,104 +1,81 @@
-name: Release and deploy to npm repository
+name: Release package to npm
 
 on:
   workflow_dispatch:
     inputs:
+      package:
+        description: Package to release
+        required: true
+        type: choice
+        options:
+          - ifc-expressions
+          - ifc-expressions-units
+          - ifc-expressions-units-qudtlib
       release-type:
-        description: "Release version (such as 3.17.2) or bump type, i.e, one of: patch, minor, major, prepatch, preminor, premajor, or prerelease"
+        description: Exact version or npm version bump type
         required: true
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.MMS_GITHUB_TOKEN }}
           fetch-depth: 0
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
+      - uses: pnpm/action-setup@v4
         with:
-          distribution: "temurin"
-          java-version: "11"
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+          version: 10.33.0
+      - uses: actions/setup-node@v4
         with:
-          cache: "npm"
+          node-version: "20"
+          cache: pnpm
           registry-url: https://registry.npmjs.org/
-          node-version: "18"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test -- --runInBand
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build and run tests
-        run: npm run build-complete
-
-      - name: setup git config
+      - name: Select and version package
+        shell: bash
+        env:
+          PACKAGE_NAME: ${{ inputs.package }}
+          RELEASE_TYPE: ${{ inputs.release-type }}
         run: |
-          git config user.name ${{ github.actor }}
+          PACKAGE_DIR="packages/$PACKAGE_NAME"
+          VERSION=$(cd "$PACKAGE_DIR" && npm --no-git-tag-version version "$RELEASE_TYPE")
+          echo "PACKAGE_DIR=$PACKAGE_DIR" >> "$GITHUB_ENV"
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> "$GITHUB_ENV"
+          echo "NEW_VERSION=${VERSION#v}" >> "$GITHUB_ENV"
+          if [[ "$RELEASE_TYPE" == pre* || "$RELEASE_TYPE" == *-* ]]; then
+            echo "RELEASE_TAG=beta" >> "$GITHUB_ENV"
+          else
+            echo "RELEASE_TAG=latest" >> "$GITHUB_ENV"
+          fi
+
+      - run: pnpm install --lockfile-only
+
+      - name: Commit and tag selected package
+        run: |
+          git config user.name "${{ github.actor }}"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$PACKAGE_DIR/package.json" pnpm-lock.yaml
+          git commit -m "Release $PACKAGE_NAME@$NEW_VERSION"
+          git tag "$PACKAGE_NAME@$NEW_VERSION"
 
-      - name: Bump release version
-        if: startsWith(github.event.inputs.release-type, 'pre') != true
-        run: |
-          echo "NEW_VERSION=$(npm --no-git-tag-version version $RELEASE_TYPE)" >> $GITHUB_ENV
-          echo "RELEASE_TAG=latest" >> $GITHUB_ENV
-        env:
-          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
-
-      - name: Bump pre-release version
-        if: startsWith(github.event.inputs.release-type, 'pre')
-        run: |
-          echo "NEW_VERSION=$(npm --no-git-tag-version --preid=beta version $RELEASE_TYPE)" >> $GITHUB_ENV
-          echo "RELEASE_TAG=beta" >> $GITHUB_ENV
-        env:
-          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
-
-      - name: Update changelog
-        uses: superfaceai/release-changelog-action@v1
-        with:
-          path-to-changelog: CHANGELOG.md
-          version: ${{ env.NEW_VERSION }}
-          operation: release
-
-      - name: Apply format using prettier
-        run: npx prettier --write CHANGELOG.md
-
-      - name: Commit and tag
-        run: |
-          git add --all
-          git commit -m "Release ${{ env.NEW_VERSION }}"
-          git tag ${{ env.NEW_VERSION }}
-
-      - name: Publish
-        run: npm publish --access public --tag ${{ env.RELEASE_TAG }}
+      - name: Publish selected package
+        run: pnpm --filter "$PACKAGE_NAME" publish --access public --tag "$RELEASE_TAG" --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
 
-      - name: Push changes and tag
+      - name: Push release commit and tag
         run: |
-          git push --force-with-lease origin main
-          git push origin ${{ env.NEW_VERSION }}
+          git push origin HEAD
+          git push origin "$PACKAGE_NAME@$NEW_VERSION"
 
-      - id: get-changelog
-        name: Get version changelog
-        uses: superfaceai/release-changelog-action@v1
+      - uses: softprops/action-gh-release@v2
         with:
-          path-to-changelog: CHANGELOG.md
-          version: ${{ env.NEW_VERSION }}
-          operation: read
-
-      - name: Update GitHub release documentation
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.NEW_VERSION }}
-          body: ${{ steps.get-changelog.outputs.changelog }}
-          prerelease: ${{ startsWith(github.event.inputs.release-type, 'pre') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Print summary
-        run: echo "Release ${{ env.NEW_VERSION }} deployed to npm." >> $GITHUB_STEP_SUMMARY
+          tag_name: ${{ env.PACKAGE_NAME }}@${{ env.NEW_VERSION }}
+          prerelease: ${{ env.RELEASE_TAG == 'beta' }}

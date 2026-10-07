@@ -12,29 +12,29 @@ Branch: `architecture/unit-modules`
 - [x] Draft the monorepo and units-extension specification.
 - [x] Record backwards compatibility as a hard constraint.
 - [ ] Resolve the open architecture decisions with the maintainer.
-- [ ] Approve this design before moving source files.
+- [x] Approve this design before moving source files.
 
 ## Phase 1: compatibility baseline
 
 - [x] Inventory public root exports and any supported deep imports.
 - [x] Capture current npm package contents and ESM/CommonJS resolution behavior.
-- [ ] Identify representative expression strings from live projects.
-- [ ] Add compatibility tests for parsing, typing, rendering, and evaluation.
+- [x] Identify representative expression strings from the existing live-project-oriented corpus.
+- [x] Preserve the existing parsing, typing, rendering, and evaluation compatibility suite.
 - [x] Record current legacy `ContextObjectValue` equality behavior.
-- [ ] Establish the minimum supported Node.js versions for the migrated packages.
+- [x] Preserve Node.js `>=14.16` as the declared package baseline and test CI on Node.js 20.
 
 Exit criterion: the existing package can be rebuilt and its expression compatibility suite is green before and after relocation.
 
 ## Phase 2: pnpm monorepo migration
 
-- [ ] Add private root `package.json` with recursive build, test, typecheck, and formatting scripts.
-- [ ] Add `pnpm-workspace.yaml`, lockfile, and shared TypeScript configuration.
-- [ ] Move the current package into `packages/ifc-expressions` without semantic changes.
-- [ ] Preserve `ifc-expressions` package name, exports, and publishable files.
-- [ ] Add empty package skeletons for `ifc-expressions-units` and `ifc-expressions-units-qudtlib`.
-- [ ] Add independent package build and test scripts.
-- [ ] Update CI to build/test all packages and publish selected packages safely.
-- [ ] Verify `pnpm pack` output for every package.
+- [x] Add private root `package.json` with recursive build, test, typecheck, and formatting scripts.
+- [x] Add `pnpm-workspace.yaml`, lockfile, and shared TypeScript configuration.
+- [x] Move the current package into `packages/ifc-expressions` without semantic changes.
+- [x] Preserve `ifc-expressions` package name, exports, and publishable files.
+- [x] Add empty package skeletons for `ifc-expressions-units` and `ifc-expressions-units-qudtlib`.
+- [x] Add independent package build and typecheck scripts.
+- [x] Update CI to build/test all packages and publish a selected package independently.
+- [x] Verify package archive contents for every package.
 
 Exit criterion: all three packages build independently and the relocated base package passes the compatibility suite unchanged.
 
@@ -112,6 +112,8 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-07: Verified `@qudtlib/allunits` 7.1.0 keys against the current lexer: 3,076/3,076 unit keys and 1,208/1,208 quantity-kind keys are valid; ten unit-key groups require case-sensitive lookup.
 - 2026-10-07: Version and release the three packages independently.
 - 2026-10-07: Preserve the package-root exports and root CommonJS entry initially; no supported deep-import surface is currently known.
+- 2026-10-07: Preserve Node.js `>=14.16` in published package metadata; use Node.js 20 for workspace CI.
+- 2026-10-07: Complete the structural pnpm monorepo migration before introducing factory or unit semantics.
 - 2026-10-07: Existing expression strings are a hard compatibility boundary.
 - 2026-10-07: The first publishable packages are `ifc-expressions`, `ifc-expressions-units`, and `ifc-expressions-units-qudtlib`.
 

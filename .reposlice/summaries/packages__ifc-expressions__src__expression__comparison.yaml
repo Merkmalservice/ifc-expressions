@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: src/expression/comparison
+target_path: packages/ifc-expressions/src/expression/comparison
 head_tree: b9ff344059f8ef73cb780ab759b1dfdefe898884
 headline: Equality and ordered comparison expressions
 summary_md: |
