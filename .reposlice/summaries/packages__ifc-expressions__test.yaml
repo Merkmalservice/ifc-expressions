@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/test
+head_tree: 6aeacfda24380bdfa214cd232094d010c11f46fe
+headline: Expression compatibility and regression corpus
+summary_md: |
+  Jest compatibility corpus for the expression language. The suites cover parsing and round-tripping, static types, evaluation, autocomplete, builtin registry and member access, public exports, temporal and boxed values, text spans, and value unwrapping. `SimpleIfcExpressionContext.ts` supplies representative IFC accessors for evaluation tests. `ContextObjectValueCompatibility.test.ts` pins legacy equality to wrapped-object reference identity.

@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions-units-qudtlib
+head_tree: d683ec8aec7eac5b87f67e6ce75b93bf4b0717a3
+headline: QUDT unit-provider package
+summary_md: |
+  Publishable QUDT provider package skeleton. Its ESM entry point is `src/index.ts`, compiled to `dist` with the shared TypeScript baseline. It declares both `ifc-expressions` and `ifc-expressions-units` as peer dependencies and links their workspace packages for development. QUDT-backed catalogs, conversion, identity, hierarchy, and anonymous derived-unit support will be implemented here.

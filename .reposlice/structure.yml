@@ -2,7 +2,7 @@ schema_version: 1
 root:
   path: .
   kind: repo
-  direct_file_count: 11
+  direct_file_count: 7
   children:
     - path: .github
       kind: directory
@@ -10,117 +10,141 @@ root:
       children:
         - path: .github/workflows
           kind: slice
-          direct_file_count: 2
+          direct_file_count: 3
           children: []
-    - path: antlr4
-      kind: directory
-      direct_file_count: 1
-      children: []
     - path: architecture
       kind: directory
       direct_file_count: 2
       children: []
-    - path: src
+    - path: packages
       kind: directory
-      direct_file_count: 5
+      direct_file_count: 0
       children:
-        - path: src/autocomplete
+        - path: packages/ifc-expressions
           kind: slice
-          direct_file_count: 2
-          children: []
-        - path: src/builtin
-          kind: slice
-          direct_file_count: 2
-          children: []
-        - path: src/compiler
-          kind: slice
-          direct_file_count: 5
-          children: []
-        - path: src/context
-          kind: slice
-          direct_file_count: 9
-          children: []
-        - path: src/documentation
-          kind: directory
-          direct_file_count: 1
-          children: []
-        - path: src/error
-          kind: slice
-          direct_file_count: 14
+          direct_file_count: 8
           children:
-            - path: src/error/mapper
-              kind: slice
-              direct_file_count: 6
-              children: []
-            - path: src/error/value
+            - path: packages/ifc-expressions/antlr4
               kind: directory
               direct_file_count: 1
               children: []
-        - path: src/expression
-          kind: slice
-          direct_file_count: 13
-          children:
-            - path: src/expression/boolean
-              kind: slice
-              direct_file_count: 7
-              children: []
-            - path: src/expression/comparison
-              kind: slice
-              direct_file_count: 7
-              children: []
-            - path: src/expression/function
-              kind: slice
-              direct_file_count: 4
-              children:
-                - path: src/expression/function/arg
-                  kind: slice
-                  direct_file_count: 22
-                  children: []
-                - path: src/expression/function/impl
-                  kind: slice
-                  direct_file_count: 31
-                  children: []
-            - path: src/expression/numeric
-              kind: slice
-              direct_file_count: 7
-              children: []
-            - path: src/expression/poly
+            - path: packages/ifc-expressions/src
               kind: directory
-              direct_file_count: 1
-              children: []
-            - path: src/expression/reference
-              kind: slice
               direct_file_count: 5
-              children: []
-            - path: src/expression/string
+              children:
+                - path: packages/ifc-expressions/src/autocomplete
+                  kind: slice
+                  direct_file_count: 2
+                  children: []
+                - path: packages/ifc-expressions/src/builtin
+                  kind: slice
+                  direct_file_count: 2
+                  children: []
+                - path: packages/ifc-expressions/src/compiler
+                  kind: slice
+                  direct_file_count: 5
+                  children: []
+                - path: packages/ifc-expressions/src/context
+                  kind: slice
+                  direct_file_count: 9
+                  children: []
+                - path: packages/ifc-expressions/src/documentation
+                  kind: directory
+                  direct_file_count: 1
+                  children: []
+                - path: packages/ifc-expressions/src/error
+                  kind: slice
+                  direct_file_count: 14
+                  children:
+                    - path: packages/ifc-expressions/src/error/mapper
+                      kind: slice
+                      direct_file_count: 6
+                      children: []
+                    - path: packages/ifc-expressions/src/error/value
+                      kind: directory
+                      direct_file_count: 1
+                      children: []
+                - path: packages/ifc-expressions/src/expression
+                  kind: slice
+                  direct_file_count: 13
+                  children:
+                    - path: packages/ifc-expressions/src/expression/boolean
+                      kind: slice
+                      direct_file_count: 7
+                      children: []
+                    - path: packages/ifc-expressions/src/expression/comparison
+                      kind: slice
+                      direct_file_count: 7
+                      children: []
+                    - path: packages/ifc-expressions/src/expression/function
+                      kind: slice
+                      direct_file_count: 4
+                      children:
+                        - path: packages/ifc-expressions/src/expression/function/arg
+                          kind: slice
+                          direct_file_count: 22
+                          children: []
+                        - path: packages/ifc-expressions/src/expression/function/impl
+                          kind: slice
+                          direct_file_count: 31
+                          children: []
+                    - path: packages/ifc-expressions/src/expression/numeric
+                      kind: slice
+                      direct_file_count: 7
+                      children: []
+                    - path: packages/ifc-expressions/src/expression/poly
+                      kind: directory
+                      direct_file_count: 1
+                      children: []
+                    - path: packages/ifc-expressions/src/expression/reference
+                      kind: slice
+                      direct_file_count: 5
+                      children: []
+                    - path: packages/ifc-expressions/src/expression/string
+                      kind: slice
+                      direct_file_count: 2
+                      children: []
+                    - path: packages/ifc-expressions/src/expression/structure
+                      kind: slice
+                      direct_file_count: 2
+                      children: []
+                - path: packages/ifc-expressions/src/grammar
+                  kind: directory
+                  direct_file_count: 1
+                  children: []
+                - path: packages/ifc-expressions/src/postprocess
+                  kind: slice
+                  direct_file_count: 2
+                  children: []
+                - path: packages/ifc-expressions/src/type
+                  kind: slice
+                  direct_file_count: 7
+                  children: []
+                - path: packages/ifc-expressions/src/util
+                  kind: slice
+                  direct_file_count: 3
+                  children: []
+                - path: packages/ifc-expressions/src/value
+                  kind: slice
+                  direct_file_count: 19
+                  children: []
+            - path: packages/ifc-expressions/test
               kind: slice
-              direct_file_count: 2
+              direct_file_count: 17
               children: []
-            - path: src/expression/structure
-              kind: slice
-              direct_file_count: 2
-              children: []
-        - path: src/grammar
-          kind: directory
-          direct_file_count: 1
-          children: []
-        - path: src/postprocess
+        - path: packages/ifc-expressions-units
           kind: slice
           direct_file_count: 2
-          children: []
-        - path: src/type
+          children:
+            - path: packages/ifc-expressions-units/src
+              kind: directory
+              direct_file_count: 1
+              children: []
+        - path: packages/ifc-expressions-units-qudtlib
           kind: slice
-          direct_file_count: 7
-          children: []
-        - path: src/util
-          kind: slice
-          direct_file_count: 3
-          children: []
-        - path: src/value
-          kind: slice
-          direct_file_count: 19
-          children: []
-    - path: test
-      kind: slice
-      direct_file_count: 16
-      children: []
+          direct_file_count: 2
+          children:
+            - path: packages/ifc-expressions-units-qudtlib/src
+              kind: directory
+              direct_file_count: 1
+              children: []

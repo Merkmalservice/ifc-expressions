@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: .github/workflows
+head_tree: aac12a374cc21a4c1c2651b10125b813079c969a
+headline: Pnpm validation and independent npm releases
+summary_md: |
+  GitHub Actions validate and release the pnpm monorepo. `ci.yml` installs the frozen lockfile on Node.js 20, then builds, typechecks, tests, and inspects every publishable package. `release-and-deploy.yml` accepts one package and version/bump, verifies the complete workspace, versions only that package, tags it as `package@version`, and publishes it to npm. `unpublish-npm-package.yml` likewise requires an explicit package and version.

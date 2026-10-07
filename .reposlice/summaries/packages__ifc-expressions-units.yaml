@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions-units
+head_tree: 3266a8fc0e4f07d6c4e0f092aef973cf2d1c1884
+headline: Provider-neutral units extension package
+summary_md: |
+  Publishable provider-neutral unit-extension package skeleton. Its ESM entry point is `src/index.ts`, compiled to `dist` with the shared TypeScript baseline. It declares `ifc-expressions` as a peer dependency and uses the workspace package for development. Provider contracts and `$unit`/`$measure` registration will be implemented here without introducing a concrete unit library dependency.
