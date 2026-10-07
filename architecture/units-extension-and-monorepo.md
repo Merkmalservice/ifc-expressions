@@ -37,6 +37,8 @@ Proposed repository layout, following the working `ecotwin-js` conventions:
 
 Each package owns its `package.json`, build, tests, exports, and publishable `dist` directory. Workspace scripts use recursive pnpm commands. Workspace packages use pnpm workspace dependencies during development and publish ordinary npm-compatible dependency ranges.
 
+The three packages are versioned and released independently. Dependency ranges express compatibility between their independently evolving APIs.
+
 ## Dependency direction
 
 ```text
@@ -97,6 +99,14 @@ Legacy, non-factory context objects retain their current behavior so existing ex
 
 The same registered type metadata drives compilation and autocomplete. Unsupported operators and wrong factory types must be rejected before model evaluation.
 
+### Catalog member resolution and autocomplete
+
+`ContextObjectType` must accept a member provider in addition to the existing eager member map. The provider performs exact member resolution for compilation and prefix-based completion for the editor. Existing member arrays are wrapped by a map-backed provider for compatibility.
+
+Generated catalogs are resolved lazily. Completion receives names, documentation, and static return types; it does not instantiate provider-level unit or measure objects. Runtime evaluation resolves the selected member through the same catalog registration.
+
+Large catalogs return a bounded, prefix-filtered result and may mark it incomplete so the editor requests completion again for a narrower prefix. Compilation always performs unbounded exact-name lookup. The packaged QUDT catalog remains synchronous; remote providers must preload their metadata during extension initialization.
+
 ## Units extension
 
 `ifc-expressions-units` registers two optional top-level language surfaces and their factory contracts:
@@ -144,7 +154,7 @@ An anonymous unit is a valid provider-level unit object without a public catalog
 
 ## Constants and catalogs
 
-The optional units package may define a deliberately incomplete set of stable, provider-independent aliases for common IFC-facing usage:
+The optional units package defines a deliberately incomplete set of stable, provider-independent aliases generated from the latest stable IFC 4.3 constants available when that package version is prepared:
 
 ```text
 $unit.METRE
@@ -153,7 +163,7 @@ $unit.KILO_GRAM
 $unit.PASCAL
 ```
 
-Their purpose is convenient, portable language for common cases, not catalog completeness. Every compatible provider must bind each standardized alias to a valid provider-level object.
+Their purpose is convenient, portable language for common cases, not catalog completeness. Every compatible provider must bind each standardized alias to a valid provider-level object. Generation records and pins the exact IFC 4.3 schema revision used for reproducible releases; updating to newer IFC 4.3 constants is an explicit package change.
 
 The QUDT package exposes its substantially larger generated catalogs with type-sensitive completion under explicit provider namespaces:
 
@@ -163,6 +173,10 @@ $measure.QUDT.<generated-measure-name>
 ```
 
 Expressions using that namespace intentionally depend on the QUDT vocabulary, but not necessarily on `qudtlib` as an implementation substrate.
+
+The provider exposes QUDT's generated JavaScript constant names literally. QUDT catalog namespaces are case-sensitive even though legacy builtin and function lookup remains case-insensitive. Provider tests enumerate every exported unit and quantity-kind constant and fail if a name cannot be tokenized by the expression grammar, collides with another exposed name, or cannot be resolved back to its provider object.
+
+Design-time verification against `@qudtlib/allunits` 7.1.0 found that all 3,076 unit keys and all 1,208 quantity-kind keys match the current lexer. Ten unit-key groups collide when normalized case-insensitively, including `CI`/`Ci` and `GAMMA`/`Gamma`; literal case-sensitive lookup is therefore required.
 
 Portable aliases and provider constants resolve to objects from the same factories, so these comparisons are valid and true when the aliases denote the same concepts:
 
@@ -185,7 +199,9 @@ Required gates:
 - Existing expression tests become a compatibility corpus and run unchanged after the package move.
 - Add golden tests for parse success, inferred types, expression rendering, and evaluation results of representative live expressions.
 - Keep the published package name `ifc-expressions` and its root export.
+- Preserve all named exports currently available from the package root.
 - Preserve current ESM and CommonJS entry points initially unless evidence shows they are unused and a separately planned major release removes one.
+- No supported deep-import entry points are currently known; the existing package export map exposes only `"."`.
 - Monorepo conversion must be structurally separate from semantic changes so regressions are attributable.
 - The base package must not acquire a mandatory unit-provider dependency.
 
@@ -203,7 +219,5 @@ New context-object operators are additive. An expression such as `$result.unit =
 
 ## Open decisions
 
-1. Which portable aliases are normative in `ifc-expressions-units`, and what compatibility/versioning policy governs additions?
-2. What naming transformation maps QUDT identifiers to expression-safe catalog member names?
-3. Should all three packages share one version, or be independently versioned and released?
-4. Which current CommonJS and deep-import entry points are confirmed compatibility requirements beyond the documented root export?
+1. Which exact IFC 4.3 normative enumerations/tables feed the portable unit and measure alias generator?
+2. What is the final standardized unit-provenance member set beyond the motivating predicates?
