@@ -63,7 +63,7 @@ An environment accepts exactly one active unit provider unless a future design i
 
 ## Core context-object extension
 
-Units and quantity kinds are not primitive expression types. Their runtime and public expression type remains `ContextObjectRef`.
+Units and measures are not primitive expression types. Their runtime and public expression type remains `ContextObjectRef`.
 
 Core gains a generic factory mechanism for nominal context objects. A factory:
 
@@ -76,7 +76,7 @@ Static function signatures and member return types can therefore distinguish:
 
 ```text
 ContextObjectRef<unit-factory>
-ContextObjectRef<quantity-kind-factory>
+ContextObjectRef<measure-factory>
 ContextObjectRef<some-other-factory>
 ```
 
@@ -99,23 +99,27 @@ The same registered type metadata drives compilation and autocomplete. Unsupport
 
 ## Units extension
 
-`ifc-expressions-units` registers the optional `$unit` language surface and the unit and quantity-kind factory contracts.
+`ifc-expressions-units` registers two optional top-level language surfaces and their factory contracts:
+
+- `$unit` for units, conversion, and convertibility;
+- `$measure` for measures and their hierarchy.
 
 Initial operations:
 
 ```text
 $unit.convert(value, fromUnit, toUnit) -> numeric
 $unit.isConvertible(fromUnit, toUnit) -> boolean
-$unit.isSubKindOf(actualKind, broaderKind) -> boolean
+$measure.isSubKindOf(actualMeasure, broaderMeasure) -> boolean
 ```
 
-Both unit arguments are `ContextObjectRef<unit-factory>`. Both quantity-kind arguments are `ContextObjectRef<quantity-kind-factory>`.
+Both unit arguments are `ContextObjectRef<unit-factory>`. Both measure arguments are `ContextObjectRef<measure-factory>`.
 
 Example:
 
 ```text
 $result.unit.isInheritedFromProject()
 && $result.unit == $unit.METRE
+&& $result.measure == $measure.LENGTH
 && $unit.convert($result.value, $result.unit, $unit.METRE) > 1
 ```
 
@@ -127,10 +131,10 @@ The exact provenance member set remains to be finalized; the motivating predicat
 
 The active unit provider exclusively owns:
 
-- provider-level unit and quantity-kind objects;
+- provider-level unit and measure objects;
 - unit identity and equality;
 - conversion and convertibility;
-- quantity-kind hierarchy;
+- measure hierarchy;
 - mapping or constructing units from IFC input;
 - catalogued and anonymous derived units.
 
@@ -151,14 +155,23 @@ $unit.PASCAL
 
 Their purpose is convenient, portable language for common cases, not catalog completeness. Every compatible provider must bind each standardized alias to a valid provider-level object.
 
-The QUDT package exposes its substantially larger generated catalog with type-sensitive completion. Provider-specific names must be visibly namespaced; the exact namespace is still open, for example:
+The QUDT package exposes its substantially larger generated catalogs with type-sensitive completion under explicit provider namespaces:
 
 ```text
 $unit.QUDT.<generated-unit-name>
-$unit.QUDT.QuantityKinds.<generated-kind-name>
+$measure.QUDT.<generated-measure-name>
 ```
 
 Expressions using that namespace intentionally depend on the QUDT vocabulary, but not necessarily on `qudtlib` as an implementation substrate.
+
+Portable aliases and provider constants resolve to objects from the same factories, so these comparisons are valid and true when the aliases denote the same concepts:
+
+```text
+$unit.METRE == $unit.QUDT.M
+$measure.LENGTH == $measure.QUDT.Length
+```
+
+Unit-to-measure comparisons are rejected during compilation because the operands belong to different nominal context-object factories.
 
 ## Backwards compatibility
 
@@ -190,8 +203,7 @@ New context-object operators are additive. An expression such as `$result.unit =
 
 ## Open decisions
 
-1. Should the user-facing term be `quantityKind`, `measurement`, or another IFC-familiar term?
-2. Which portable aliases are normative in `ifc-expressions-units`, and what compatibility/versioning policy governs additions?
-3. What exact namespace exposes the complete QUDT unit and quantity-kind catalogs?
-4. Should all three packages share one version, or be independently versioned and released?
-5. Which current CommonJS and deep-import entry points are confirmed compatibility requirements beyond the documented root export?
+1. Which portable aliases are normative in `ifc-expressions-units`, and what compatibility/versioning policy governs additions?
+2. What naming transformation maps QUDT identifiers to expression-safe catalog member names?
+3. Should all three packages share one version, or be independently versioned and released?
+4. Which current CommonJS and deep-import entry points are confirmed compatibility requirements beyond the documented root export?
