@@ -3,7 +3,7 @@ config_fingerprint: '{"slice_patterns":[".github/workflows","src/autocomplete","
 repo:
   path: .
   kind: repo
-  head_tree: 28063540defbf831a9cad41bf483356e7760f920
+  head_tree: 0191ec069a77331d415f3f37b102495f22becfe0
 slices:
   - path: .github/workflows
     kind: slice

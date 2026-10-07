@@ -16,6 +16,10 @@ root:
       kind: directory
       direct_file_count: 1
       children: []
+    - path: architecture
+      kind: directory
+      direct_file_count: 2
+      children: []
     - path: src
       kind: directory
       direct_file_count: 5

@@ -17,10 +17,10 @@ Branch: `architecture/unit-modules`
 ## Phase 1: compatibility baseline
 
 - [x] Inventory public root exports and any supported deep imports.
-- [ ] Capture current npm package contents and ESM/CommonJS resolution behavior.
+- [x] Capture current npm package contents and ESM/CommonJS resolution behavior.
 - [ ] Identify representative expression strings from live projects.
 - [ ] Add compatibility tests for parsing, typing, rendering, and evaluation.
-- [ ] Record current legacy `ContextObjectValue` equality behavior.
+- [x] Record current legacy `ContextObjectValue` equality behavior.
 - [ ] Establish the minimum supported Node.js versions for the migrated packages.
 
 Exit criterion: the existing package can be rebuilt and its expression compatibility suite is green before and after relocation.
