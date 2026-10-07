@@ -1,6 +1,7 @@
 # Units extension and monorepo design
 
-Status: draft  
+Status: draft
+
 Branch: `architecture/unit-modules`
 
 ## Purpose
@@ -48,7 +49,17 @@ ifc-expressions
 
 `ifc-expressions` must remain usable without installing or configuring a unit provider. Without the units extension, `$unit` is unknown and unit-aware expressions fail during compilation.
 
-The QUDT implementation is the default recommendation, but `ifc-expressions-units` must not statically depend on it because the implementation already depends on the contract. Applications compose and register the provider explicitly unless we introduce another packaging layer.
+The QUDT implementation is the default recommendation, but `ifc-expressions-units` does not statically depend on it because the implementation already depends on the contract. Applications install and register a provider explicitly.
+
+Initializing the units extension without a provider is a fatal configuration error. Validation happens when the language environment is assembled, before expressions are compiled or evaluated. The error must name the missing capability and give an actionable remedy, for example:
+
+```text
+ifc-expressions-units requires a unit provider.
+Install ifc-expressions-units-qudtlib and register its provider,
+or register another compatible unit provider.
+```
+
+An environment accepts exactly one active unit provider unless a future design introduces explicit provider selection. Missing, duplicate, or incomplete provider registrations fail during initialization. Provider registration also validates all required portable aliases and operations.
 
 ## Core context-object extension
 
@@ -179,10 +190,8 @@ New context-object operators are additive. An expression such as `$result.unit =
 
 ## Open decisions
 
-1. Does “default QUDT provider” mean recommended and explicitly registered, or must installing `ifc-expressions-units` automatically install/configure it? Automatic composition requires a different package split to avoid a dependency cycle.
-2. Should the user-facing term be `quantityKind`, `measurement`, or another IFC-familiar term?
-3. Which portable aliases are normative in `ifc-expressions-units`, and what compatibility/versioning policy governs additions?
-4. What exact namespace exposes the complete QUDT unit and quantity-kind catalogs?
-5. Should all three packages share one version, or be independently versioned and released?
-6. Which current CommonJS and deep-import entry points are confirmed compatibility requirements beyond the documented root export?
-
+1. Should the user-facing term be `quantityKind`, `measurement`, or another IFC-familiar term?
+2. Which portable aliases are normative in `ifc-expressions-units`, and what compatibility/versioning policy governs additions?
+3. What exact namespace exposes the complete QUDT unit and quantity-kind catalogs?
+4. Should all three packages share one version, or be independently versioned and released?
+5. Which current CommonJS and deep-import entry points are confirmed compatibility requirements beyond the documented root export?

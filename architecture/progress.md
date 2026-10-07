@@ -1,6 +1,7 @@
 # Architecture progress tracker
 
-Updated: 2026-10-07  
+Updated: 2026-10-07
+
 Branch: `architecture/unit-modules`
 
 ## Current milestone: architecture baseline
@@ -68,6 +69,8 @@ Exit criterion: supported comparisons compile and evaluate; unsupported comparis
 - [ ] Specify unit provenance predicates.
 - [ ] Select the portable alias set and its compatibility policy.
 - [ ] Test that the base package works without any unit extension installed.
+- [ ] Fail units-extension initialization with actionable diagnostics when no provider is registered.
+- [ ] Reject duplicate or incomplete unit-provider registrations during initialization.
 
 Exit criterion: a mock provider can supply units, quantity kinds, equality, conversion, hierarchy, provenance, and aliases with full static checking and completion.
 
@@ -79,7 +82,7 @@ Exit criterion: a mock provider can supply units, quantity kinds, equality, conv
 - [ ] Support valid provider objects for uncatalogued/anonymous derived units.
 - [ ] Generate or lazily expose the full QUDT catalog with completion.
 - [ ] Bind every portable alias to a QUDT provider object.
-- [ ] Decide how the recommended/default provider is composed without cyclic dependencies.
+- [x] Keep provider installation and registration explicit; do not introduce an automatic dependency from the units contract to QUDT.
 
 Exit criterion: QUDT-backed expressions work for portable aliases, the full catalog, and anonymous IFC-derived units without conversion logic in the base or units-contract packages.
 
@@ -98,12 +101,12 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-07: Units and quantity kinds remain factory-backed `ContextObjectRef` values, not primitive expression types.
 - 2026-10-07: Unit conversion, identity, compatibility, hierarchy, and anonymous-unit construction belong exclusively to the unit provider.
 - 2026-10-07: Unit support is optional for `ifc-expressions`; the generic context-object factory/operator mechanism belongs in the base package.
+- 2026-10-07: `ifc-expressions-units` requires an explicitly registered provider and fails during initialization with an actionable error when it is missing; provider installation is not automatic.
 - 2026-10-07: Existing expression strings are a hard compatibility boundary.
 - 2026-10-07: The first publishable packages are `ifc-expressions`, `ifc-expressions-units`, and `ifc-expressions-units-qudtlib`.
 
 ## Blocking decisions
 
-- [ ] Meaning of “default provider”: explicit recommended composition versus automatic installation/configuration.
 - [ ] User-facing name for quantity kinds/measurements.
 - [ ] Portable alias scope and naming.
 - [ ] QUDT catalog namespace.
