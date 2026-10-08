@@ -28,4 +28,5 @@ export type CompletionResult = {
   replaceFrom: number;
   replaceTo: number;
   activeHelp?: ActiveHelp;
+  isIncomplete?: boolean;
 };

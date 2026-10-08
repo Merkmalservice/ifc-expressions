@@ -62,6 +62,16 @@ import { TupleType } from "./type/TupleType.js";
 import { TypeDisjunction } from "./type/TypeDisjunction.js";
 import { Types } from "./type/Types.js";
 import { ContextObjectType } from "./type/ContextObjectType.js";
+import {
+  ContextObjectOperator,
+  ContextObjectTypeFactory,
+  ContextObjectBinaryOperator,
+} from "./type/ContextObjectTypeFactory.js";
+import {
+  ContextObjectMemberProvider,
+  ContextObjectMemberCompletion,
+  MapContextObjectMemberProvider,
+} from "./type/ContextObjectMemberProvider.js";
 import { BuiltinVariableRegistry } from "./builtin/BuiltinVariableRegistry.js";
 import { IfcExpressionOptions } from "./IfcExpressionOptions.js";
 import { IfcExpressionAutocomplete } from "./autocomplete/IfcExpressionAutocomplete.js";
@@ -114,6 +124,9 @@ export {
   TypeDisjunction,
   Types,
   ContextObjectType,
+  ContextObjectValue,
+  ContextObjectOperator,
+  MapContextObjectMemberProvider,
   BuiltinVariableRegistry,
   IfcExpressionAutocomplete,
 };
@@ -124,6 +137,10 @@ export type {
   CompletionItem,
   CompletionResult,
   IfcExpressionAutocompleteOptions,
+  ContextObjectTypeFactory,
+  ContextObjectBinaryOperator,
+  ContextObjectMemberProvider,
+  ContextObjectMemberCompletion,
 };
 
 export type UnwrappedExpressionValue =

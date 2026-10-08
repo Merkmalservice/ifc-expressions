@@ -26,9 +26,10 @@ export class AT extends Func {
       evaluatedArguments.get("input") as ArrayValue
     ).getValue();
     const index = (evaluatedArguments.get("index") as NumericValue).getValue();
-    return new ExprEvalSuccessObj(
-      inputArray.at(index.toNumber()) as ExpressionValue
-    );
+    const numericIndex = index.toNumber();
+    const resolvedIndex =
+      numericIndex < 0 ? inputArray.length + numericIndex : numericIndex;
+    return new ExprEvalSuccessObj(inputArray[resolvedIndex] as ExpressionValue);
   }
 
   getReturnType(argumentTypes: Array<ExprType>): ExprType {

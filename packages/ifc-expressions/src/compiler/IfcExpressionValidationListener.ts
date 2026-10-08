@@ -96,7 +96,16 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
   };
 
   exitSEComparison: (ctx: SEComparisonContext) => void = (ctx) => {
-    this.typeManager.requireTypesOverlap(ctx._left, ctx._right);
+    const operator = ctx.CMP_OP().getText();
+    if (operator === "==" || operator === "!=") {
+      this.typeManager.requireEqualitySupported(
+        ctx._left,
+        ctx._right,
+        operator
+      );
+    } else {
+      this.typeManager.requireTypesOverlap(ctx._left, ctx._right);
+    }
     this.typeManager.setType(ctx, Types.boolean());
   };
 

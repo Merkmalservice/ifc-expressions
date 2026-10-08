@@ -50,10 +50,7 @@ export function toExpressionValue(
         `Expected context object value for type ${expectedType.getName()}`
       );
     }
-    return new ContextObjectValue(
-      value as Record<string, unknown>,
-      expectedType
-    );
+    return expectedType.createValue(value);
   }
 
   if (expectedType instanceof TupleType) {
@@ -130,6 +127,9 @@ export function inferExpressionValue(
     return ArrayValue.of(value.map((item) => inferExpressionValue(item)));
   }
   if (typeof value === "object" && value !== null) {
+    if (fallbackType instanceof ContextObjectType) {
+      return fallbackType.createValue(value);
+    }
     return new ContextObjectValue(
       value as Record<string, unknown>,
       fallbackType

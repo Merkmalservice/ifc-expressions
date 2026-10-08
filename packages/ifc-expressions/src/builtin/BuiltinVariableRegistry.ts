@@ -530,7 +530,9 @@ export class BuiltinVariableRegistry {
       definition.type ??
       (members.size > 0 ? Type.CONTEXT_OBJECT_REF : Type.ANY);
     const resolvedType =
-      members.size > 0
+      definition.type instanceof ContextObjectType
+        ? definition.type
+        : members.size > 0
         ? new ContextObjectType(definition.name, baseType, members)
         : baseType;
     const createReferenceExpr =

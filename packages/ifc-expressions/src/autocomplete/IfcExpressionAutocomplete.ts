@@ -950,24 +950,30 @@ export class IfcExpressionAutocomplete {
         memberCandidate.startTokenIndex,
         builtinVariableRegistry
       );
-      const typedPrefix = normalizeForMatch(input.slice(range.from, range.to));
-      const items = (
+      const rawPrefix = input.slice(range.from, range.to);
+      const typedPrefix = normalizeForMatch(rawPrefix);
+      const completion =
         receiverType instanceof ContextObjectType
-          ? receiverType
-              .getMemberDefinitions()
-              .map((definition) => toMemberItem(definition, options.localizer))
+          ? receiverType.completeMembers(rawPrefix)
+          : undefined;
+      const items = (
+        completion
+          ? completion.definitions.map((definition) =>
+              toMemberItem(definition, options.localizer)
+            )
           : receiverType
-          ? getPrimitiveMethodItems(receiverType, options.localizer)
+          ? getPrimitiveMethodItems(receiverType, options.localizer).filter(
+              (item) => normalizeForMatch(item.label).startsWith(typedPrefix)
+            )
           : []
-      )
-        .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
-        .sort((left, right) => left.label.localeCompare(right.label));
+      ).sort((left, right) => left.label.localeCompare(right.label));
 
       return {
         items,
         replaceFrom: range.from,
         replaceTo: range.to,
         activeHelp,
+        isIncomplete: completion?.isIncomplete,
       };
     }
 

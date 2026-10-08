@@ -2,6 +2,8 @@ import { ParserRuleContext } from "antlr4ng";
 import { Type, Types } from "../type/Types.js";
 import { ExpressionTypeError } from "../error/ExpressionTypeError.js";
 import { ExprType } from "../type/ExprType.js";
+import { ContextObjectType } from "../type/ContextObjectType.js";
+import { ContextObjectOperator } from "../type/ContextObjectTypeFactory.js";
 
 export class TypeManager {
   private readonly types = new Map<ParserRuleContext, ExprType>();
@@ -90,6 +92,40 @@ export class TypeManager {
           ctxA
         )
     );
+  }
+
+  public requireEqualitySupported(
+    ctxA: ParserRuleContext,
+    ctxB: ParserRuleContext,
+    operator: "==" | "!=" = "=="
+  ) {
+    const leftType = this.types.get(ctxA);
+    const rightType = this.types.get(ctxB);
+    const leftFactoryType =
+      leftType instanceof ContextObjectType && leftType.getFactory()
+        ? leftType
+        : undefined;
+    const rightFactoryType =
+      rightType instanceof ContextObjectType && rightType.getFactory()
+        ? rightType
+        : undefined;
+
+    if (!leftFactoryType && !rightFactoryType) {
+      this.requireTypesOverlap(ctxA, ctxB);
+      return;
+    }
+
+    if (
+      !leftFactoryType ||
+      !rightFactoryType ||
+      leftFactoryType.getFactory() !== rightFactoryType.getFactory() ||
+      !leftFactoryType.supportsOperator(ContextObjectOperator.EQUALS)
+    ) {
+      throw new ExpressionTypeError(
+        `Operator '${operator}' is not supported for operand types ${leftType.getName()} and ${rightType.getName()}.`,
+        ctxA
+      );
+    }
   }
 
   public isType(type: ExprType, ...ctxs) {

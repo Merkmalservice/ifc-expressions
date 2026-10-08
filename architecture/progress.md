@@ -1,6 +1,6 @@
 # Architecture progress tracker
 
-Updated: 2026-10-07
+Updated: 2026-10-08
 
 Branch: `architecture/unit-modules`
 
@@ -40,26 +40,26 @@ Exit criterion: all three packages build independently and the relocated base pa
 
 ## Phase 3: generic context-object factories
 
-- [ ] Specify the minimal `ContextObjectTypeFactory` contract.
-- [ ] Add nominal factory identity to static context-object types.
-- [ ] Associate factory identity with created `ContextObjectValue` instances.
-- [ ] Extend function arguments and return types to retain factory identity.
-- [ ] Drive member completion and signature help from the same static metadata.
-- [ ] Add lazy exact-resolution and prefix-completion providers for large nested catalogs.
-- [ ] Preserve case-insensitive legacy members while allowing case-sensitive provider catalogs.
-- [ ] Preserve the existing builtin registry API through compatibility adapters.
+- [x] Specify the minimal `ContextObjectTypeFactory` contract.
+- [x] Add nominal factory identity to static context-object types.
+- [x] Associate factory identity with created `ContextObjectValue` instances.
+- [x] Extend function arguments and return types to retain factory identity.
+- [x] Drive member completion and signature help from the same static metadata.
+- [x] Add lazy exact-resolution and prefix-completion providers for large nested catalogs.
+- [x] Preserve case-insensitive legacy members while allowing case-sensitive provider catalogs.
+- [x] Preserve the existing builtin registry API through compatibility adapters.
 - [ ] Add configuration validation for duplicate or incompatible factory registrations.
 
 Exit criterion: two distinct context-object factories are statically distinguishable without adding primitive expression types.
 
 ## Phase 4: context-object operators
 
-- [ ] Define static operator signatures for factory-backed context objects.
-- [ ] Implement equality dispatch through the common factory.
-- [ ] Derive `!=` from equality.
-- [ ] Reject unsupported and cross-factory operators during expression compilation.
-- [ ] Preserve legacy context-object reference equality.
-- [ ] Add operator-aware completion and diagnostics where applicable.
+- [x] Define static operator signatures for factory-backed context objects.
+- [x] Implement equality dispatch through the common factory.
+- [x] Derive `!=` from equality.
+- [x] Reject unsupported and cross-factory operators during expression compilation.
+- [x] Preserve legacy context-object reference equality.
+- [x] Add operator-aware diagnostics where applicable; completion is not applicable to infix equality.
 
 Exit criterion: supported comparisons compile and evaluate; unsupported comparisons never reach runtime.
 
@@ -116,6 +116,9 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-07: Complete the structural pnpm monorepo migration before introducing factory or unit semantics.
 - 2026-10-07: Existing expression strings are a hard compatibility boundary.
 - 2026-10-07: The first publishable packages are `ifc-expressions`, `ifc-expressions-units`, and `ifc-expressions-units-qudtlib`.
+- 2026-10-08: Context-object factory identity is nominal: two context-object types belong to the same nominal type only when they share the exact factory instance.
+- 2026-10-08: Context-object member catalogs use separate exact lookup and bounded prefix completion operations; completion may report an incomplete result.
+- 2026-10-08: Existing eager member maps remain supported through a live, case-insensitive adapter; provider catalogs may define literal case-sensitive lookup.
 
 ## Blocking decisions
 

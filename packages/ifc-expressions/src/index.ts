@@ -42,6 +42,9 @@ export {
   TypeDisjunction,
   Types,
   ContextObjectType,
+  ContextObjectValue,
+  ContextObjectOperator,
+  MapContextObjectMemberProvider,
   BuiltinVariableRegistry,
   IfcExpressionAutocomplete,
 } from "./IfcExpression.js";
@@ -51,6 +54,10 @@ export type {
   CompletionItem,
   CompletionResult,
   IfcExpressionOptions,
+  ContextObjectTypeFactory,
+  ContextObjectBinaryOperator,
+  ContextObjectMemberProvider,
+  ContextObjectMemberCompletion,
 } from "./IfcExpression.js";
 
 export { E } from "./E.js";
