@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/autocomplete
+head_tree: 5343c5a2364f3b04003e5757c01ba58ae6c84136
+headline: Type-sensitive parser-aware expression completion
+summary_md: |
+  Computes context-sensitive completion items from parser state and the same static type/member metadata used by compilation. It completes builtin roots, functions, and chained context-object members, preserving replacement spans and localized documentation. Context-object member completion delegates to `ContextObjectMemberProvider`, honors provider case sensitivity, caps large result sets, and propagates `isIncomplete` so editors can request a narrower prefix. Member access recognizes reserved literal tokens such as `UNKNOWN` after a dot, enabling provider constants without changing ordinary literal parsing.

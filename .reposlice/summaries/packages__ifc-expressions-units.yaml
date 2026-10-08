@@ -1,6 +1,6 @@
 schema_version: 1
 target_path: packages/ifc-expressions-units
-head_tree: 3266a8fc0e4f07d6c4e0f092aef973cf2d1c1884
-headline: Provider-neutral units extension package
+head_tree: 550f6441d03ba0d5ea7d4dbbf9f81bf5040dbfdc
+headline: Provider-neutral unit and measure language environment
 summary_md: |
-  Publishable provider-neutral unit-extension package skeleton. Its ESM entry point is `src/index.ts`, compiled to `dist` with the shared TypeScript baseline. It declares `ifc-expressions` as a peer dependency and uses the workspace package for development. Provider contracts and `$unit`/`$measure` registration will be implemented here without introducing a concrete unit library dependency.
+  Implements the optional, provider-neutral units language layer without depending on a unit library. `provider.ts` defines opaque provider-owned unit/measure objects, conversion, equality, hierarchy, and lazy provider catalog contracts. `catalogs.ts` pins portable names to IFC4X3_ADD2: 510 SI unit/prefix aliases and 81 measure aliases. `createIfcExpressionUnitsEnvironment()` requires and validates an explicit provider, creates distinct nominal unit and measure context-object factories, and supplies typed `$unit`/`$measure` builtin definitions and runtime values. It exposes `$unit.convert`, `$unit.isConvertible`, `$measure.isSubKindOf`, portable constants, and optional case-sensitive provider catalogs. Tests use a mock provider to cover fatal missing/incomplete configuration, aliases, nominal equality, conversion, and unit/measure type separation.

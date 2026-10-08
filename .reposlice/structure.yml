@@ -118,7 +118,7 @@ root:
                   children: []
                 - path: packages/ifc-expressions/src/type
                   kind: slice
-                  direct_file_count: 7
+                  direct_file_count: 9
                   children: []
                 - path: packages/ifc-expressions/src/util
                   kind: slice
@@ -130,13 +130,17 @@ root:
                   children: []
             - path: packages/ifc-expressions/test
               kind: slice
-              direct_file_count: 17
+              direct_file_count: 19
               children: []
         - path: packages/ifc-expressions-units
           kind: slice
           direct_file_count: 2
           children:
             - path: packages/ifc-expressions-units/src
+              kind: directory
+              direct_file_count: 4
+              children: []
+            - path: packages/ifc-expressions-units/test
               kind: directory
               direct_file_count: 1
               children: []
@@ -145,6 +149,10 @@ root:
           direct_file_count: 2
           children:
             - path: packages/ifc-expressions-units-qudtlib/src
+              kind: directory
+              direct_file_count: 2
+              children: []
+            - path: packages/ifc-expressions-units-qudtlib/test
               kind: directory
               direct_file_count: 1
               children: []

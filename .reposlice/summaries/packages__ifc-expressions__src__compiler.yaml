@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/compiler
+head_tree: 0ad4a951df246f47a6d8e0713ecc9c5098d163a0
+headline: Static validation and typed expression compilation
+summary_md: |
+  Turns the ANTLR parse tree into typed expression nodes and validates the tree before evaluation. `IfcExpressionValidationListener` tracks expression and method-target types, resolves builtin roots and context-object members, checks function arguments and operator compatibility, and records types through `TypeManager`. `ExprCompiler` then constructs the corresponding evaluator nodes and associates source context for diagnostics. Context-object equality is accepted only for matching nominal factories that declare it; member properties are resolved through the type's member provider. Member names now include reserved literals in post-dot position for provider catalogs.

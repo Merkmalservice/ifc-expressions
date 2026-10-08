@@ -1,6 +1,6 @@
 schema_version: 1
 target_path: packages/ifc-expressions-units-qudtlib
-head_tree: d683ec8aec7eac5b87f67e6ce75b93bf4b0717a3
-headline: QUDT unit-provider package
+head_tree: 3c0bdf8b29a2ff6935f707e538c86e6afdec80e9
+headline: QUDT-backed unit provider and literal catalogs
 summary_md: |
-  Publishable QUDT provider package skeleton. Its ESM entry point is `src/index.ts`, compiled to `dist` with the shared TypeScript baseline. It declares both `ifc-expressions` and `ifc-expressions-units` as peer dependencies and links their workspace packages for development. QUDT-backed catalogs, conversion, identity, hierarchy, and anonymous derived-unit support will be implemented here.
+  Provides the default `ifc-expressions-units` implementation backed by `@qudtlib/allunits` 7.1.0. `QudtUnitProvider` maps all portable IFC4X3_ADD2 aliases to QUDT `Unit` and `QuantityKind` objects, delegates identity, conversion, convertibility, and quantity-kind hierarchy to QUDT, and constructs valid provider-level scaled units when QUDT has no catalog constant. Literal, case-sensitive `$unit.QUDT.*` and `$measure.QUDT.*` catalogs expose the upstream JavaScript constant names with bounded lazy completion. The package re-exports useful QUDT objects and tests all portable bindings, conversion, hierarchy, case collisions, completion, and parser compatibility for all 3,076 unit plus 1,208 quantity-kind constants.

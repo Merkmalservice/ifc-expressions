@@ -3,7 +3,7 @@ config_fingerprint: '{"slice_patterns":[".github/workflows","packages/ifc-expres
 repo:
   path: .
   kind: repo
-  head_tree: 449ae75285a0f68474ccc073b20c79a05f9d615b
+  head_tree: f647a41f316bc48553a8b548eb3fca7cede26cb2
 slices:
   - path: .github/workflows
     kind: slice
@@ -11,27 +11,27 @@ slices:
     parent_slice: null
   - path: packages/ifc-expressions
     kind: slice
-    head_tree: 52e1015b27cc4df9e814b29084ccbb9f114b1c46
+    head_tree: 8ec54168a70bc4e23f2b6e200948b95a44b5eae1
     parent_slice: null
   - path: packages/ifc-expressions-units
     kind: slice
-    head_tree: 3266a8fc0e4f07d6c4e0f092aef973cf2d1c1884
+    head_tree: 550f6441d03ba0d5ea7d4dbbf9f81bf5040dbfdc
     parent_slice: null
   - path: packages/ifc-expressions-units-qudtlib
     kind: slice
-    head_tree: d683ec8aec7eac5b87f67e6ce75b93bf4b0717a3
+    head_tree: 3c0bdf8b29a2ff6935f707e538c86e6afdec80e9
     parent_slice: null
   - path: packages/ifc-expressions/src/autocomplete
     kind: slice
-    head_tree: 8cd1736d70a9ad6cd1a29f4a330ac74fe4024f05
+    head_tree: 5343c5a2364f3b04003e5757c01ba58ae6c84136
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/builtin
     kind: slice
-    head_tree: 297a3c3935e78fc83f268908fd9616af2218a343
+    head_tree: 714aa909ae14eb71987f5cc5e5085021b5bfc5a7
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/compiler
     kind: slice
-    head_tree: 6a630b066c3a0cb58ebaef842361258575cd811e
+    head_tree: 0ad4a951df246f47a6d8e0713ecc9c5098d163a0
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/context
     kind: slice
@@ -39,7 +39,7 @@ slices:
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/error
     kind: slice
-    head_tree: dd9f9f04bc4fdde60d0554c969a94739d8340739
+    head_tree: e7043caa80e4a430ea23be29aa6fc03a0caace3c
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/error/mapper
     kind: slice
@@ -47,7 +47,7 @@ slices:
     parent_slice: packages/ifc-expressions/src/error
   - path: packages/ifc-expressions/src/expression
     kind: slice
-    head_tree: 2e5001600367868fda0d79b4cc6312bafc0a3bef
+    head_tree: 1dc5d96e92125d7396d5d71860abdc5feb1d3515
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/expression/boolean
     kind: slice
@@ -59,7 +59,7 @@ slices:
     parent_slice: packages/ifc-expressions/src/expression
   - path: packages/ifc-expressions/src/expression/function
     kind: slice
-    head_tree: cfd397036a3b91509e2262779ae48b2fe401742a
+    head_tree: 559e96f6628c5841ef8635c06c00a307ef86b44a
     parent_slice: packages/ifc-expressions/src/expression
   - path: packages/ifc-expressions/src/expression/function/arg
     kind: slice
@@ -67,7 +67,7 @@ slices:
     parent_slice: packages/ifc-expressions/src/expression/function
   - path: packages/ifc-expressions/src/expression/function/impl
     kind: slice
-    head_tree: 37bcb14cc10896b888a10797c033c86d8d7514d7
+    head_tree: a0e75e2849dfc371079bb48c689d6f22d7f21a2d
     parent_slice: packages/ifc-expressions/src/expression/function
   - path: packages/ifc-expressions/src/expression/numeric
     kind: slice
@@ -91,7 +91,7 @@ slices:
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/type
     kind: slice
-    head_tree: bd6b7390075a5ee7491ca94dc7448285f918c208
+    head_tree: 507328ec4f400aa9638c5a6da8f326cef1ab3e12
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/util
     kind: slice
@@ -99,9 +99,9 @@ slices:
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/value
     kind: slice
-    head_tree: 8b4a1f99fceb2a2d377bff8c6d9b2d4ca56b15d3
+    head_tree: 72e6437693fe7b82aa3b2ac03e86b6472f9e2a4d
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/test
     kind: slice
-    head_tree: 6aeacfda24380bdfa214cd232094d010c11f46fe
+    head_tree: 347bca73df5bef168f977629e9b1332d24e2f9be
     parent_slice: packages/ifc-expressions

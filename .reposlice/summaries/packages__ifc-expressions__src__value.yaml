@@ -1,6 +1,6 @@
 schema_version: 1
 target_path: packages/ifc-expressions/src/value
-head_tree: 8b4a1f99fceb2a2d377bff8c6d9b2d4ca56b15d3
-headline: Boxed expression values and equality semantics
+head_tree: 72e6437693fe7b82aa3b2ac03e86b6472f9e2a4d
+headline: Boxed expression values and factory-backed operations
 summary_md: |
-  The value subsystem boxes primitive, logical, temporal, array, IFC-accessor, and client context-object values behind the generic `Value` interface, which exposes raw value access, equality, string rendering, and expression type. Numeric and temporal values use semantic equality and ordering; boolean/logical values implement three-valued operations; arrays compare their elements. `ContextObjectValue` stores a raw record plus its `ExprType` and currently uses raw object-reference equality, while `ObjectAccessorValue` similarly uses accessor identity. `ExpressionValue` is the union consumed by the evaluator.
+  Boxes evaluator values behind the generic `Value` interface, including numeric, string, boolean/logical, temporal, array, IFC-accessor, reference, and client context-object values. Primitive and temporal implementations provide their semantic equality and ordering, and logical values implement three-valued behavior. `ContextObjectValue` carries the raw provider object and its `ContextObjectType`; factory-backed values delegate declared binary operations such as equality to that type's factory, while legacy context-object values retain raw object-reference equality for backward compatibility. `ExpressionValue` is the evaluator-wide union of these boxed values.
