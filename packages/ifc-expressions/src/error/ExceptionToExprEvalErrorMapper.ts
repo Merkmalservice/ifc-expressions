@@ -49,13 +49,16 @@ mappers.set(
 mappers.set(InvalidSyntaxException.name, mappers.get(ValidationException.name));
 
 export function mapException(e: Error): ExprEvalError {
-  const mapper = mappers.get(e.constructor.name);
+  const mapper =
+    mappers.get(e.constructor.name) ??
+    (e instanceof ValidationException
+      ? mappers.get(ValidationException.name)
+      : undefined);
   if (isNullish(mapper)) {
     return new ExprEvalErrorObj(
       ExprKind.PARSE_ERROR,
       ExprEvalStatus.ERROR,
-      e.message,
-      this.getTextSpan()
+      e.message
     );
   }
   return mapper.mapException(e);

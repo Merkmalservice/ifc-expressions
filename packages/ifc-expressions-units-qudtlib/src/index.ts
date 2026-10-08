@@ -1,2 +1,3 @@
-/** QUDT-backed unit support will be introduced behind this package boundary. */
-export {};
+export { QudtUnitProvider, qudtUnitProvider } from "./QudtUnitProvider.js";
+export { QuantityKinds, Qudt, Unit, Units } from "@qudtlib/allunits";
+export type { QuantityKind } from "@qudtlib/allunits";

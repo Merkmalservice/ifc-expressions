@@ -48,7 +48,7 @@ Exit criterion: all three packages build independently and the relocated base pa
 - [x] Add lazy exact-resolution and prefix-completion providers for large nested catalogs.
 - [x] Preserve case-insensitive legacy members while allowing case-sensitive provider catalogs.
 - [x] Preserve the existing builtin registry API through compatibility adapters.
-- [ ] Add configuration validation for duplicate or incompatible factory registrations.
+- [x] Avoid global factory registration; environment-owned factory instances make duplicate registration impossible, while builtin and catalog names are validated at configuration time.
 
 Exit criterion: two distinct context-object factories are statically distinguishable without adding primitive expression types.
 
@@ -65,27 +65,27 @@ Exit criterion: supported comparisons compile and evaluate; unsupported comparis
 
 ## Phase 5: units extension
 
-- [ ] Define unit and measure factory contracts as context-object specializations.
-- [ ] Register the optional `$unit` and `$measure` builtins and typed operations.
+- [x] Define unit and measure factory contracts as context-object specializations.
+- [x] Register the optional `$unit` and `$measure` builtins and typed operations.
 - [x] Use separate `$unit` and `$measure` top-level objects rather than an umbrella namespace.
 - [ ] Specify unit provenance predicates.
-- [ ] Generate portable aliases from a pinned latest stable IFC 4.3 schema revision.
-- [ ] Test that the base package works without any unit extension installed.
-- [ ] Fail units-extension initialization with actionable diagnostics when no provider is registered.
-- [ ] Reject duplicate or incomplete unit-provider registrations during initialization.
+- [x] Generate portable aliases from the pinned IFC4X3_ADD2 (IFC 4.3.2.0) schema revision.
+- [x] Test that the base package works without any unit extension installed.
+- [x] Fail units-extension initialization with actionable diagnostics when no provider is registered.
+- [x] Reject duplicate or incomplete unit-provider registrations during initialization.
 
 Exit criterion: a mock provider can supply units, measures, equality, conversion, hierarchy, provenance, and aliases with full static checking and completion.
 
 ## Phase 6: QUDT provider
 
-- [ ] Select compatible `qudtlib` packages and versions.
-- [ ] Implement provider-owned unit identity, equality, conversion, and compatibility.
-- [ ] Implement provider-owned measure identity and hierarchy.
-- [ ] Support valid provider objects for uncatalogued/anonymous derived units.
-- [ ] Generate or lazily expose the full QUDT catalog with completion.
-- [ ] Expose generated QUDT JavaScript constant names literally.
-- [ ] Exhaustively test QUDT constant names against the lexer, case-sensitive lookup, collisions, and runtime resolution.
-- [ ] Bind every portable alias to a QUDT provider object.
+- [x] Select and pin `@qudtlib/allunits` 7.1.0.
+- [x] Implement provider-owned unit identity, equality, conversion, and compatibility.
+- [x] Implement provider-owned measure identity and hierarchy.
+- [x] Support valid provider objects for uncatalogued/anonymous derived units.
+- [x] Lazily expose the full QUDT catalog with bounded completion.
+- [x] Expose generated QUDT JavaScript constant names literally.
+- [x] Exhaustively test QUDT constant names against the lexer, case-sensitive lookup, collisions, and runtime resolution.
+- [x] Bind every portable alias to a QUDT provider object.
 - [x] Keep provider installation and registration explicit; do not introduce an automatic dependency from the units contract to QUDT.
 
 Exit criterion: QUDT-backed expressions work for portable aliases, the full catalog, and anonymous IFC-derived units without conversion logic in the base or units-contract packages.
@@ -109,7 +109,7 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-07: Expose units and measures through separate `$unit` and `$measure` top-level objects; provider catalogs live under `$unit.<provider>` and `$measure.<provider>`.
 - 2026-10-07: Generate the portable alias set from the latest stable IFC 4.3 constants, pinning the exact source revision per release.
 - 2026-10-07: Expose QUDT-generated JavaScript constant names literally under case-sensitive provider namespaces, guarded by exhaustive compatibility tests.
-- 2026-10-07: Verified `@qudtlib/allunits` 7.1.0 keys against the current lexer: 3,076/3,076 unit keys and 1,208/1,208 quantity-kind keys are valid; ten unit-key groups require case-sensitive lookup.
+- 2026-10-08: Verified all 3,076 unit keys and 1,208 quantity-kind keys from `@qudtlib/allunits` 7.1.0 through the expression parser; `UNKNOWN` required reserved tokens to be allowed specifically in member-name position, and ten unit-key groups require case-sensitive lookup.
 - 2026-10-07: Version and release the three packages independently.
 - 2026-10-07: Preserve the package-root exports and root CommonJS entry initially; no supported deep-import surface is currently known.
 - 2026-10-07: Preserve Node.js `>=14.16` in published package metadata; use Node.js 20 for workspace CI.
@@ -119,8 +119,10 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-08: Context-object factory identity is nominal: two context-object types belong to the same nominal type only when they share the exact factory instance.
 - 2026-10-08: Context-object member catalogs use separate exact lookup and bounded prefix completion operations; completion may report an incomplete result.
 - 2026-10-08: Existing eager member maps remain supported through a live, case-insensitive adapter; provider catalogs may define literal case-sensitive lookup.
+- 2026-10-08: Portable aliases are pinned to the official IFC4X3_ADD2 (IFC 4.3.2.0) schema: units combine `IfcSIUnitName` with optional `IfcSIPrefix`; measures combine `IfcUnitEnum` and `IfcDerivedUnitEnum`, remove the `UNIT` suffix, and exclude `USERDEFINED`.
+- 2026-10-08: The default provider is pinned to `@qudtlib/allunits` 7.1.0 and retains all identity, conversion, convertibility, and quantity-kind hierarchy behavior.
+- 2026-10-08: Member access accepts reserved literal tokens after `.`, allowing literal provider constants such as `$unit.QUDT.UNKNOWN` without changing standalone literal semantics.
 
 ## Blocking decisions
 
-- [ ] Exact IFC 4.3 source enumerations/tables for portable alias generation.
 - [ ] Final standardized unit-provenance member set.

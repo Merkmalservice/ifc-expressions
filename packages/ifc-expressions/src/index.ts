@@ -58,6 +58,11 @@ export type {
   ContextObjectBinaryOperator,
   ContextObjectMemberProvider,
   ContextObjectMemberCompletion,
+  BuiltinVariableDefinition,
+  RegisteredBuiltinVariableDefinition,
+  BuiltinMemberDefinition,
+  BuiltinPropertyDefinition,
+  BuiltinFunctionDefinition,
 } from "./IfcExpression.js";
 
 export { E } from "./E.js";

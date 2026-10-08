@@ -300,7 +300,7 @@ function toMethodAccessorStep(
   methodAccessor: MethodAccessorContext
 ): CompletedAccessorStep | undefined {
   if (methodAccessor instanceof MethodPropertyAccessContext) {
-    const identifier = methodAccessor.IDENTIFIER()?.getText();
+    const identifier = methodAccessor.memberName()?.getText();
     if (!identifier) {
       return undefined;
     }

@@ -72,7 +72,14 @@ import {
   ContextObjectMemberCompletion,
   MapContextObjectMemberProvider,
 } from "./type/ContextObjectMemberProvider.js";
-import { BuiltinVariableRegistry } from "./builtin/BuiltinVariableRegistry.js";
+import {
+  BuiltinVariableRegistry,
+  BuiltinVariableDefinition,
+  RegisteredBuiltinVariableDefinition,
+  BuiltinMemberDefinition,
+  BuiltinPropertyDefinition,
+  BuiltinFunctionDefinition,
+} from "./builtin/BuiltinVariableRegistry.js";
 import { IfcExpressionOptions } from "./IfcExpressionOptions.js";
 import { IfcExpressionAutocomplete } from "./autocomplete/IfcExpressionAutocomplete.js";
 import type {
@@ -141,6 +148,11 @@ export type {
   ContextObjectBinaryOperator,
   ContextObjectMemberProvider,
   ContextObjectMemberCompletion,
+  BuiltinVariableDefinition,
+  RegisteredBuiltinVariableDefinition,
+  BuiltinMemberDefinition,
+  BuiltinPropertyDefinition,
+  BuiltinFunctionDefinition,
 };
 
 export type UnwrappedExpressionValue =

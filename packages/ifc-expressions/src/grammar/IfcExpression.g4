@@ -26,8 +26,12 @@ DOT target=methodAccessor call=methodCallChain             # methodCallChainInne
 
 methodAccessor:
     functionCall                                           # MethodFunctionCall
-    | IDENTIFIER                                           # MethodPropertyAccess
+    | memberName                                           # MethodPropertyAccess
     ;
+
+// Keywords remain literals in ordinary expression positions but may be
+// provider-defined names after a member-access dot.
+memberName: IDENTIFIER | LOGICAL_UNKNOWN | BOOLEAN ;
 
 functionCall :
     IDENTIFIER '('sub=exprList ? ')'

@@ -239,20 +239,13 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     ctx
   ) => {
     const [_, targetType] = this.popMethodCallTarget(ctx);
+    const memberName = ctx.memberName().getText();
     if (!(targetType instanceof ContextObjectType)) {
-      throw new NoSuchMemberException(
-        ctx.IDENTIFIER().getText(),
-        targetType.getName(),
-        ctx
-      );
+      throw new NoSuchMemberException(memberName, targetType.getName(), ctx);
     }
-    const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
+    const member = targetType.getMemberDefinition(memberName);
     if (!isBuiltinPropertyDefinition(member)) {
-      throw new NoSuchMemberException(
-        ctx.IDENTIFIER().getText(),
-        targetType.getName(),
-        ctx
-      );
+      throw new NoSuchMemberException(memberName, targetType.getName(), ctx);
     }
     this.typeManager.setType(ctx, member.valueType);
   };

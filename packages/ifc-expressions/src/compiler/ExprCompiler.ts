@@ -225,8 +225,9 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
   ) => {
     const targetExpr = this.methodCallTargetStack.pop();
     const targetType = targetExpr.getType();
+    const memberName = ctx.memberName().getText();
     if (targetType instanceof ContextObjectType) {
-      const member = targetType.getMemberDefinition(ctx.IDENTIFIER().getText());
+      const member = targetType.getMemberDefinition(memberName);
       if (isBuiltinPropertyDefinition(member)) {
         return this.associateContextAndReturn(
           new BuiltinPropertyAccessExpr(

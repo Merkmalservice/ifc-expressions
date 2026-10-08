@@ -14,11 +14,11 @@ Existing expression strings used by live projects are a compatibility boundary. 
 
 The first independently publishable npm packages are:
 
-| Package | Responsibility |
-| --- | --- |
-| `ifc-expressions` | Parser, compiler, evaluator, context-object infrastructure, operator extension mechanism, and autocomplete infrastructure. |
-| `ifc-expressions-units` | Optional unit-language contract, `$unit` builtin specification, portable aliases, and provider interfaces. |
-| `ifc-expressions-units-qudtlib` | Default/recommended implementation of the units extension using `qudtlib`, including the QUDT catalog. |
+| Package                         | Responsibility                                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `ifc-expressions`               | Parser, compiler, evaluator, context-object infrastructure, operator extension mechanism, and autocomplete infrastructure. |
+| `ifc-expressions-units`         | Optional unit-language contract, `$unit` builtin specification, portable aliases, and provider interfaces.                 |
+| `ifc-expressions-units-qudtlib` | Default/recommended implementation of the units extension using `qudtlib`, including the QUDT catalog.                     |
 
 Proposed repository layout, following the working `ecotwin-js` conventions:
 
@@ -154,7 +154,7 @@ An anonymous unit is a valid provider-level unit object without a public catalog
 
 ## Constants and catalogs
 
-The optional units package defines a deliberately incomplete set of stable, provider-independent aliases generated from the latest stable IFC 4.3 constants available when that package version is prepared:
+The optional units package defines a deliberately incomplete set of stable, provider-independent aliases generated from the official IFC4X3_ADD2 (IFC 4.3.2.0) schema:
 
 ```text
 $unit.METRE
@@ -165,6 +165,8 @@ $unit.PASCAL
 
 Their purpose is convenient, portable language for common cases, not catalog completeness. Every compatible provider must bind each standardized alias to a valid provider-level object. Generation records and pins the exact IFC 4.3 schema revision used for reproducible releases; updating to newer IFC 4.3 constants is an explicit package change.
 
+Portable unit names are the Cartesian product of `IfcSIUnitName` and an optional `IfcSIPrefix`, joined with `_`. Portable measure names combine `IfcUnitEnum` and `IfcDerivedUnitEnum`, remove the trailing `UNIT`, and exclude `USERDEFINED`. The normative source URLs are exported with the generated catalogs.
+
 The QUDT package exposes its substantially larger generated catalogs with type-sensitive completion under explicit provider namespaces:
 
 ```text
@@ -174,9 +176,9 @@ $measure.QUDT.<generated-measure-name>
 
 Expressions using that namespace intentionally depend on the QUDT vocabulary, but not necessarily on `qudtlib` as an implementation substrate.
 
-The provider exposes QUDT's generated JavaScript constant names literally. QUDT catalog namespaces are case-sensitive even though legacy builtin and function lookup remains case-insensitive. Provider tests enumerate every exported unit and quantity-kind constant and fail if a name cannot be tokenized by the expression grammar, collides with another exposed name, or cannot be resolved back to its provider object.
+The provider exposes QUDT's generated JavaScript constant names literally. QUDT catalog namespaces are case-sensitive even though legacy builtin and function lookup remains case-insensitive. Provider tests enumerate every exported unit and quantity-kind constant and fail if a name cannot be tokenized by the expression grammar, collides with another exposed name, or cannot be resolved back to its provider object. Reserved literal tokens are accepted as member names after `.`, so constants such as `$unit.QUDT.UNKNOWN` remain expressible without changing standalone `UNKNOWN` behavior.
 
-Design-time verification against `@qudtlib/allunits` 7.1.0 found that all 3,076 unit keys and all 1,208 quantity-kind keys match the current lexer. Ten unit-key groups collide when normalized case-insensitively, including `CI`/`Ci` and `GAMMA`/`Gamma`; literal case-sensitive lookup is therefore required.
+Verification against `@qudtlib/allunits` 7.1.0 passes all 3,076 unit keys and all 1,208 quantity-kind keys through the expression parser. The `UNKNOWN` unit key requires reserved tokens to be accepted in member-name position. Ten unit-key groups collide when normalized case-insensitively, including `CI`/`Ci` and `GAMMA`/`Gamma`; literal case-sensitive lookup is therefore required.
 
 Portable aliases and provider constants resolve to objects from the same factories, so these comparisons are valid and true when the aliases denote the same concepts:
 
@@ -219,5 +221,4 @@ New context-object operators are additive. An expression such as `$result.unit =
 
 ## Open decisions
 
-1. Which exact IFC 4.3 normative enumerations/tables feed the portable unit and measure alias generator?
-2. What is the final standardized unit-provenance member set beyond the motivating predicates?
+1. What is the final standardized unit-provenance member set beyond the motivating predicates?
