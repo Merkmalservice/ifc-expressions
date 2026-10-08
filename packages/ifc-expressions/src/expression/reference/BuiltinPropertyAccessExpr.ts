@@ -5,7 +5,11 @@ import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
 import { ContextObjectValue } from "../../value/ContextObjectValue.js";
-import { ExprEvalErrorObj, ExprEvalStatus } from "../ExprEvalResult.js";
+import {
+  EXISTS_GUARD_HINT,
+  ExprEvalErrorObj,
+  ExprEvalStatus,
+} from "../ExprEvalResult.js";
 import {
   getBuiltinMemberValue,
   toExpressionValue,
@@ -52,7 +56,7 @@ export class BuiltinPropertyAccessExpr extends Expr1<
       return new ExprEvalErrorObj(
         this.getKind(),
         ExprEvalStatus.NOT_FOUND,
-        `No builtin member '${this.memberName}' found on '${this.targetName}'`,
+        `No builtin member '${this.memberName}' found on '${this.targetName}'. ${EXISTS_GUARD_HINT}`,
         this.getTextSpan()
       );
     }

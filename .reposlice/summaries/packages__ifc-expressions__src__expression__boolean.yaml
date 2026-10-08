@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/expression/boolean
+head_tree: 893d3cfcfb0d4f032bd1fbe06565d257b4216519
+headline: Boolean and three-valued logical expression nodes
+summary_md: |
+  Boolean expression nodes implement boolean and IFC logical literals, unary negation, and binary `AND`, `OR`, and `XOR`. `BinaryBooleanOpExpr` delegates value semantics to `BooleanValue`/`LogicalValue`, promotes the result type to logical when either operand is logical, and short-circuits `AND` on false and `OR` on true before evaluating the right operand. That short-circuit behavior enables safe guards such as `EXISTS($result.unit) && ...`.

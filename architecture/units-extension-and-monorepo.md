@@ -107,6 +107,10 @@ Generated catalogs are resolved lazily. Completion receives names, documentation
 
 Large catalogs return a bounded, prefix-filtered result and may mark it incomplete so the editor requests completion again for a narrower prefix. Compilation always performs unbounded exact-name lookup. The packaged QUDT catalog remains synchronous; remote providers must preload their metadata during extension initialization.
 
+### Optional runtime values
+
+`EXISTS(expression)` is a reserved, lazy core expression that accepts any statically valid operand. It returns `false` when evaluating the operand produces an absent/not-found result, returns `true` for every present value, and propagates unrelated evaluation failures. Because `EXISTS` is reserved rather than an ordinary function identifier, method-call sugar such as `$result.unit.exists()` is a syntax error. Runtime errors caused by absent builtin values include a hint to consider guarding the access with `EXISTS(...)`.
+
 ## Units extension
 
 `ifc-expressions-units` registers two optional top-level language surfaces and their factory contracts:
@@ -127,7 +131,8 @@ Both unit arguments are `ContextObjectRef<unit-factory>`. Both measure arguments
 Example:
 
 ```text
-$result.unit.isProjectUnit()
+EXISTS($result.unit)
+&& $result.unit.isProjectUnit()
 && $result.unit == $unit.METRE
 && $result.measure == $measure.LENGTH
 && $unit.convert($result.value, $result.unit, $unit.METRE) > 1

@@ -8,7 +8,7 @@ import {
 } from "../../ExprEvalResult.js";
 import { Type } from "../../../type/Types.js";
 import { BooleanValue } from "../../../value/BooleanValue.js";
-import { FuncArgObjectAccessor } from "../arg/FuncArgObjectAccessor.js";
+import { FuncArgAny } from "../arg/FuncArgAny.js";
 import { ExprType } from "../../../type/ExprType.js";
 import { FunctionExpr } from "../FunctionExpr.js";
 
@@ -17,7 +17,7 @@ export class EXISTS extends Func {
 
   constructor() {
     super("EXISTS", [
-      new FuncArgObjectAccessor(true, EXISTS.KEY_OBJECT, Type.IFC_OBJECT_REF),
+      new FuncArgAny(true, EXISTS.KEY_OBJECT),
     ]);
   }
 
@@ -44,6 +44,7 @@ export class EXISTS extends Func {
     if (isExprEvalError(arg)) {
       if (
         arg.status === ExprEvalStatus.NOT_FOUND ||
+        arg.status === ExprEvalStatus.UNDEFINED_RESULT ||
         arg.status === ExprEvalStatus.IFC_PROPERTY_NOT_FOUND ||
         arg.status === ExprEvalStatus.IFC_TYPE_OBJECT_NOT_FOUND ||
         arg.status === ExprEvalStatus.IFC_PROPERTY_SET_NOT_FOUND

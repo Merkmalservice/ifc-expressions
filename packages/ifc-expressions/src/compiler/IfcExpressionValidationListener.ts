@@ -17,6 +17,7 @@ import {
   SEArrayExprContext,
   SEBooleanBinaryOpContext,
   SEComparisonContext,
+  SEExistsContext,
   SEFunctionCallContext,
   SELiteralContext,
   SEMethodCallContext,
@@ -173,6 +174,10 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
       `Encountered Variable ref that was neither a built-in variable nor a configured client builtin`,
       ctx
     );
+  };
+
+  exitSEExists: (ctx: SEExistsContext) => void = (ctx) => {
+    this.typeManager.setType(ctx, Types.boolean());
   };
 
   exitSEUnaryMinus: (ctx: SEUnaryMinusContext) => void = (ctx) => {

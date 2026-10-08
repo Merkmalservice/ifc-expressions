@@ -147,7 +147,8 @@ describe("Client builtin member evaluation", () => {
     expect(actual).toMatchObject({
       exprKind: ExprKind.REF_BUILTIN_ROOT,
       status: ExprEvalStatus.NOT_FOUND,
-      message: "No builtin variable found with name '$missing'",
+      message:
+        "No builtin variable found with name '$missing'. Consider guarding optional access with EXISTS(...).",
     });
   });
 
@@ -173,7 +174,36 @@ describe("Client builtin member evaluation", () => {
     expect(actual).toMatchObject({
       exprKind: ExprKind.REF_BUILTIN_MEMBER,
       status: ExprEvalStatus.NOT_FOUND,
-      message: "No builtin member 'code' found on '$payload'",
+      message:
+        "No builtin member 'code' found on '$payload'. Consider guarding optional access with EXISTS(...).",
     });
+  });
+
+  it("evaluates EXISTS as false for a missing runtime member", () => {
+    const actual = IfcExpression.evaluate(
+      "EXISTS($result.payload.code)",
+      {
+        ...clientContext,
+        resolveBuiltinVariable(name: string) {
+          if (name === "result") {
+            return { payload: {} };
+          }
+          return clientContext.resolveBuiltinVariable(name);
+        },
+      },
+      { builtinVariableRegistry: registry }
+    );
+
+    expect(actual).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.of(false)));
+  });
+
+  it("evaluates EXISTS as true for a present runtime member", () => {
+    const actual = IfcExpression.evaluate(
+      "EXISTS($result.payload.code)",
+      clientContext,
+      { builtinVariableRegistry: registry }
+    );
+
+    expect(actual).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.of(true)));
   });
 });

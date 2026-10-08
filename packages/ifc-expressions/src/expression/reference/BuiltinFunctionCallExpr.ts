@@ -4,6 +4,7 @@ import { Expr } from "../Expr.js";
 import { ExprKind } from "../ExprKind.js";
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import {
+  EXISTS_GUARD_HINT,
   ExprEvalErrorObj,
   ExprEvalResult,
   ExprEvalStatus,
@@ -88,7 +89,7 @@ export class BuiltinFunctionCallExpr extends ExprBase<ExpressionValue> {
       return new ExprEvalErrorObj(
         this.getKind(),
         ExprEvalStatus.NOT_FOUND,
-        `Builtin function '${this.name}' on '${this.targetName}' returned no value`,
+        `Builtin function '${this.name}' on '${this.targetName}' returned no value. ${EXISTS_GUARD_HINT}`,
         this.getTextSpan()
       );
     }

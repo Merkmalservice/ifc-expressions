@@ -18,6 +18,7 @@ import {
   SEArrayExprContext,
   SEBooleanBinaryOpContext,
   SEComparisonContext,
+  SEExistsContext,
   SEFunctionCallContext,
   SELiteralContext,
   SEMethodCallContext,
@@ -162,6 +163,12 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
 
   visitSEVariableRef: (ctx: SEVariableRefContext) => Expr<any> = (ctx) => {
     return this.visit(ctx.variableRef());
+  };
+  visitSEExists: (ctx: SEExistsContext) => Expr<any> = (ctx) => {
+    return this.associateContextAndReturn(
+      new FunctionExpr("EXISTS", [this.visit(ctx._sub)]),
+      ctx
+    );
   };
   visitSEArrayExpr: (ctx: SEArrayExprContext) => Expr<any> = (ctx) => {
     return this.visit(ctx.arrayExpr());

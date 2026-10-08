@@ -13,6 +13,7 @@ singleExpr:
     | left=singleExpr CMP_OP right=singleExpr               # SEComparison
     | <assoc=right> '!'  sub=singleExpr                     # SENot
     | left=singleExpr op=BOOLEAN_BINARY_OP right=singleExpr # SEBooleanBinaryOp
+    | EXISTS '(' sub=singleExpr ')'                         # SEExists
     | sub=variableRef                                       # SEVariableRef
     | sub=functionCall                                      # SEFunctionCall
     | sub=literal                                           # SELiteral
@@ -68,6 +69,7 @@ INT     : [0-9]+ ;
 FLOAT  : [0-9]+ '.' [0-9]+;
 BOOLEAN : ('TRUE'|'true'|'FALSE'|'false');
 LOGICAL_UNKNOWN: ('UNKNOWN'|'unknown');
+EXISTS: ('EXISTS'|'exists');
 DOT : '.';
 QUOTED_STRING : ('"' .*? '"') | ('\'' .*? '\'' );
 IDENTIFIER : [a-zA-Z_][a-zA-Z0-9_\-$&]* ;

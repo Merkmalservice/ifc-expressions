@@ -7,6 +7,7 @@ export const IfcExpressionUnitProvenance = {
   PROJECT: "project",
   EXPLICIT: "explicit",
   CALCULATED: "calculated",
+  UNKNOWN: "unknown",
 } as const;
 
 export type IfcExpressionUnitProvenance =

@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/expression/reference
+head_tree: 3c3080e0655c277f0dc3e4d18f3a6d85b66db3d4
+headline: IFC and extensible builtin reference evaluation
+summary_md: |
+  Reference expressions resolve the legacy IFC roots (`$element`, `$property`) and extensible builtin context objects, properties, and functions. Builtin references retain their statically registered `ExprType`, convert raw host values through `BuiltinRuntimeValueConverter`, and report structured type or not-found errors at runtime. Missing builtin roots, members, and null-returning builtin calls append the shared `EXISTS_GUARD_HINT`, directing expression authors to guard optional accesses with `EXISTS(...)`.

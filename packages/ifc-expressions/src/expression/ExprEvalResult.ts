@@ -3,6 +3,9 @@ import { ExprKind } from "./ExprKind.js";
 import { isNullish } from "../util/IfcExpressionUtils.js";
 import { TextSpan } from "../util/TextSpan.js";
 
+export const EXISTS_GUARD_HINT =
+  "Consider guarding optional access with EXISTS(...).";
+
 export enum ExprEvalStatus {
   SUCCESS = 1000,
   ERROR = 2000,
@@ -102,7 +105,7 @@ export class ExprEvalErrorUndefinedResult extends ExprEvalErrorObj {
     super(
       epxrKind,
       ExprEvalStatus.UNDEFINED_RESULT,
-      "Expression evaluated to undefined or null - this should never happen",
+      `Expression evaluated to undefined or null. ${EXISTS_GUARD_HINT}`,
       textSpan
     );
   }

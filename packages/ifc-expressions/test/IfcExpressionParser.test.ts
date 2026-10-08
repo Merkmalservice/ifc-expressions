@@ -149,9 +149,10 @@ const cases = [
   ["OR('abc', TRUE)", WrongFunctionArgumentTypeException, null],
   ["OR('abc'=='def', TRUE)", null, Type.BOOLEAN],
   ["EXISTS($element.property('dontFindThis'))", null, Type.BOOLEAN],
-  ["EXISTS('abc')", WrongFunctionArgumentTypeException, null],
-  ["EXISTS(1)", WrongFunctionArgumentTypeException, null],
-  ["EXISTS(TRUE)", WrongFunctionArgumentTypeException, null],
+  ["EXISTS('abc')", null, Type.BOOLEAN],
+  ["EXISTS(1)", null, Type.BOOLEAN],
+  ["EXISTS(TRUE)", null, Type.BOOLEAN],
+  ["'abc'.exists()", SyntaxErrorException, null],
   [
     '1 + MAP("grün", [["rot", "red"],["grün","green"],["blau", "blue"]])',
     ExpressionTypeError,

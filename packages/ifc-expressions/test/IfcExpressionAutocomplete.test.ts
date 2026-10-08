@@ -695,6 +695,12 @@ describe("IfcExpressionAutocomplete", () => {
     );
   });
 
+  it("does not offer reserved EXISTS as method-call sugar", () => {
+    const result = complete("$query.property.ex");
+
+    expect(result.items.map((item) => item.label)).not.toContain("exists");
+  });
+
   it("returns localized active argument help for incomplete function calls", () => {
     const result = complete("REPLACE('fox', 'The quick brown fox', ", {
       localizer,

@@ -49,6 +49,14 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
     // override if subclass needs to do something with the left result, such as put it in the local context
   }
 
+  protected getShortCircuitResult(
+    _ctx: IfcExpressionContext,
+    _localCtx: Map<string, any>,
+    _leftResult: L
+  ): E | undefined {
+    return undefined;
+  }
+
   public evaluate(
     ctx: IfcExpressionContext,
     localCtx: Map<string, any>
@@ -65,6 +73,14 @@ export abstract class Expr2<L, R, E> extends ExprBase<E> {
       return this.makeErrorForLeftSubExprError(ctx, localCtx, leftResult);
     }
     this.onAfterLeftRecursion(ctx, localCtx, leftResult.result);
+    const shortCircuitResult = this.getShortCircuitResult(
+      ctx,
+      localCtx,
+      leftResult.result
+    );
+    if (!isNullish(shortCircuitResult)) {
+      return this.wrapInResultIfNecessary(shortCircuitResult);
+    }
     const rightResult = this.right.evaluate(ctx, localCtx);
     if (isNullish(rightResult)) {
       return new ExprEvalErrorUndefinedResult(

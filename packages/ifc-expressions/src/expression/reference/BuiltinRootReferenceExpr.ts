@@ -4,7 +4,11 @@ import { ExprKind } from "../ExprKind.js";
 import { ExpressionValue } from "../../value/ExpressionValue.js";
 import { ExprType } from "../../type/ExprType.js";
 import { ExprStringBuilder } from "../ExprStringBuilder.js";
-import { ExprEvalErrorObj, ExprEvalStatus } from "../ExprEvalResult.js";
+import {
+  EXISTS_GUARD_HINT,
+  ExprEvalErrorObj,
+  ExprEvalStatus,
+} from "../ExprEvalResult.js";
 import { toExpressionValue } from "../../builtin/BuiltinRuntimeValueConverter.js";
 
 export class BuiltinRootReferenceExpr extends Expr0<ExpressionValue> {
@@ -23,7 +27,7 @@ export class BuiltinRootReferenceExpr extends Expr0<ExpressionValue> {
       return new ExprEvalErrorObj(
         this.getKind(),
         ExprEvalStatus.NOT_FOUND,
-        `No builtin variable found with name '$${this.name}'`,
+        `No builtin variable found with name '$${this.name}'. ${EXISTS_GUARD_HINT}`,
         this.getTextSpan()
       );
     }

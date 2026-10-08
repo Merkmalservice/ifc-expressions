@@ -44,6 +44,7 @@ export type IfcExpressionUnitsEnvironment<
   createProjectUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   createExplicitUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   createCalculatedUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
+  createUnknownUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   resolveBuiltinVariable(name: string): unknown;
 };
 
@@ -346,6 +347,25 @@ export function createIfcExpressionUnitsEnvironment<
   const unitValues: Record<string, unknown> = {};
   const measureValues: Record<string, unknown> = {};
 
+  unitMembers.set("CONVERT", {
+    name: "convert",
+    kind: "function",
+    returnType: Types.numeric(),
+    argumentTypes: [Types.numeric(), unitType, unitType],
+  });
+  unitMembers.set("ISCONVERTIBLE", {
+    name: "isConvertible",
+    kind: "function",
+    returnType: Types.boolean(),
+    argumentTypes: [unitType, unitType],
+  });
+  measureMembers.set("ISSUBKINDOF", {
+    name: "isSubKindOf",
+    kind: "function",
+    returnType: Types.boolean(),
+    argumentTypes: [measureType, measureType],
+  });
+
   for (const name of IFC_PORTABLE_UNIT_NAMES) {
     const value = requirePortableCatalogEntry(
       provider.id,
@@ -374,25 +394,6 @@ export function createIfcExpressionUnitsEnvironment<
     });
     measureValues[name] = value;
   }
-
-  unitMembers.set("CONVERT", {
-    name: "convert",
-    kind: "function",
-    returnType: Types.numeric(),
-    argumentTypes: [Types.numeric(), unitType, unitType],
-  });
-  unitMembers.set("ISCONVERTIBLE", {
-    name: "isConvertible",
-    kind: "function",
-    returnType: Types.boolean(),
-    argumentTypes: [unitType, unitType],
-  });
-  measureMembers.set("ISSUBKINDOF", {
-    name: "isSubKindOf",
-    kind: "function",
-    returnType: Types.boolean(),
-    argumentTypes: [measureType, measureType],
-  });
 
   unitValues.convert = (
     value: unknown,
@@ -477,6 +478,13 @@ export function createIfcExpressionUnitsEnvironment<
       return createIfcExpressionUnitReference(
         unit,
         IfcExpressionUnitProvenance.CALCULATED,
+        unitReferenceOwner
+      );
+    },
+    createUnknownUnit(unit: Unit) {
+      return createIfcExpressionUnitReference(
+        unit,
+        IfcExpressionUnitProvenance.UNKNOWN,
         unitReferenceOwner
       );
     },

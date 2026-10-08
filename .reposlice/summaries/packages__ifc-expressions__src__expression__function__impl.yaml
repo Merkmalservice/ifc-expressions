@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/expression/function/impl
+head_tree: a0e75e2849dfc371079bb48c689d6f22d7f21a2d
+headline: Built-in functions with typed arguments and structured evaluation
+summary_md: |
+  Concrete built-in function implementations cover conditionals and mapping (`IF`, `CHOOSE`, `MAP`), comparisons and boolean helpers, collection access, conversions and string/date operations, and IFC navigation (`PROPERTY`, `PROPERTYSET`, `TYPE`). Each class declares typed `FuncArg` contracts, computes a static return type, and converts evaluated arguments into `ExpressionValue` results or structured evaluation errors. `EXISTS` is deliberately special: it accepts any expression type and overrides normal evaluation to turn absence statuses (`NOT_FOUND`, `UNDEFINED_RESULT`, and IFC object/property not-found variants) into `false`, while returning `true` for present values and propagating unrelated errors.

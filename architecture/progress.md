@@ -123,6 +123,7 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-08: The default provider is pinned to `@qudtlib/allunits` 7.1.0 and retains all identity, conversion, convertibility, and quantity-kind hierarchy behavior.
 - 2026-10-08: Member access accepts reserved literal tokens after `.`, allowing literal provider constants such as `$unit.QUDT.UNKNOWN` without changing standalone literal semantics.
 - 2026-10-08: Every concrete expression-facing unit occurrence wraps a provider unit with `project`, `explicit`, `calculated`, or `catalog` provenance. Equality and conversion ignore provenance; `isProjectUnit()` and `isExplicitUnit()` are the initial standardized expression predicates.
+- 2026-10-08: Generalized the lazy `EXISTS(expression)` implementation to every expression type, reserved it in the grammar so method-call sugar is rejected, extended autocomplete, and added actionable `EXISTS(...)` hints to null/absent builtin runtime failures.
 
 ## Blocking decisions
 

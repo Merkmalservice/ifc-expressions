@@ -34,6 +34,24 @@ export abstract class BinaryBooleanOpExpr extends Expr2<
     return leftOperand[this.method].call(leftOperand, rightOperand);
   }
 
+  protected getShortCircuitResult(
+    _ctx: IfcExpressionContext,
+    _localCtx: Map<string, any>,
+    leftOperand: BooleanValue | LogicalValue
+  ): BooleanValue | LogicalValue | undefined {
+    if (this.method === "and" && leftOperand.isFalse()) {
+      return Types.isLogical(this.getType())
+        ? LogicalValue.false()
+        : BooleanValue.false();
+    }
+    if (this.method === "or" && leftOperand.isTrue()) {
+      return Types.isLogical(this.getType())
+        ? LogicalValue.true()
+        : BooleanValue.true();
+    }
+    return undefined;
+  }
+
   getType(): ExprType {
     if (
       Types.isLogical(this.left.getType()) ||

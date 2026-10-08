@@ -853,4 +853,22 @@ describe("ifcExpression", () => {
   it(".parse() does not throw ", () => {
     expect(() => IfcExpression.parse("1+")).not.toThrow();
   });
+
+  it("short-circuits a false left operand of &&", () => {
+    const result = IfcExpression.evaluate(
+      "FALSE && $element.property('missing').value() == 1",
+      ctxSimple
+    );
+
+    expect(result).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.false()));
+  });
+
+  it("short-circuits a true left operand of ||", () => {
+    const result = IfcExpression.evaluate(
+      "TRUE || $element.property('missing').value() == 1",
+      ctxSimple
+    );
+
+    expect(result).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.true()));
+  });
 });

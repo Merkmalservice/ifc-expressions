@@ -93,6 +93,7 @@ function isChainableType(type: ExprType): boolean {
 }
 
 const unsupportedPrimitiveMethodFunctionNames = new Set([
+  "EXISTS",
   "NAME",
   "GUID",
   "IFCCLASS",
@@ -162,7 +163,10 @@ const emptyExpressionStarterFunctionNames = [
 ] as const;
 
 function isExtendableTokenType(tokenType: number): boolean {
-  return tokenType === IfcExpressionParser.IDENTIFIER;
+  return (
+    tokenType === IfcExpressionParser.IDENTIFIER ||
+    tokenType === IfcExpressionParser.EXISTS
+  );
 }
 
 function findCaretTokenIndex(
@@ -896,6 +900,12 @@ function hasIdentifierTokenCandidate(
   return tokenCandidates.has(IfcExpressionParser.IDENTIFIER);
 }
 
+function hasExistsTokenCandidate(
+  tokenCandidates: Map<number, Array<number>>
+): boolean {
+  return tokenCandidates.has(IfcExpressionParser.EXISTS);
+}
+
 export class IfcExpressionAutocomplete {
   public static complete(
     input: string,
@@ -978,11 +988,23 @@ export class IfcExpressionAutocomplete {
     }
 
     const functionRange = findFunctionReplaceRange(input, cursorOffset);
-    if (functionRange && hasIdentifierTokenCandidate(candidates.tokens)) {
+    if (
+      functionRange &&
+      (hasIdentifierTokenCandidate(candidates.tokens) ||
+        hasExistsTokenCandidate(candidates.tokens))
+    ) {
       const typedPrefix = normalizeForMatch(
         input.slice(functionRange.from, functionRange.to)
       );
-      const items = IfcExpressionFunctions.getBuiltinFunctionNames()
+      const functionNames = [
+        ...(hasIdentifierTokenCandidate(candidates.tokens)
+          ? IfcExpressionFunctions.getBuiltinFunctionNames().filter(
+              (name) => name !== "EXISTS"
+            )
+          : []),
+        ...(hasExistsTokenCandidate(candidates.tokens) ? ["EXISTS"] : []),
+      ];
+      const items = functionNames
         .map((name) => toFunctionItem(name, options.localizer))
         .filter((item) => normalizeForMatch(item.label).startsWith(typedPrefix))
         .sort((left, right) => left.label.localeCompare(right.label));

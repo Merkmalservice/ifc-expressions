@@ -187,6 +187,7 @@ test("carries occurrence provenance without changing unit identity", () => {
   const projectUnit = environment.createProjectUnit(metre);
   const explicitUnit = environment.createExplicitUnit(metre);
   const calculatedUnit = environment.createCalculatedUnit(metre);
+  const unknownUnit = environment.createUnknownUnit(metre);
   const definitions = [
     { name: "$projectResult", type: resultType },
     { name: "$explicitResult", type: resultType },
@@ -227,6 +228,9 @@ test("carries occurrence provenance without changing unit identity", () => {
     environment.builtinValues.unit.METRE.provenance,
     IfcExpressionUnitProvenance.CATALOG
   );
+  assert.equal(unknownUnit.provenance, IfcExpressionUnitProvenance.UNKNOWN);
+  assert.equal(unknownUnit.isProjectUnit(), false);
+  assert.equal(unknownUnit.isExplicitUnit(), false);
 
   const otherEnvironment = createIfcExpressionUnitsEnvironment(provider);
   assert.throws(
@@ -312,4 +316,24 @@ test("offers the standardized provenance predicates in unit completion", () => {
 
   assert.ok(labels.includes("isProjectUnit"));
   assert.ok(labels.includes("isExplicitUnit"));
+});
+
+test("keeps helper functions visible in unfiltered root completion", () => {
+  const environment = createIfcExpressionUnitsEnvironment(mockProvider());
+  const registry = new BuiltinVariableRegistry(environment.builtinDefinitions);
+
+  const unitCompletion = IfcExpressionAutocomplete.complete("$unit.", 6, {
+    builtinVariableRegistry: registry,
+  });
+  const measureCompletion = IfcExpressionAutocomplete.complete("$measure.", 9, {
+    builtinVariableRegistry: registry,
+  });
+
+  assert.ok(unitCompletion.items.some((item) => item.label === "convert"));
+  assert.ok(
+    unitCompletion.items.some((item) => item.label === "isConvertible")
+  );
+  assert.ok(
+    measureCompletion.items.some((item) => item.label === "isSubKindOf")
+  );
 });
