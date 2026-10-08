@@ -2,13 +2,17 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   BuiltinVariableRegistry,
+  ContextObjectType,
   IfcExpression,
+  IfcExpressionAutocomplete,
+  Types,
   isExprEvalSuccess,
 } from "ifc-expressions";
 import {
   createIfcExpressionUnitsEnvironment,
   IFC_PORTABLE_MEASURE_NAMES,
   IFC_PORTABLE_UNIT_NAMES,
+  IfcExpressionUnitProvenance,
   IfcExpressionUnitsConfigurationError,
 } from "../dist/index.js";
 
@@ -80,6 +84,31 @@ function evaluate(expression, environment) {
   );
 }
 
+function evaluateWithDefinitions(expression, environment, definitions, values) {
+  const registry = new BuiltinVariableRegistry([
+    ...environment.builtinDefinitions,
+    ...definitions,
+  ]);
+  return IfcExpression.evaluate(
+    expression,
+    {
+      resolveElemRef() {
+        throw new Error("not used");
+      },
+      resolvePropRef() {
+        throw new Error("not used");
+      },
+      resolveBuiltinVariable(name) {
+        return (
+          values[name.replace(/^\$/, "").toLowerCase()] ??
+          environment.resolveBuiltinVariable(name)
+        );
+      },
+    },
+    { builtinVariableRegistry: registry }
+  );
+}
+
 test("fails immediately with an actionable error when no provider is supplied", () => {
   assert.throws(
     () => createIfcExpressionUnitsEnvironment(undefined),
@@ -137,4 +166,150 @@ test("provides typed portable measures and rejects unit/measure equality", () =>
 
   const mismatch = evaluate("$unit.METRE == $measure.LENGTH", environment);
   assert.equal(isExprEvalSuccess(mismatch), false);
+});
+
+test("carries occurrence provenance without changing unit identity", () => {
+  const provider = mockProvider();
+  const environment = createIfcExpressionUnitsEnvironment(provider);
+  const metre = provider.resolveUnit("METRE");
+  const concreteMembers = new Map([
+    [
+      "UNIT",
+      { name: "unit", kind: "property", valueType: environment.unitType },
+    ],
+  ]);
+  const resultType = new ContextObjectType(
+    "$result",
+    Types.contextObjectRef(),
+    concreteMembers
+  );
+
+  const projectUnit = environment.createProjectUnit(metre);
+  const explicitUnit = environment.createExplicitUnit(metre);
+  const calculatedUnit = environment.createCalculatedUnit(metre);
+  const definitions = [
+    { name: "$projectResult", type: resultType },
+    { name: "$explicitResult", type: resultType },
+    { name: "$calculatedResult", type: resultType },
+  ];
+  const values = {
+    projectresult: { unit: projectUnit },
+    explicitresult: { unit: explicitUnit },
+    calculatedresult: { unit: calculatedUnit },
+  };
+  const result = evaluateWithDefinitions(
+    [
+      "$projectResult.unit.isProjectUnit()",
+      "!$projectResult.unit.isExplicitUnit()",
+      "$explicitResult.unit.isExplicitUnit()",
+      "!$explicitResult.unit.isProjectUnit()",
+      "!$calculatedResult.unit.isProjectUnit()",
+      "!$calculatedResult.unit.isExplicitUnit()",
+      "!$unit.METRE.isProjectUnit()",
+      "!$unit.METRE.isExplicitUnit()",
+      "$projectResult.unit == $explicitResult.unit",
+      "$calculatedResult.unit == $unit.METRE",
+    ].join(" && "),
+    environment,
+    definitions,
+    values
+  );
+
+  assert.equal(isExprEvalSuccess(result), true);
+  assert.equal(result.result.getValue(), true);
+  assert.equal(projectUnit.provenance, IfcExpressionUnitProvenance.PROJECT);
+  assert.equal(explicitUnit.provenance, IfcExpressionUnitProvenance.EXPLICIT);
+  assert.equal(
+    calculatedUnit.provenance,
+    IfcExpressionUnitProvenance.CALCULATED
+  );
+  assert.equal(
+    environment.builtinValues.unit.METRE.provenance,
+    IfcExpressionUnitProvenance.CATALOG
+  );
+
+  const otherEnvironment = createIfcExpressionUnitsEnvironment(provider);
+  assert.throws(
+    () => otherEnvironment.unitType.createValue(projectUnit),
+    /active ifc-expressions-units environment/
+  );
+});
+
+test("uses the same unit type for directly and transitively reached IFC properties", () => {
+  const provider = mockProvider();
+  const environment = createIfcExpressionUnitsEnvironment(provider);
+  const explicitUnit = environment.createExplicitUnit(
+    provider.resolveUnit("CENTI_METRE")
+  );
+  const propertyType = new ContextObjectType(
+    "test-property",
+    Types.contextObjectRef(),
+    new Map([
+      [
+        "UNIT",
+        { name: "unit", kind: "property", valueType: environment.unitType },
+      ],
+    ])
+  );
+  const propertySetType = new ContextObjectType(
+    "test-property-set",
+    Types.contextObjectRef(),
+    new Map([
+      [
+        "PROPERTY",
+        {
+          name: "property",
+          kind: "function",
+          returnType: propertyType,
+          argumentTypes: [Types.string()],
+        },
+      ],
+    ])
+  );
+  const elementType = new ContextObjectType(
+    "test-element",
+    Types.contextObjectRef(),
+    new Map([
+      [
+        "PROPERTYSET",
+        {
+          name: "propertySet",
+          kind: "function",
+          returnType: propertySetType,
+          argumentTypes: [Types.string()],
+        },
+      ],
+    ])
+  );
+  const property = { unit: explicitUnit };
+  const values = {
+    property,
+    element: { propertySet: () => ({ property: () => property }) },
+  };
+  const result = evaluateWithDefinitions(
+    "$property.unit.isExplicitUnit() && $element.propertySet('Pset').property('Length').unit.isExplicitUnit()",
+    environment,
+    [
+      { name: "$property", type: propertyType },
+      { name: "$element", type: elementType },
+    ],
+    values
+  );
+
+  assert.equal(isExprEvalSuccess(result), true);
+  assert.equal(result.result.getValue(), true);
+});
+
+test("offers the standardized provenance predicates in unit completion", () => {
+  const environment = createIfcExpressionUnitsEnvironment(mockProvider());
+  const registry = new BuiltinVariableRegistry(environment.builtinDefinitions);
+  const expression = "$unit.METRE.is";
+  const labels = IfcExpressionAutocomplete.complete(
+    expression,
+    expression.length,
+    { builtinVariableRegistry: registry }
+  ).items.map((item) => item.label);
+
+  assert.ok(labels.includes("isProjectUnit"));
+  assert.ok(labels.includes("isExplicitUnit"));
 });

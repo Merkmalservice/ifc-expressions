@@ -11,7 +11,7 @@ Branch: `architecture/unit-modules`
 - [x] Inspect the `ecotwin-js` pnpm workspace conventions.
 - [x] Draft the monorepo and units-extension specification.
 - [x] Record backwards compatibility as a hard constraint.
-- [ ] Resolve the open architecture decisions with the maintainer.
+- [x] Resolve the open architecture decisions with the maintainer.
 - [x] Approve this design before moving source files.
 
 ## Phase 1: compatibility baseline
@@ -68,7 +68,7 @@ Exit criterion: supported comparisons compile and evaluate; unsupported comparis
 - [x] Define unit and measure factory contracts as context-object specializations.
 - [x] Register the optional `$unit` and `$measure` builtins and typed operations.
 - [x] Use separate `$unit` and `$measure` top-level objects rather than an umbrella namespace.
-- [ ] Specify unit provenance predicates.
+- [x] Specify unit provenance predicates on occurrence-level unit references.
 - [x] Generate portable aliases from the pinned IFC4X3_ADD2 (IFC 4.3.2.0) schema revision.
 - [x] Test that the base package works without any unit extension installed.
 - [x] Fail units-extension initialization with actionable diagnostics when no provider is registered.
@@ -122,7 +122,8 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-08: Portable aliases are pinned to the official IFC4X3_ADD2 (IFC 4.3.2.0) schema: units combine `IfcSIUnitName` with optional `IfcSIPrefix`; measures combine `IfcUnitEnum` and `IfcDerivedUnitEnum`, remove the `UNIT` suffix, and exclude `USERDEFINED`.
 - 2026-10-08: The default provider is pinned to `@qudtlib/allunits` 7.1.0 and retains all identity, conversion, convertibility, and quantity-kind hierarchy behavior.
 - 2026-10-08: Member access accepts reserved literal tokens after `.`, allowing literal provider constants such as `$unit.QUDT.UNKNOWN` without changing standalone literal semantics.
+- 2026-10-08: Every concrete expression-facing unit occurrence wraps a provider unit with `project`, `explicit`, `calculated`, or `catalog` provenance. Equality and conversion ignore provenance; `isProjectUnit()` and `isExplicitUnit()` are the initial standardized expression predicates.
 
 ## Blocking decisions
 
-- [ ] Final standardized unit-provenance member set.
+None.

@@ -18,6 +18,12 @@ import {
   IfcExpressionUnitsConfigurationError,
   IfcExpressionValueCatalog,
 } from "./provider.js";
+import {
+  createIfcExpressionUnitReference,
+  IfcExpressionUnitProvenance,
+  IfcExpressionUnitReference,
+  isIfcExpressionUnitReference,
+} from "./unit-reference.js";
 
 export type IfcExpressionUnitsEnvironment<
   Unit extends object,
@@ -31,8 +37,45 @@ export type IfcExpressionUnitsEnvironment<
     unit: Record<string, unknown>;
     measure: Record<string, unknown>;
   }>;
+  createUnitReference(
+    unit: Unit,
+    provenance: IfcExpressionUnitProvenance
+  ): IfcExpressionUnitReference<Unit>;
+  createProjectUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
+  createExplicitUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
+  createCalculatedUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   resolveBuiltinVariable(name: string): unknown;
 };
+
+class UnitValueFactory<Unit extends object>
+  implements ContextObjectTypeFactory<IfcExpressionUnitReference<Unit>>
+{
+  constructor(
+    private readonly provider: IfcExpressionUnitProvider<Unit, any>,
+    private readonly referenceOwner: object
+  ) {}
+
+  createValue(
+    value: IfcExpressionUnitReference<Unit>,
+    type: ContextObjectType
+  ): ContextObjectValue<IfcExpressionUnitReference<Unit>> {
+    if (!isIfcExpressionUnitReference<Unit>(value, this.referenceOwner)) {
+      throw new TypeError(
+        "Unit context values must be created by the active ifc-expressions-units environment."
+      );
+    }
+    return new ContextObjectValue(value, type);
+  }
+
+  getBinaryOperator(operator: ContextObjectOperator) {
+    return operator === ContextObjectOperator.EQUALS
+      ? (
+          left: IfcExpressionUnitReference<Unit>,
+          right: IfcExpressionUnitReference<Unit>
+        ) => this.provider.unitsEqual(left.providerUnit, right.providerUnit)
+      : undefined;
+  }
+}
 
 class ProviderValueFactory<T extends object>
   implements ContextObjectTypeFactory<T>
@@ -75,16 +118,56 @@ class CatalogMemberProvider<T extends object>
   }
 }
 
-function catalogRuntimeValue<T extends object>(
-  catalog: IfcExpressionValueCatalog<T>
+class CompositeMemberProvider implements ContextObjectMemberProvider {
+  constructor(
+    private readonly providers: ReadonlyArray<ContextObjectMemberProvider>
+  ) {}
+
+  getMemberDefinition(name: string): BuiltinMemberDefinition | undefined {
+    for (const provider of this.providers) {
+      const definition = provider.getMemberDefinition(name);
+      if (definition) {
+        return definition;
+      }
+    }
+    return undefined;
+  }
+
+  completeMembers(prefix: string, limit: number) {
+    const definitions: Array<BuiltinMemberDefinition> = [];
+    const names = new Set<string>();
+    let isIncomplete = false;
+    for (const provider of this.providers) {
+      const remaining = Math.max(0, limit - definitions.length);
+      const completion = provider.completeMembers(prefix, remaining);
+      isIncomplete ||= completion.isIncomplete === true;
+      for (const definition of completion.definitions) {
+        const normalizedName = definition.name.toUpperCase();
+        if (!names.has(normalizedName) && definitions.length < limit) {
+          names.add(normalizedName);
+          definitions.push(definition);
+        } else if (!names.has(normalizedName)) {
+          isIncomplete = true;
+        }
+      }
+    }
+    return { definitions, isIncomplete: isIncomplete || undefined };
+  }
+}
+
+function catalogRuntimeValue<T extends object, R extends object>(
+  catalog: IfcExpressionValueCatalog<T>,
+  toRuntimeValue: (value: T) => R
 ): Record<string, unknown> {
   return new Proxy(
     {},
     {
       get(_target, property) {
-        return typeof property === "string"
-          ? catalog.resolve(property)
-          : undefined;
+        if (typeof property !== "string") {
+          return undefined;
+        }
+        const value = catalog.resolve(property);
+        return value ? toRuntimeValue(value) : undefined;
       },
       getOwnPropertyDescriptor(_target, property) {
         if (
@@ -99,13 +182,14 @@ function catalogRuntimeValue<T extends object>(
   );
 }
 
-function addCatalogs<T extends object>(
+function addCatalogs<T extends object, R extends object>(
   providerId: string,
   kind: "unit" | "measure",
   catalogs: ReadonlyArray<IfcExpressionValueCatalog<T>> | undefined,
   valueType: ContextObjectType,
   rootMembers: Map<string, BuiltinMemberDefinition>,
-  rootValues: Record<string, unknown>
+  rootValues: Record<string, unknown>,
+  toRuntimeValue: (value: T) => R
 ): void {
   const seen = new Set<string>();
   for (const catalog of catalogs ?? []) {
@@ -130,7 +214,7 @@ function addCatalogs<T extends object>(
       kind: "property",
       valueType: catalogType,
     });
-    rootValues[catalog.name] = catalogRuntimeValue(catalog);
+    rootValues[catalog.name] = catalogRuntimeValue(catalog, toRuntimeValue);
   }
 }
 
@@ -213,16 +297,41 @@ export function createIfcExpressionUnitsEnvironment<
   }
   validateProvider(provider);
 
-  const unitFactory = new ProviderValueFactory(
-    provider.unitsEqual.bind(provider)
-  );
+  const unitReferenceOwner = {};
+  const unitFactory = new UnitValueFactory(provider, unitReferenceOwner);
   const measureFactory = new ProviderValueFactory(
     provider.measuresEqual.bind(provider)
   );
+  const unitValueMembers = new Map<string, BuiltinMemberDefinition>([
+    [
+      "ISPROJECTUNIT",
+      {
+        name: "isProjectUnit",
+        kind: "function",
+        returnType: Types.boolean(),
+        argumentTypes: [],
+      },
+    ],
+    [
+      "ISEXPLICITUNIT",
+      {
+        name: "isExplicitUnit",
+        kind: "function",
+        returnType: Types.boolean(),
+        argumentTypes: [],
+      },
+    ],
+  ]);
+  const unitMemberProviders: Array<ContextObjectMemberProvider> = [
+    new MapContextObjectMemberProvider(unitValueMembers),
+  ];
+  if (provider.unitMembers) {
+    unitMemberProviders.push(provider.unitMembers);
+  }
   const unitType = new ContextObjectType(
     `${provider.id}:unit`,
     Types.contextObjectRef(),
-    provider.unitMembers ?? emptyMembers(),
+    new CompositeMemberProvider(unitMemberProviders),
     unitFactory
   );
   const measureType = new ContextObjectType(
@@ -245,7 +354,11 @@ export function createIfcExpressionUnitsEnvironment<
       provider.resolveUnit(name)
     );
     unitMembers.set(name, { name, kind: "property", valueType: unitType });
-    unitValues[name] = value;
+    unitValues[name] = createIfcExpressionUnitReference(
+      value,
+      IfcExpressionUnitProvenance.CATALOG,
+      unitReferenceOwner
+    );
   }
   for (const name of IFC_PORTABLE_MEASURE_NAMES) {
     const value = requirePortableCatalogEntry(
@@ -281,10 +394,15 @@ export function createIfcExpressionUnitsEnvironment<
     argumentTypes: [measureType, measureType],
   });
 
-  unitValues.convert = (value: unknown, from: Unit, to: Unit) =>
-    provider.convert(toNumber(value), from, to);
-  unitValues.isConvertible = (from: Unit, to: Unit) =>
-    provider.isConvertible(from, to);
+  unitValues.convert = (
+    value: unknown,
+    from: IfcExpressionUnitReference<Unit>,
+    to: IfcExpressionUnitReference<Unit>
+  ) => provider.convert(toNumber(value), from.providerUnit, to.providerUnit);
+  unitValues.isConvertible = (
+    from: IfcExpressionUnitReference<Unit>,
+    to: IfcExpressionUnitReference<Unit>
+  ) => provider.isConvertible(from.providerUnit, to.providerUnit);
   measureValues.isSubKindOf = (actual: Measure, broader: Measure) =>
     provider.isSubKindOf(actual, broader);
 
@@ -294,7 +412,13 @@ export function createIfcExpressionUnitsEnvironment<
     provider.unitCatalogs,
     unitType,
     unitMembers,
-    unitValues
+    unitValues,
+    (unit) =>
+      createIfcExpressionUnitReference(
+        unit,
+        IfcExpressionUnitProvenance.CATALOG,
+        unitReferenceOwner
+      )
   );
   addCatalogs(
     provider.id,
@@ -302,7 +426,8 @@ export function createIfcExpressionUnitsEnvironment<
     provider.measureCatalogs,
     measureType,
     measureMembers,
-    measureValues
+    measureValues,
+    (measure) => measure
   );
 
   const unitRootType = new ContextObjectType(
@@ -327,6 +452,34 @@ export function createIfcExpressionUnitsEnvironment<
     measureType,
     builtinDefinitions,
     builtinValues,
+    createUnitReference(unit: Unit, provenance: IfcExpressionUnitProvenance) {
+      return createIfcExpressionUnitReference(
+        unit,
+        provenance,
+        unitReferenceOwner
+      );
+    },
+    createProjectUnit(unit: Unit) {
+      return createIfcExpressionUnitReference(
+        unit,
+        IfcExpressionUnitProvenance.PROJECT,
+        unitReferenceOwner
+      );
+    },
+    createExplicitUnit(unit: Unit) {
+      return createIfcExpressionUnitReference(
+        unit,
+        IfcExpressionUnitProvenance.EXPLICIT,
+        unitReferenceOwner
+      );
+    },
+    createCalculatedUnit(unit: Unit) {
+      return createIfcExpressionUnitReference(
+        unit,
+        IfcExpressionUnitProvenance.CALCULATED,
+        unitReferenceOwner
+      );
+    },
     resolveBuiltinVariable(name: string): unknown {
       return builtinValues[name.replace(/^\$/, "").toLowerCase()];
     },

@@ -19,3 +19,5 @@ export type {
 } from "./provider.js";
 export { createIfcExpressionUnitsEnvironment } from "./environment.js";
 export type { IfcExpressionUnitsEnvironment } from "./environment.js";
+export { IfcExpressionUnitProvenance } from "./unit-reference.js";
+export type { IfcExpressionUnitReference } from "./unit-reference.js";

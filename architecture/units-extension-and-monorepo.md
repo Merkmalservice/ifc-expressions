@@ -127,15 +127,32 @@ Both unit arguments are `ContextObjectRef<unit-factory>`. Both measure arguments
 Example:
 
 ```text
-$result.unit.isInheritedFromProject()
+$result.unit.isProjectUnit()
 && $result.unit == $unit.METRE
 && $result.measure == $measure.LENGTH
 && $unit.convert($result.value, $result.unit, $unit.METRE) > 1
 ```
 
-Unit provenance is metadata on the expression-facing unit object, not part of unit identity. Catalog constants have no model provenance. Equality is provider-defined unit identity and ignores provenance.
+Unit provenance is occurrence metadata on every expression-facing concrete unit object, not part of unit identity. This includes `$result.unit`, `$property.unit`, units reached through property navigation, and units attached to intermediate or final calculation results. Equality, conversion, and convertibility unwrap the provider unit and ignore provenance.
 
-The exact provenance member set remains to be finalized; the motivating predicates are `isInheritedFromProject()` and `isExplicitlySpecified()`.
+The standardized predicates are:
+
+```text
+unit.isProjectUnit() -> boolean
+unit.isExplicitUnit() -> boolean
+```
+
+`isProjectUnit()` identifies an IFC value whose effective unit was inherited from the project's `UnitsInContext`. `isExplicitUnit()` identifies a unit attached directly to an IFC property or physical quantity. The provider-neutral runtime reference also retains typed `catalog` and `calculated` provenance for catalog constants and calculation results; both standardized predicates return false for those categories. Further predicates can be added without changing the provenance representation.
+
+Consuming adapters construct occurrence values through the active units environment. They must not pass raw provider units into unit-typed context members:
+
+```text
+environment.createProjectUnit(providerUnit)
+environment.createExplicitUnit(providerUnit)
+environment.createCalculatedUnit(providerUnit)
+```
+
+All returned references have the environment's same nominal unit type, so direct and navigated properties remain statically comparable with `$unit` constants.
 
 ## Provider ownership
 
@@ -221,4 +238,4 @@ New context-object operators are additive. An expression such as `$result.unit =
 
 ## Open decisions
 
-1. What is the final standardized unit-provenance member set beyond the motivating predicates?
+There are no unresolved core unit-extension decisions. Consuming-project integration may identify additional provenance predicates, which must be additive.
