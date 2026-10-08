@@ -3,7 +3,7 @@ config_fingerprint: '{"slice_patterns":[".github/workflows","packages/ifc-expres
 repo:
   path: .
   kind: repo
-  head_tree: f647a41f316bc48553a8b548eb3fca7cede26cb2
+  head_tree: 38746d5e22e803ad73654d84cf131d3204e3350c
 slices:
   - path: .github/workflows
     kind: slice
@@ -15,7 +15,7 @@ slices:
     parent_slice: null
   - path: packages/ifc-expressions-units
     kind: slice
-    head_tree: 550f6441d03ba0d5ea7d4dbbf9f81bf5040dbfdc
+    head_tree: 5b2a46fcc03d436c7e1b610e60875c43a3d89586
     parent_slice: null
   - path: packages/ifc-expressions-units-qudtlib
     kind: slice

@@ -138,7 +138,7 @@ root:
           children:
             - path: packages/ifc-expressions-units/src
               kind: directory
-              direct_file_count: 4
+              direct_file_count: 5
               children: []
             - path: packages/ifc-expressions-units/test
               kind: directory
