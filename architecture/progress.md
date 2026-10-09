@@ -59,7 +59,7 @@ Exit criterion: two distinct context-object factories are statically distinguish
 - [x] Derive `!=` from equality.
 - [x] Reject unsupported and cross-factory operators during expression compilation.
 - [x] Preserve legacy context-object reference equality.
-- [x] Add operator-aware diagnostics where applicable; completion is not applicable to infix equality.
+- [x] Add operator-aware diagnostics and type-sensitive infix operator completion.
 
 Exit criterion: supported comparisons compile and evaluate; unsupported comparisons never reach runtime.
 
@@ -122,8 +122,9 @@ Exit criterion: the original `ET_IH-Dicke` case can be detected and explicitly r
 - 2026-10-08: Portable aliases are pinned to the official IFC4X3_ADD2 (IFC 4.3.2.0) schema: units combine `IfcSIUnitName` with optional `IfcSIPrefix`; measures combine `IfcUnitEnum` and `IfcDerivedUnitEnum`, remove the `UNIT` suffix, and exclude `USERDEFINED`.
 - 2026-10-08: The default provider is pinned to `@qudtlib/allunits` 7.1.0 and retains all identity, conversion, convertibility, and quantity-kind hierarchy behavior.
 - 2026-10-08: Member access accepts reserved literal tokens after `.`, allowing literal provider constants such as `$unit.QUDT.UNKNOWN` without changing standalone literal semantics.
-- 2026-10-08: Every concrete expression-facing unit occurrence wraps a provider unit with `project`, `explicit`, `calculated`, or `catalog` provenance. Equality and conversion ignore provenance; `isProjectUnit()` and `isExplicitUnit()` are the initial standardized expression predicates.
+- 2026-10-08: Every concrete expression-facing unit occurrence wraps a provider unit with `project`, `explicit`, `default`, `calculated`, or `catalog` provenance. Equality and conversion ignore provenance; `isProjectUnit()`, `isExplicitUnit()`, and `isDefaultUnit()` are standardized expression predicates. Default provenance is intentionally context-neutral and does not introduce query concepts into ifc-expressions.
 - 2026-10-08: Generalized the lazy `EXISTS(expression)` implementation to every expression type, reserved it in the grammar so method-call sugar is rejected, extended autocomplete, and added actionable `EXISTS(...)` hints to null/absent builtin runtime failures.
+- 2026-10-09: Added type-sensitive infix completion for boolean, comparison, arithmetic, string-concatenation, and context-object equality operators; callers can supply an expected result type to rank valid continuations.
 
 ## Blocking decisions
 

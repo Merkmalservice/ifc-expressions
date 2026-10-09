@@ -186,17 +186,20 @@ test("carries occurrence provenance without changing unit identity", () => {
 
   const projectUnit = environment.createProjectUnit(metre);
   const explicitUnit = environment.createExplicitUnit(metre);
+  const defaultUnit = environment.createDefaultUnit(metre);
   const calculatedUnit = environment.createCalculatedUnit(metre);
   const unknownUnit = environment.createUnknownUnit(metre);
   const definitions = [
     { name: "$projectResult", type: resultType },
     { name: "$explicitResult", type: resultType },
     { name: "$calculatedResult", type: resultType },
+    { name: "$defaultResult", type: resultType },
   ];
   const values = {
     projectresult: { unit: projectUnit },
     explicitresult: { unit: explicitUnit },
     calculatedresult: { unit: calculatedUnit },
+    defaultresult: { unit: defaultUnit },
   };
   const result = evaluateWithDefinitions(
     [
@@ -206,6 +209,9 @@ test("carries occurrence provenance without changing unit identity", () => {
       "!$explicitResult.unit.isProjectUnit()",
       "!$calculatedResult.unit.isProjectUnit()",
       "!$calculatedResult.unit.isExplicitUnit()",
+      "$defaultResult.unit.isDefaultUnit()",
+      "!$defaultResult.unit.isProjectUnit()",
+      "!$defaultResult.unit.isExplicitUnit()",
       "!$unit.METRE.isProjectUnit()",
       "!$unit.METRE.isExplicitUnit()",
       "$projectResult.unit == $explicitResult.unit",
@@ -220,6 +226,7 @@ test("carries occurrence provenance without changing unit identity", () => {
   assert.equal(result.result.getValue(), true);
   assert.equal(projectUnit.provenance, IfcExpressionUnitProvenance.PROJECT);
   assert.equal(explicitUnit.provenance, IfcExpressionUnitProvenance.EXPLICIT);
+  assert.equal(defaultUnit.provenance, IfcExpressionUnitProvenance.DEFAULT);
   assert.equal(
     calculatedUnit.provenance,
     IfcExpressionUnitProvenance.CALCULATED
@@ -316,6 +323,7 @@ test("offers the standardized provenance predicates in unit completion", () => {
 
   assert.ok(labels.includes("isProjectUnit"));
   assert.ok(labels.includes("isExplicitUnit"));
+  assert.ok(labels.includes("isDefaultUnit"));
 });
 
 test("keeps helper functions visible in unfiltered root completion", () => {

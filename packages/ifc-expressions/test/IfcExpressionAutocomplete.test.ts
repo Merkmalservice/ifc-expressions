@@ -123,7 +123,9 @@ function complete(
   textWithCursorMarker: string,
   options: IfcExpressionAutocompleteOptions = {}
 ) {
-  const cursor = textWithCursorMarker.indexOf("|");
+  const explicitCursor = textWithCursorMarker.indexOf("¦");
+  const cursor =
+    explicitCursor >= 0 ? explicitCursor : textWithCursorMarker.indexOf("|");
   const text =
     cursor === -1
       ? textWithCursorMarker
@@ -406,6 +408,30 @@ const completionCases: Array<CompletionCase> = [
     text: "$element.type().propertySet('PSet_Betonbau').unknown",
     expected: null,
   },
+  {
+    text: "$result.statusCode >= 300 ",
+    expected: ["||", "&&", "><", "==", "!=", ">=", "<=", ">", "<"],
+  },
+  {
+    text: "$result.statusCode >= 300 || $result.statusCode == 0 ¦",
+    expected: ["||", "&&", "><", "==", "!=", ">=", "<=", ">", "<"],
+  },
+  {
+    text: "$query.matches('x') ",
+    expected: ["||", "&&", "><", "==", "!=", ">=", "<=", ">", "<"],
+  },
+  {
+    text: "TRUE ",
+    expected: ["||", "&&", "><", "==", "!=", ">=", "<=", ">", "<"],
+  },
+  {
+    text: "$result.statusCode ",
+    expected: ["==", "!=", ">=", "<=", ">", "<", "+", "-", "*", "/", "^"],
+  },
+  {
+    text: "'ND' ",
+    expected: ["==", "!=", ">=", "<=", ">", "<", "+"],
+  },
 ];
 
 const builtinFunctionCoverageCases: Array<BuiltinFunctionCoverageCase> = [
@@ -544,6 +570,14 @@ describe("IfcExpressionAutocomplete", () => {
     }`, () => {
       expect(completeLabels(text)).toEqual(expected ?? []);
     });
+  });
+
+  it("ranks operators whose result matches the expected expression type first", () => {
+    expect(
+      completeLabels("$result.statusCode ", {
+        expectedResultType: Type.NUMERIC,
+      })
+    ).toEqual(["+", "-", "*", "/", "^", "==", "!=", ">=", "<=", ">", "<"]);
   });
 
   describe.each(builtinFunctionCoverageCases)(

@@ -6,6 +6,7 @@ export const IfcExpressionUnitProvenance = {
   CATALOG: "catalog",
   PROJECT: "project",
   EXPLICIT: "explicit",
+  DEFAULT: "default",
   CALCULATED: "calculated",
   UNKNOWN: "unknown",
 } as const;
@@ -19,6 +20,7 @@ export interface IfcExpressionUnitReference<Unit extends object> {
 
   isProjectUnit(): boolean;
   isExplicitUnit(): boolean;
+  isDefaultUnit(): boolean;
 }
 
 const unitReferenceOwners = new WeakMap<object, object>();
@@ -38,6 +40,7 @@ export function createIfcExpressionUnitReference<Unit extends object>(
     provenance,
     isProjectUnit: () => provenance === IfcExpressionUnitProvenance.PROJECT,
     isExplicitUnit: () => provenance === IfcExpressionUnitProvenance.EXPLICIT,
+    isDefaultUnit: () => provenance === IfcExpressionUnitProvenance.DEFAULT,
   };
   const reference = new Proxy(target, {
     get(current, property, receiver) {

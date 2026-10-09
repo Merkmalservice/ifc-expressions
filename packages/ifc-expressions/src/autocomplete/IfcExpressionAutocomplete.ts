@@ -1,6 +1,7 @@
 import {
   CharStream,
   CommonTokenStream,
+  ParseTreeWalker,
   ParserRuleContext,
   Token,
 } from "antlr4ng";
@@ -17,6 +18,7 @@ import {
 import { IfcExpressionLexer } from "../gen/parser/IfcExpressionLexer.js";
 import {
   ExprListContext,
+  ExprContext,
   FunctionCallContext,
   IfcExpressionParser,
   MethodAccessorContext,
@@ -33,6 +35,9 @@ import {
 import { IfcExpressionFunctions } from "../expression/function/IfcExpressionFunctions.js";
 import { ContextObjectType } from "../type/ContextObjectType.js";
 import { ExprType } from "../type/ExprType.js";
+import { Type } from "../type/Types.js";
+import { IfcExpressionValidationListener } from "../compiler/IfcExpressionValidationListener.js";
+import { ContextObjectOperator } from "../type/ContextObjectTypeFactory.js";
 import { CompletionItem, CompletionResult } from "./CompletionItem.js";
 import {
   DocumentationLocalizer,
@@ -43,6 +48,7 @@ export type IfcExpressionAutocompleteOptions = {
   builtinVariableRegistry?: BuiltinVariableRegistry;
   localizer?: DocumentationLocalizer;
   emptyExpressionStarters?: Array<string>;
+  expectedResultType?: ExprType;
 };
 
 type CompletedAccessorStep =
@@ -67,7 +73,7 @@ type MethodAccessorStep =
 
 type ParsedAutocompleteInput = {
   parser: IfcExpressionParser;
-  parseTree: ParserRuleContext;
+  parseTree: ExprContext;
   tokens: Array<Token>;
   caretTokenIndex: number;
 };
@@ -161,6 +167,47 @@ const emptyExpressionStarterFunctionNames = [
   "TONUMERIC",
   "TOBOOLEAN",
 ] as const;
+
+type OperatorCompletionDefinition = {
+  label: string;
+  resultType: ExprType;
+  documentation: string;
+};
+
+const booleanOperatorDefinitions: Array<OperatorCompletionDefinition> = [
+  {
+    label: "||",
+    resultType: Type.BOOLEAN,
+    documentation: "Logical OR: true when either operand is true.",
+  },
+  {
+    label: "&&",
+    resultType: Type.BOOLEAN,
+    documentation: "Logical AND: true when both operands are true.",
+  },
+  {
+    label: "><",
+    resultType: Type.BOOLEAN,
+    documentation: "Logical XOR: true when exactly one operand is true.",
+  },
+];
+
+const comparisonOperatorDefinitions: Array<OperatorCompletionDefinition> = [
+  { label: "==", resultType: Type.BOOLEAN, documentation: "Equal to." },
+  { label: "!=", resultType: Type.BOOLEAN, documentation: "Not equal to." },
+  {
+    label: ">=",
+    resultType: Type.BOOLEAN,
+    documentation: "Greater than or equal to.",
+  },
+  {
+    label: "<=",
+    resultType: Type.BOOLEAN,
+    documentation: "Less than or equal to.",
+  },
+  { label: ">", resultType: Type.BOOLEAN, documentation: "Greater than." },
+  { label: "<", resultType: Type.BOOLEAN, documentation: "Less than." },
+];
 
 function isExtendableTokenType(tokenType: number): boolean {
   return (
@@ -906,6 +953,112 @@ function hasExistsTokenCandidate(
   return tokenCandidates.has(IfcExpressionParser.EXISTS);
 }
 
+function inferCompleteExpressionType(
+  parseTree: ExprContext,
+  builtinVariableRegistry: BuiltinVariableRegistry
+): ExprType | undefined {
+  try {
+    const listener = new IfcExpressionValidationListener(
+      builtinVariableRegistry
+    );
+    new ParseTreeWalker().walk(listener, parseTree);
+    const typeManager = listener.getTypeManager();
+    const result =
+      typeManager.getType(parseTree) ??
+      typeManager.getType(parseTree.singleExpr());
+    return result;
+  } catch {
+    return undefined;
+  }
+}
+
+function supportsEquality(type: ExprType): boolean {
+  return (
+    !(type instanceof ContextObjectType) ||
+    !type.getFactory() ||
+    type.supportsOperator(ContextObjectOperator.EQUALS)
+  );
+}
+
+function toOperatorItem(
+  definition: OperatorCompletionDefinition
+): CompletionItem {
+  return {
+    kind: "operator",
+    label: definition.label,
+    insertText: `${definition.label} `,
+    returnTypeName: toCompletionTypeName(definition.resultType),
+    documentation: definition.documentation,
+  };
+}
+
+function getOperatorItems(
+  leftType: ExprType,
+  expectedResultType?: ExprType
+): Array<CompletionItem> {
+  const definitions: Array<OperatorCompletionDefinition> = [];
+  const isLogical = leftType.overlapsWith(Type.LOGICAL);
+  const isNumeric = leftType.overlapsWith(Type.NUMERIC);
+  const isString = leftType.overlapsWith(Type.STRING);
+
+  if (isLogical) {
+    definitions.push(...booleanOperatorDefinitions);
+  }
+  if (supportsEquality(leftType)) {
+    definitions.push(...comparisonOperatorDefinitions.slice(0, 2));
+  }
+  if (isNumeric || isString || isLogical) {
+    definitions.push(...comparisonOperatorDefinitions.slice(2));
+  }
+  if (isNumeric || isString) {
+    definitions.push({
+      label: "+",
+      resultType: isString && !isNumeric ? Type.STRING : leftType,
+      documentation:
+        isString && !isNumeric ? "Concatenate strings." : "Add numeric values.",
+    });
+  }
+  if (isNumeric) {
+    definitions.push(
+      {
+        label: "-",
+        resultType: Type.NUMERIC,
+        documentation: "Subtract numeric values.",
+      },
+      {
+        label: "*",
+        resultType: Type.NUMERIC,
+        documentation: "Multiply numeric values.",
+      },
+      {
+        label: "/",
+        resultType: Type.NUMERIC,
+        documentation: "Divide numeric values.",
+      },
+      {
+        label: "^",
+        resultType: Type.NUMERIC,
+        documentation: "Raise a numeric value to a power.",
+      }
+    );
+  }
+
+  return definitions
+    .map((definition, index) => ({
+      definition,
+      index,
+      expected:
+        expectedResultType?.overlapsWith(definition.resultType) === true
+          ? 0
+          : 1,
+    }))
+    .sort(
+      (left, right) =>
+        left.expected - right.expected || left.index - right.index
+    )
+    .map(({ definition }) => toOperatorItem(definition));
+}
+
 export class IfcExpressionAutocomplete {
   public static complete(
     input: string,
@@ -942,6 +1095,24 @@ export class IfcExpressionAutocomplete {
       cursorOffset,
       options.localizer
     );
+
+    const atExpressionEnd =
+      input.slice(cursorOffset).trim().length === 0 &&
+      /\s/.test(input[cursorOffset - 1] ?? "");
+    const completedExpressionType = atExpressionEnd
+      ? inferCompleteExpressionType(parsed.parseTree, builtinVariableRegistry)
+      : undefined;
+    const operatorItems = completedExpressionType
+      ? getOperatorItems(completedExpressionType, options.expectedResultType)
+      : [];
+    if (operatorItems.length > 0) {
+      return {
+        items: operatorItems,
+        replaceFrom: cursorOffset,
+        replaceTo: cursorOffset,
+        activeHelp,
+      };
+    }
 
     const memberCandidate = getMemberRuleCandidate(ruleCandidates);
     if (memberCandidate) {

@@ -43,6 +43,7 @@ export type IfcExpressionUnitsEnvironment<
   ): IfcExpressionUnitReference<Unit>;
   createProjectUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   createExplicitUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
+  createDefaultUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   createCalculatedUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   createUnknownUnit(unit: Unit): IfcExpressionUnitReference<Unit>;
   resolveBuiltinVariable(name: string): unknown;
@@ -322,6 +323,15 @@ export function createIfcExpressionUnitsEnvironment<
         argumentTypes: [],
       },
     ],
+    [
+      "ISDEFAULTUNIT",
+      {
+        name: "isDefaultUnit",
+        kind: "function",
+        returnType: Types.boolean(),
+        argumentTypes: [],
+      },
+    ],
   ]);
   const unitMemberProviders: Array<ContextObjectMemberProvider> = [
     new MapContextObjectMemberProvider(unitValueMembers),
@@ -471,6 +481,13 @@ export function createIfcExpressionUnitsEnvironment<
       return createIfcExpressionUnitReference(
         unit,
         IfcExpressionUnitProvenance.EXPLICIT,
+        unitReferenceOwner
+      );
+    },
+    createDefaultUnit(unit: Unit) {
+      return createIfcExpressionUnitReference(
+        unit,
+        IfcExpressionUnitProvenance.DEFAULT,
         unitReferenceOwner
       );
     },

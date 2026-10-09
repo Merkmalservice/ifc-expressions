@@ -2,7 +2,8 @@ export type CompletionItemKind =
   | "builtinRoot"
   | "builtinFunction"
   | "builtinMemberProperty"
-  | "builtinMemberFunction";
+  | "builtinMemberFunction"
+  | "operator";
 
 export type CompletionItem = {
   kind: CompletionItemKind;

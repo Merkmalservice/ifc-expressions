@@ -145,9 +145,10 @@ The standardized predicates are:
 ```text
 unit.isProjectUnit() -> boolean
 unit.isExplicitUnit() -> boolean
+unit.isDefaultUnit() -> boolean
 ```
 
-`isProjectUnit()` identifies an IFC value whose effective unit was inherited from the project's `UnitsInContext`. `isExplicitUnit()` identifies a unit attached directly to an IFC property or physical quantity. The provider-neutral runtime reference also retains typed `catalog` and `calculated` provenance for catalog constants and calculation results; both standardized predicates return false for those categories. Further predicates can be added without changing the provenance representation.
+`isProjectUnit()` identifies an IFC value whose effective unit was inherited from the project's `UnitsInContext`. `isExplicitUnit()` identifies a unit attached directly to an IFC property or physical quantity. `isDefaultUnit()` identifies a unit supplied by the surrounding evaluation context when the value itself has no usable unit; the expression API deliberately does not prescribe whether that context is a query, mapping, schema, or application configuration. The provider-neutral runtime reference also retains typed `catalog` and `calculated` provenance for catalog constants and calculation results. Further predicates can be added without changing the provenance representation.
 
 Consuming adapters construct occurrence values through the active units environment. They must not pass raw provider units into unit-typed context members:
 
