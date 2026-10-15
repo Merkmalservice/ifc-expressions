@@ -27,6 +27,8 @@ import {
   MethodCallChainInnerContext,
   MethodFunctionCallContext,
   MethodPropertyAccessContext,
+  SEFunctionCallContext,
+  SELiteralContext,
   SEMethodCallContext,
   SEParenthesisContext,
   SEVariableRefContext,
@@ -501,6 +503,42 @@ function resolveSingleExprType(
       : undefined;
   }
 
+  if (singleExpr instanceof SEFunctionCallContext) {
+    const functionCall = singleExpr.functionCall();
+    const functionName = functionCall.IDENTIFIER()?.getText();
+    const func = functionName
+      ? IfcExpressionFunctions.getFunction(functionName)
+      : undefined;
+    const argumentTypes = resolveExprListTypes(
+      functionCall.exprList(),
+      builtinVariableRegistry
+    );
+    if (!func || !argumentTypes) {
+      return undefined;
+    }
+    try {
+      return func.getReturnType(argumentTypes);
+    } catch {
+      return undefined;
+    }
+  }
+
+  if (singleExpr instanceof SELiteralContext) {
+    const literal = singleExpr.literal();
+    if (literal.numLiteral()) {
+      return Type.NUMERIC;
+    }
+    if (literal.stringLiteral()) {
+      return Type.STRING;
+    }
+    if (literal.booleanLiteral()) {
+      return Type.BOOLEAN;
+    }
+    if (literal.logicalLiteral()) {
+      return Type.LOGICAL;
+    }
+  }
+
   if (singleExpr instanceof SEParenthesisContext) {
     return resolveSingleExprType(
       singleExpr.singleExpr(),
@@ -534,6 +572,27 @@ function resolveSingleExprType(
   }
 
   return undefined;
+}
+
+function resolveExprListTypes(
+  exprList: ExprListContext | undefined,
+  builtinVariableRegistry: BuiltinVariableRegistry
+): Array<ExprType> | undefined {
+  if (!exprList) {
+    return [];
+  }
+  const currentType = resolveSingleExprType(
+    exprList.singleExpr(),
+    builtinVariableRegistry
+  );
+  if (!currentType) {
+    return undefined;
+  }
+  const rest = resolveExprListTypes(
+    exprList.exprList(),
+    builtinVariableRegistry
+  );
+  return rest ? [currentType, ...rest] : undefined;
 }
 
 function findReceiverTypeForMemberSlot(

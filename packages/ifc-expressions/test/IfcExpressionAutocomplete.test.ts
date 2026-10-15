@@ -3,7 +3,7 @@ import {
   IfcExpressionAutocomplete,
 } from "../src/IfcExpression.js";
 import { IfcExpressionFunctions } from "../src/expression/function/IfcExpressionFunctions.js";
-import { Type } from "../src/type/Types.js";
+import { Type, Types } from "../src/type/Types.js";
 import { IfcExpressionAutocompleteOptions } from "../src/autocomplete/IfcExpressionAutocomplete.js";
 
 const payloadRegistry = new BuiltinVariableRegistry([
@@ -71,6 +71,11 @@ const registry = new BuiltinVariableRegistry([
             },
           },
         ],
+      },
+      {
+        name: "payloads",
+        kind: "property",
+        valueType: Types.array(payloadRegistry.getDefinition("payload")!.type),
       },
     ],
   },
@@ -258,7 +263,7 @@ const completionCases: Array<CompletionCase> = [
   },
   {
     text: "$query.",
-    expected: ["matches", "property"],
+    expected: ["matches", "payloads", "property"],
   },
   {
     text: "$query.m",
@@ -266,7 +271,11 @@ const completionCases: Array<CompletionCase> = [
   },
   {
     text: "$query.p",
-    expected: ["property"],
+    expected: ["payloads", "property"],
+  },
+  {
+    text: "AT($query.payloads, 0).",
+    expected: ["code"],
   },
   {
     text: "$result.",
