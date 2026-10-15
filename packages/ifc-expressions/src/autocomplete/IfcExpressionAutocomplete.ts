@@ -322,6 +322,48 @@ function findMemberReplaceRange(
   return range;
 }
 
+function findDirectBuiltinReceiverType(
+  input: string,
+  memberRangeFrom: number,
+  builtinVariableRegistry: BuiltinVariableRegistry
+): ExprType | undefined {
+  const dotIndex = memberRangeFrom - 1;
+  if (dotIndex < 1 || input[dotIndex] !== ".") {
+    return undefined;
+  }
+
+  let rootStart = dotIndex - 1;
+  while (
+    rootStart >= 0 &&
+    isIdentifierChar(input[rootStart]) &&
+    input[rootStart] !== "$"
+  ) {
+    rootStart--;
+  }
+  if (input[rootStart] !== "$") {
+    return undefined;
+  }
+
+  return builtinVariableRegistry.getDefinition(
+    input.slice(rootStart, dotIndex)
+  )?.type;
+}
+
+function isInsideQuotedString(input: string, cursorOffset: number): boolean {
+  let quote: "'" | '"' | undefined;
+  for (let index = 0; index < cursorOffset; index++) {
+    const char = input[index];
+    if (quote) {
+      if (char === quote) {
+        quote = undefined;
+      }
+    } else if (char === "'" || char === '"') {
+      quote = char;
+    }
+  }
+  return quote !== undefined;
+}
+
 function findFunctionReplaceRange(
   input: string,
   cursorOffset: number
@@ -1115,23 +1157,20 @@ export class IfcExpressionAutocomplete {
     }
 
     const memberCandidate = getMemberRuleCandidate(ruleCandidates);
-    if (memberCandidate) {
-      const range = findMemberReplaceRange(input, cursorOffset);
-      if (!range) {
-        return {
-          items: [],
-          replaceFrom: cursorOffset,
-          replaceTo: cursorOffset,
-          activeHelp,
-        };
-      }
-
-      const receiverType = findReceiverTypeForMemberSlot(
-        parsed.parseTree,
-        memberCandidate.startTokenIndex,
-        builtinVariableRegistry
-      );
-      const rawPrefix = input.slice(range.from, range.to);
+    const memberRange = findMemberReplaceRange(input, cursorOffset);
+    if (memberCandidate && memberRange) {
+      const receiverType =
+        findDirectBuiltinReceiverType(
+          input,
+          memberRange.from,
+          builtinVariableRegistry
+        ) ??
+        findReceiverTypeForMemberSlot(
+          parsed.parseTree,
+          memberCandidate.startTokenIndex,
+          builtinVariableRegistry
+        );
+      const rawPrefix = input.slice(memberRange.from, memberRange.to);
       const typedPrefix = normalizeForMatch(rawPrefix);
       const completion =
         receiverType instanceof ContextObjectType
@@ -1151,8 +1190,8 @@ export class IfcExpressionAutocomplete {
 
       return {
         items,
-        replaceFrom: range.from,
-        replaceTo: range.to,
+        replaceFrom: memberRange.from,
+        replaceTo: memberRange.to,
         activeHelp,
         isIncomplete: completion?.isIncomplete,
       };
@@ -1191,7 +1230,14 @@ export class IfcExpressionAutocomplete {
     }
 
     const range = findBuiltinRootReplaceRange(input, cursorOffset);
-    if (!range || !hasBuiltinRootRuleCandidate(ruleCandidates)) {
+    const hasLexicalBuiltinRootContext =
+      !!range && (range.from === 0 || !isIdentifierChar(input[range.from - 1]));
+    if (
+      !range ||
+      isInsideQuotedString(input, cursorOffset) ||
+      (!hasBuiltinRootRuleCandidate(ruleCandidates) &&
+        !hasLexicalBuiltinRootContext)
+    ) {
       return {
         items: [],
         replaceFrom: cursorOffset,

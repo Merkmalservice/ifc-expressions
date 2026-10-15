@@ -49,6 +49,13 @@ export type IfcExpressionUnitsEnvironment<
   resolveBuiltinVariable(name: string): unknown;
 };
 
+function memberArgument(prefix: string, label: string, summary: string) {
+  return {
+    label: { key: `${prefix}.arg.${label}.label`, fallback: label },
+    documentation: { key: `${prefix}.arg.${label}.summary`, fallback: summary },
+  };
+}
+
 class UnitValueFactory<Unit extends object>
   implements ContextObjectTypeFactory<IfcExpressionUnitReference<Unit>>
 {
@@ -362,18 +369,51 @@ export function createIfcExpressionUnitsEnvironment<
     kind: "function",
     returnType: Types.numeric(),
     argumentTypes: [Types.numeric(), unitType, unitType],
+    documentation: {
+      key: "builtin.$unit.convert.summary",
+      fallback: "Convert a numeric value between compatible units.",
+    },
+    argumentDocumentation: [
+      memberArgument("builtin.$unit.convert", "value", "Numeric value to convert."),
+      memberArgument(
+        "builtin.$unit.convert",
+        "from_unit",
+        "Unit the value is currently expressed in."
+      ),
+      memberArgument("builtin.$unit.convert", "to_unit", "Unit to convert the value to."),
+    ],
   });
   unitMembers.set("ISCONVERTIBLE", {
     name: "isConvertible",
     kind: "function",
     returnType: Types.boolean(),
     argumentTypes: [unitType, unitType],
+    documentation: {
+      key: "builtin.$unit.isConvertible.summary",
+      fallback: "Check whether two units can be converted.",
+    },
+    argumentDocumentation: [
+      memberArgument("builtin.$unit.isConvertible", "from_unit", "Source unit."),
+      memberArgument("builtin.$unit.isConvertible", "to_unit", "Target unit."),
+    ],
   });
   measureMembers.set("ISSUBKINDOF", {
     name: "isSubKindOf",
     kind: "function",
     returnType: Types.boolean(),
     argumentTypes: [measureType, measureType],
+    documentation: {
+      key: "builtin.$measure.isSubKindOf.summary",
+      fallback: "Check whether one quantity kind is a specialization of another.",
+    },
+    argumentDocumentation: [
+      memberArgument("builtin.$measure.isSubKindOf", "actual", "Quantity kind to test."),
+      memberArgument(
+        "builtin.$measure.isSubKindOf",
+        "broader",
+        "Expected broader quantity kind."
+      ),
+    ],
   });
 
   for (const name of IFC_PORTABLE_UNIT_NAMES) {

@@ -345,3 +345,70 @@ test("keeps helper functions visible in unfiltered root completion", () => {
     measureCompletion.items.some((item) => item.label === "isSubKindOf")
   );
 });
+
+test("provides position-aware parameter help for unit conversion", () => {
+  const environment = createIfcExpressionUnitsEnvironment(mockProvider());
+  const registry = new BuiltinVariableRegistry(environment.builtinDefinitions);
+  const complete = (expression) =>
+    IfcExpressionAutocomplete.complete(expression, expression.length, {
+      builtinVariableRegistry: registry,
+    }).activeHelp;
+
+  assert.deepEqual(complete("$unit.convert("), {
+    label: "convert(value, from_unit, to_unit)",
+    documentation:
+      "convert(value, from_unit, to_unit): Convert a numeric value between compatible units.",
+    activeParameterIndex: 0,
+    activeParameterLabel: "value",
+    activeParameterDocumentation: "Numeric value to convert.",
+  });
+  assert.deepEqual(complete("$unit.convert(12, "), {
+    label: "convert(value, from_unit, to_unit)",
+    documentation:
+      "convert(value, from_unit, to_unit): Convert a numeric value between compatible units.",
+    activeParameterIndex: 1,
+    activeParameterLabel: "from_unit",
+    activeParameterDocumentation: "Unit the value is currently expressed in.",
+  });
+  assert.deepEqual(complete("$unit.convert(12, $unit.METRE, "), {
+    label: "convert(value, from_unit, to_unit)",
+    documentation:
+      "convert(value, from_unit, to_unit): Convert a numeric value between compatible units.",
+    activeParameterIndex: 2,
+    activeParameterLabel: "to_unit",
+    activeParameterDocumentation: "Unit to convert the value to.",
+  });
+});
+
+test("completes explicit builtin receivers inside nested function arguments", () => {
+  const environment = createIfcExpressionUnitsEnvironment(mockProvider());
+  const resultType = new ContextObjectType(
+    "$result",
+    Types.contextObjectRef(),
+    new Map([
+      ["VALUE", { name: "value", kind: "property", valueType: Types.numeric() }],
+      ["UNIT", { name: "unit", kind: "property", valueType: environment.unitType }],
+    ])
+  );
+  const registry = new BuiltinVariableRegistry([
+    ...environment.builtinDefinitions,
+    { name: "$result", type: resultType },
+  ]);
+  const complete = (expression) =>
+    IfcExpressionAutocomplete.complete(expression, expression.length, {
+      builtinVariableRegistry: registry,
+    }).items.map((item) => item.label);
+
+  assert.ok(
+    complete("$unit.convert($result.value, $result.unit, $").includes("$unit")
+  );
+  assert.deepEqual(
+    complete("$unit.convert($result.value, $result.unit, $result."),
+    ["unit", "value"]
+  );
+  assert.ok(
+    complete("$unit.convert($result.value, $result.unit, $unit.").includes(
+      "METRE"
+    )
+  );
+});
