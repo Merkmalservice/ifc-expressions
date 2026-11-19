@@ -43,7 +43,7 @@
   "devDependencies": {
     "ifc-expressions": "workspace:*",
     "ifc-expressions-units": "workspace:*",
-    "typescript": "^5.1.3"
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@qudtlib/allunits": "7.1.0"
