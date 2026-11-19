@@ -15,7 +15,9 @@ import {
   NumLiteralContext,
   SEAddSubContext,
   SEArrayExprContext,
-  SEBooleanBinaryOpContext,
+  SEBooleanAndContext,
+  SEBooleanOrContext,
+  SEBooleanXorContext,
   SEComparisonContext,
   SEExistsContext,
   SEFunctionCallContext,
@@ -90,11 +92,25 @@ export class IfcExpressionValidationListener extends IfcExpressionListener {
     throw new InvalidSyntaxException("--", ctx);
   };
 
-  exitSEBooleanBinaryOp: (ctx: SEBooleanBinaryOpContext) => void = (ctx) => {
+  exitSEBooleanAnd: (ctx: SEBooleanAndContext) => void = (ctx) => {
+    this.validateBooleanBinaryOperation(ctx);
+  };
+
+  exitSEBooleanXor: (ctx: SEBooleanXorContext) => void = (ctx) => {
+    this.validateBooleanBinaryOperation(ctx);
+  };
+
+  exitSEBooleanOr: (ctx: SEBooleanOrContext) => void = (ctx) => {
+    this.validateBooleanBinaryOperation(ctx);
+  };
+
+  private validateBooleanBinaryOperation(
+    ctx: SEBooleanAndContext | SEBooleanXorContext | SEBooleanOrContext
+  ): void {
     this.typeManager.requireLogicalOrBoolean(ctx._left);
     this.typeManager.requireLogicalOrBoolean(ctx._right);
     this.typeManager.setType(ctx, Types.boolean());
-  };
+  }
 
   exitSEComparison: (ctx: SEComparisonContext) => void = (ctx) => {
     const operator = ctx.CMP_OP().getText();

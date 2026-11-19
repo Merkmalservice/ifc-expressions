@@ -335,6 +335,8 @@ An expression can be
 - boolean operators
   - `&&`, `||`, `><`: boolean and, or, xor
   - `!`: boolean not
+  - From highest to lowest precedence the order is `!`, `&&`, `><`, `||`.
+    Use parentheses to preserve an existing expression’s grouping when migrating from 3.x.
 - string operators
   - `+`: string concatenation
 

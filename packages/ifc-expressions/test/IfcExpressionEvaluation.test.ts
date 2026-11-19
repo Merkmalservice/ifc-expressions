@@ -871,4 +871,25 @@ describe("ifcExpression", () => {
 
     expect(result).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.true()));
   });
+
+  it("gives && higher precedence than ||", () => {
+    const result = IfcExpression.evaluate("TRUE || FALSE && FALSE", ctxSimple);
+
+    expect(result).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.true()));
+  });
+
+  it("gives XOR higher precedence than ||", () => {
+    const result = IfcExpression.evaluate("TRUE || FALSE >< TRUE", ctxSimple);
+
+    expect(result).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.true()));
+  });
+
+  it("short-circuits a guarded fallback after a true OR branch", () => {
+    const result = IfcExpression.evaluate(
+      "TRUE || EXISTS($element.propertySet('missing')) && $element.propertySet('missing').property('missing').value() == 1",
+      ctxSimple
+    );
+
+    expect(result).toStrictEqual(new ExprEvalSuccessObj(BooleanValue.true()));
+  });
 });

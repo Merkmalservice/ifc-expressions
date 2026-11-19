@@ -4,7 +4,7 @@ description: Use reposlice to narrow repository scope, ingest focused code via s
 ---
 # reposlice Skill
 
-Use `reposlice` to narrow repository scope for the current task, and to ingest files. Keep slices maintained (with good summaries you write from fresh context) to create compounding value for the repo. 
+Use `reposlice` to narrow repository scope for the current task, and to ingest files. Keep slices maintained (with good summaries you write from fresh context) to create compounding value for the repo.
 
 ## First Contact
 

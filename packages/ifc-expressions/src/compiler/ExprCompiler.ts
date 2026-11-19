@@ -16,7 +16,9 @@ import {
   NumLiteralContext,
   SEAddSubContext,
   SEArrayExprContext,
-  SEBooleanBinaryOpContext,
+  SEBooleanAndContext,
+  SEBooleanOrContext,
+  SEBooleanXorContext,
   SEComparisonContext,
   SEExistsContext,
   SEFunctionCallContext,
@@ -360,40 +362,24 @@ export class ExprCompiler extends IfcExpressionVisitor<Expr<any>> {
     );
   };
 
-  visitSEBooleanBinaryOp: (ctx: SEBooleanBinaryOpContext) => Expr<any> = (
-    ctx
-  ) => {
-    switch (ctx._op.text) {
-      case "&&":
-        return this.associateContextAndReturn(
-          new AndExpr(
-            this.visit(ctx.singleExpr(0)),
-            this.visit(ctx.singleExpr(1))
-          ),
-          ctx
-        );
-      case "||":
-        return this.associateContextAndReturn(
-          new OrExpr(
-            this.visit(ctx.singleExpr(0)),
-            this.visit(ctx.singleExpr(1))
-          ),
-          ctx
-        );
-      case "><":
-        return this.associateContextAndReturn(
-          new XorExpr(
-            this.visit(ctx.singleExpr(0)),
-            this.visit(ctx.singleExpr(1))
-          ),
-          ctx
-        );
-    }
-    throw new SyntaxErrorException(
-      ctx._op.text,
-      ctx._op.line,
-      ctx._op.column,
-      `Unknown boolean operator ${ctx._op.text}`
+  visitSEBooleanAnd: (ctx: SEBooleanAndContext) => Expr<any> = (ctx) => {
+    return this.associateContextAndReturn(
+      new AndExpr(this.visit(ctx.singleExpr(0)), this.visit(ctx.singleExpr(1))),
+      ctx
+    );
+  };
+
+  visitSEBooleanXor: (ctx: SEBooleanXorContext) => Expr<any> = (ctx) => {
+    return this.associateContextAndReturn(
+      new XorExpr(this.visit(ctx.singleExpr(0)), this.visit(ctx.singleExpr(1))),
+      ctx
+    );
+  };
+
+  visitSEBooleanOr: (ctx: SEBooleanOrContext) => Expr<any> = (ctx) => {
+    return this.associateContextAndReturn(
+      new OrExpr(this.visit(ctx.singleExpr(0)), this.visit(ctx.singleExpr(1))),
+      ctx
     );
   };
 

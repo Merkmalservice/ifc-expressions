@@ -12,7 +12,9 @@ singleExpr:
     | left=singleExpr op=('+'|'-') right=singleExpr         # SEAddSub
     | left=singleExpr CMP_OP right=singleExpr               # SEComparison
     | <assoc=right> '!'  sub=singleExpr                     # SENot
-    | left=singleExpr op=BOOLEAN_BINARY_OP right=singleExpr # SEBooleanBinaryOp
+    | left=singleExpr op=BOOLEAN_AND right=singleExpr       # SEBooleanAnd
+    | left=singleExpr op=BOOLEAN_XOR right=singleExpr       # SEBooleanXor
+    | left=singleExpr op=BOOLEAN_OR right=singleExpr        # SEBooleanOr
     | EXISTS '(' sub=singleExpr ')'                         # SEExists
     | sub=variableRef                                       # SEVariableRef
     | sub=functionCall                                      # SEFunctionCall
@@ -75,5 +77,7 @@ QUOTED_STRING : ('"' .*? '"') | ('\'' .*? '\'' );
 IDENTIFIER : [a-zA-Z_][a-zA-Z0-9_\-$&]* ;
 WS : [ \t]+ -> skip ;
 NEWLINE : [\r\n]+ -> skip;
-BOOLEAN_BINARY_OP: ('||'|'&&'|'><');
+BOOLEAN_AND: '&&';
+BOOLEAN_XOR: '><';
+BOOLEAN_OR: '||';
 CMP_OP: ('=='|'<'|'>'|'>='|'<='|'!=');
