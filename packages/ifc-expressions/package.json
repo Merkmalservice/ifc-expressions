@@ -12,9 +12,26 @@
     }
   },
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Merkmalservice/ifc-expressions.git",
+    "directory": "packages/ifc-expressions"
+  },
+  "homepage": "https://github.com/Merkmalservice/ifc-expressions#readme",
+  "bugs": {
+    "url": "https://github.com/Merkmalservice/ifc-expressions/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "types": "./dist/index.d.ts",
-  "files": ["./dist/**/*", "./dist/*"],
-  "engines": { "node": ">=14.16" },
+  "files": [
+    "./dist/**/*",
+    "./dist/*"
+  ],
+  "engines": {
+    "node": ">=14.16"
+  },
   "scripts": {
     "build-complete": "pnpm run format-apply && pnpm run build && pnpm run test",
     "build": "pnpm run clean && pnpm run make-parser && pnpm run transpile",
@@ -30,7 +47,12 @@
     "check": "pnpm run format-check && pnpm run lint",
     "pack:check": "npm pack --dry-run"
   },
-  "keywords": ["IFC", "Expressions", "BIM", "Formula"],
+  "keywords": [
+    "IFC",
+    "Expressions",
+    "BIM",
+    "Formula"
+  ],
   "dependencies": {
     "antlr4-c3": "^3.4.4",
     "antlr4ng": "^3.0.16",

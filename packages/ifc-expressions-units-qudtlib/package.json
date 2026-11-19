@@ -14,6 +14,18 @@
     "dist"
   ],
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Merkmalservice/ifc-expressions.git",
+    "directory": "packages/ifc-expressions-units-qudtlib"
+  },
+  "homepage": "https://github.com/Merkmalservice/ifc-expressions#readme",
+  "bugs": {
+    "url": "https://github.com/Merkmalservice/ifc-expressions/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=14.16"
   },

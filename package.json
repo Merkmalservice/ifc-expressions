@@ -10,6 +10,13 @@
     "check": "pnpm -r --if-present check",
     "format": "pnpm -r --if-present format-apply",
     "format:check": "pnpm -r --if-present format-check",
-    "pack:check": "pnpm -r --if-present pack:check"
+    "pack:check": "pnpm -r --if-present pack:check",
+    "changeset": "changeset",
+    "changeset:status": "changeset status --verbose",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "3.0.3"
   }
 }
