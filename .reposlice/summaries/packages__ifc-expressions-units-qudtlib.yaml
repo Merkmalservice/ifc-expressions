@@ -1,6 +1,5 @@
 schema_version: 1
 target_path: packages/ifc-expressions-units-qudtlib
-head_tree: 3c0bdf8b29a2ff6935f707e538c86e6afdec80e9
-headline: QUDT-backed unit provider and literal catalogs
-summary_md: |
-  Provides the default `ifc-expressions-units` implementation backed by `@qudtlib/allunits` 7.1.0. `QudtUnitProvider` maps all portable IFC4X3_ADD2 aliases to QUDT `Unit` and `QuantityKind` objects, delegates identity, conversion, convertibility, and quantity-kind hierarchy to QUDT, and constructs valid provider-level scaled units when QUDT has no catalog constant. Literal, case-sensitive `$unit.QUDT.*` and `$measure.QUDT.*` catalogs expose the upstream JavaScript constant names with bounded lazy completion. The package re-exports useful QUDT objects and tests all portable bindings, conversion, hierarchy, case collisions, completion, and parser compatibility for all 3,076 unit plus 1,208 quantity-kind constants.
+head_tree: 8c86d6e795aceea6c1ce6fb18b4f5d9f5427a69b
+headline: QUDT-backed units, measures, and completion
+summary_md: "QudtUnitProvider implements the provider-neutral units API with @qudtlib/allunits. It binds every portable IFC alias, delegates conversion and quantity-kind hierarchy to QUDT, and constructs scaled units for supported prefixes missing from the QUDT catalog. Lazy $unit.QUDT and $measure.QUDT catalogs expose case-sensitive upstream constant names with bounded completion. Integration tests exercise bindings, conversion, hierarchy, and parser compatibility across the upstream catalogs.\r\n"

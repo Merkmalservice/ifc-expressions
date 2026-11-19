@@ -1,6 +1,5 @@
 schema_version: 1
 target_path: packages/ifc-expressions/test
-head_tree: 347bca73df5bef168f977629e9b1332d24e2f9be
-headline: Core compatibility and context-object regression corpus
-summary_md: |
-  Jest compatibility and regression corpus for the core expression package. It covers parsing and stringification, evaluation, static typing, autocomplete, builtin registration and member access, public exports, temporal and boxed values, text spans, and value unwrapping; `SimpleIfcExpressionContext.ts` supplies representative IFC accessors. Autocomplete cases cover type-valid boolean, comparison, arithmetic, concatenation, equality, and chained-expression operator suggestions plus expected-result-type ranking. Dedicated context-object tests pin legacy reference equality and verify nominal factory identity, delegated equality/inequality, compile-time rejection of cross-factory and unsupported operators, lazy member-provider completion, case sensitivity, and live eager-map compatibility.
+head_tree: faefbbc4939c9723e017c09a512e34966df3928d
+headline: Core parser, evaluator, and completion regression tests
+summary_md: "Jest tests cover syntax, stringification, evaluation, temporal and boxed values, public exports, and unwrapping. SimpleIfcExpressionContext supplies representative IFC accessors. Evaluation cases cover mixed boolean precedence, lazy EXISTS guards, and short-circuit fallback. Completion cases cover typed operators, nested arguments, and builtin-result members. Context-object tests cover nominal identity, delegated equality, and lazy member-provider behavior.\r\n"

@@ -3,27 +3,27 @@ config_fingerprint: '{"slice_patterns":[".github/workflows","packages/ifc-expres
 repo:
   path: .
   kind: repo
-  head_tree: 03c551bd8f8a0e92bbd53e1eb400a21e7b458c72
+  head_tree: 3b19e60b4b59985f58c549776b4f472f6b286a54
 slices:
   - path: .github/workflows
     kind: slice
-    head_tree: aac12a374cc21a4c1c2651b10125b813079c969a
+    head_tree: 17d7fc58133231a9289fa4ed89cd5176c7631840
     parent_slice: null
   - path: packages/ifc-expressions
     kind: slice
-    head_tree: 8ec54168a70bc4e23f2b6e200948b95a44b5eae1
+    head_tree: 3ce8368a5697476a1b4dfd2b1c0cb7d67d4ec1d9
     parent_slice: null
   - path: packages/ifc-expressions-units
     kind: slice
-    head_tree: 5b2a46fcc03d436c7e1b610e60875c43a3d89586
+    head_tree: 98e9a3ce6b188cd8576f956ea81db3fefe6ef2cf
     parent_slice: null
   - path: packages/ifc-expressions-units-qudtlib
     kind: slice
-    head_tree: 3c0bdf8b29a2ff6935f707e538c86e6afdec80e9
+    head_tree: 8c86d6e795aceea6c1ce6fb18b4f5d9f5427a69b
     parent_slice: null
   - path: packages/ifc-expressions/src/autocomplete
     kind: slice
-    head_tree: 5343c5a2364f3b04003e5757c01ba58ae6c84136
+    head_tree: 3d5540fd8bb04db35b2823f18f5307ae4910acd7
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/builtin
     kind: slice
@@ -31,7 +31,7 @@ slices:
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/compiler
     kind: slice
-    head_tree: 0ad4a951df246f47a6d8e0713ecc9c5098d163a0
+    head_tree: 78f0bec29505a76408771d4360a72f9e0e8fcc30
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/context
     kind: slice
@@ -47,11 +47,11 @@ slices:
     parent_slice: packages/ifc-expressions/src/error
   - path: packages/ifc-expressions/src/expression
     kind: slice
-    head_tree: 1dc5d96e92125d7396d5d71860abdc5feb1d3515
+    head_tree: e6e276c9d6ec806afb6ecf739bcb2e0d1886ebf2
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/src/expression/boolean
     kind: slice
-    head_tree: 893d3cfcfb0d4f032bd1fbe06565d257b4216519
+    head_tree: 82087ed5ef364b783132e0c7bdd82890a9b99084
     parent_slice: packages/ifc-expressions/src/expression
   - path: packages/ifc-expressions/src/expression/comparison
     kind: slice
@@ -59,7 +59,7 @@ slices:
     parent_slice: packages/ifc-expressions/src/expression
   - path: packages/ifc-expressions/src/expression/function
     kind: slice
-    head_tree: 559e96f6628c5841ef8635c06c00a307ef86b44a
+    head_tree: f448857333b100e7e02f3a75644623a5720b29d2
     parent_slice: packages/ifc-expressions/src/expression
   - path: packages/ifc-expressions/src/expression/function/arg
     kind: slice
@@ -67,7 +67,7 @@ slices:
     parent_slice: packages/ifc-expressions/src/expression/function
   - path: packages/ifc-expressions/src/expression/function/impl
     kind: slice
-    head_tree: a0e75e2849dfc371079bb48c689d6f22d7f21a2d
+    head_tree: 264899b408bdc0f96214c9ac2ec130cdb69a3a46
     parent_slice: packages/ifc-expressions/src/expression/function
   - path: packages/ifc-expressions/src/expression/numeric
     kind: slice
@@ -75,7 +75,7 @@ slices:
     parent_slice: packages/ifc-expressions/src/expression
   - path: packages/ifc-expressions/src/expression/reference
     kind: slice
-    head_tree: 3c3080e0655c277f0dc3e4d18f3a6d85b66db3d4
+    head_tree: 3826737f58e696c70d0c1653022e020ba6f6e566
     parent_slice: packages/ifc-expressions/src/expression
   - path: packages/ifc-expressions/src/expression/string
     kind: slice
@@ -103,5 +103,5 @@ slices:
     parent_slice: packages/ifc-expressions
   - path: packages/ifc-expressions/test
     kind: slice
-    head_tree: 347bca73df5bef168f977629e9b1332d24e2f9be
+    head_tree: faefbbc4939c9723e017c09a512e34966df3928d
     parent_slice: packages/ifc-expressions

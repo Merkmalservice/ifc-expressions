@@ -2,11 +2,15 @@ schema_version: 1
 root:
   path: .
   kind: repo
-  direct_file_count: 7
+  direct_file_count: 8
   children:
+    - path: .changeset
+      kind: directory
+      direct_file_count: 3
+      children: []
     - path: .github
       kind: directory
-      direct_file_count: 0
+      direct_file_count: 1
       children:
         - path: .github/workflows
           kind: slice
