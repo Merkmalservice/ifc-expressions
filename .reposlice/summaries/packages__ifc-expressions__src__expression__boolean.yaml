@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/expression/boolean
+head_tree: 82087ed5ef364b783132e0c7bdd82890a9b99084
+headline: Short-circuiting boolean and logical expression nodes
+summary_md: |
+  Boolean expression nodes implement boolean and IFC logical literals, unary negation, and binary `AND`, `OR`, and `XOR`. `BinaryBooleanOpExpr` delegates value semantics to `BooleanValue`/`LogicalValue`, promotes the result type to logical when either operand is logical, and short-circuits `AND` on false and `OR` on true before evaluating the right operand. Together with conventional parser precedence (`&&` before `><` before `||`), this enables safe mixed-operator guards such as `known || EXISTS(optional) && use(optional)`.

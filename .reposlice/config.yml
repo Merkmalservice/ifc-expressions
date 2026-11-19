@@ -1,0 +1,27 @@
+slice_patterns:
+  - .github/workflows
+  - packages/ifc-expressions
+  - packages/ifc-expressions/src/autocomplete
+  - packages/ifc-expressions/src/builtin
+  - packages/ifc-expressions/src/compiler
+  - packages/ifc-expressions/src/context
+  - packages/ifc-expressions/src/error
+  - packages/ifc-expressions/src/error/mapper
+  - packages/ifc-expressions/src/expression
+  - packages/ifc-expressions/src/expression/boolean
+  - packages/ifc-expressions/src/expression/comparison
+  - packages/ifc-expressions/src/expression/function
+  - packages/ifc-expressions/src/expression/function/arg
+  - packages/ifc-expressions/src/expression/function/impl
+  - packages/ifc-expressions/src/expression/numeric
+  - packages/ifc-expressions/src/expression/reference
+  - packages/ifc-expressions/src/expression/string
+  - packages/ifc-expressions/src/expression/structure
+  - packages/ifc-expressions/src/postprocess
+  - packages/ifc-expressions/src/type
+  - packages/ifc-expressions/src/util
+  - packages/ifc-expressions/src/value
+  - packages/ifc-expressions/test
+  - packages/ifc-expressions-units
+  - packages/ifc-expressions-units-qudtlib
+ignore_patterns: []

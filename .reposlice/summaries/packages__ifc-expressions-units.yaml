@@ -1,0 +1,5 @@
+schema_version: 1
+target_path: packages/ifc-expressions-units
+head_tree: 98e9a3ce6b188cd8576f956ea81db3fefe6ef2cf
+headline: Provider-neutral units and occurrence provenance
+summary_md: "provider.ts defines provider-owned unit and measure objects, conversion, equality, hierarchy, and lazy catalogs. catalogs.ts contains the pinned IFC4X3_ADD2 aliases. createIfcExpressionUnitsEnvironment validates an explicit provider and exposes typed $unit and $measure builtins and nominal unit and measure types. Unit references carry occurrence provenance for catalog, project, explicit, default, calculated, and unknown units. Equality and conversion delegate to the provider; environment constructors reject foreign unit references. Tests cover configuration errors, conversion, provenance, member access, and completion.\r\n"

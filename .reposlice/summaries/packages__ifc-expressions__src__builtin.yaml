@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/builtin
+head_tree: 714aa909ae14eb71987f5cc5e5085021b5bfc5a7
+headline: Typed builtin registration and runtime conversion
+summary_md: |
+  Defines typed builtin roots and bridges host runtime data into expression values. `BuiltinVariableRegistry` owns the default `$element`/`$property` definitions plus client-supplied roots, validates duplicate roots and members, and constructs context-object types whose property/function metadata is shared by compilation and autocomplete. Definitions may use eager maps or lazy member providers. `BuiltinRuntimeValueConverter` converts primitives, arrays, IFC accessors, and host objects according to the expected `ExprType`; factory-backed context-object types create nominal `ContextObjectValue`s through their factory, while legacy types preserve prior wrapping and case-insensitive member access.

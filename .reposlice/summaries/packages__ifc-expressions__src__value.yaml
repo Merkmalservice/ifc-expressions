@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/value
+head_tree: 72e6437693fe7b82aa3b2ac03e86b6472f9e2a4d
+headline: Boxed expression values and factory-backed operations
+summary_md: |
+  Boxes evaluator values behind the generic `Value` interface, including numeric, string, boolean/logical, temporal, array, IFC-accessor, reference, and client context-object values. Primitive and temporal implementations provide their semantic equality and ordering, and logical values implement three-valued behavior. `ContextObjectValue` carries the raw provider object and its `ContextObjectType`; factory-backed values delegate declared binary operations such as equality to that type's factory, while legacy context-object values retain raw object-reference equality for backward compatibility. `ExpressionValue` is the evaluator-wide union of these boxed values.

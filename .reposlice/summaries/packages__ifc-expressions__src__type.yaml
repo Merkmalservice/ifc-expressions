@@ -1,0 +1,6 @@
+schema_version: 1
+target_path: packages/ifc-expressions/src/type
+head_tree: 507328ec4f400aa9638c5a6da8f326cef1ab3e12
+headline: Structural and nominal expression type system
+summary_md: |
+  Defines the expression type hierarchy and assignability rules. `ExprType` implementations cover primitive/simple types, arrays, tuples, disjunctions, and member-bearing context objects; `Types` supplies common constructors and compatibility guards. `ContextObjectType` supports either legacy eager member maps or lazy `ContextObjectMemberProvider`s with exact lookup and bounded prefix completion. Optional `ContextObjectTypeFactory` instances give context objects nominal identity and declare supported operators such as equality, so same-factory operations type-check while cross-factory or unsupported operations fail during compilation. Legacy non-factory context objects retain name/base-type compatibility.

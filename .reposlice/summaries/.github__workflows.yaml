@@ -1,0 +1,5 @@
+schema_version: 1
+target_path: .github/workflows
+head_tree: 17d7fc58133231a9289fa4ed89cd5176c7631840
+headline: GitHub Actions validation and trusted npm releases
+summary_md: "The CI workflow installs the frozen pnpm lockfile on Node.js 22 and 24, then builds, typechecks, tests, and checks all package tarballs. On main, release-and-deploy.yml uses Changesets to create a version pull request or build a registry publish plan. A read-only job verifies and packs the artifacts. The npm-release environment grants OIDC only to the publish job, which also creates GitHub tags and releases. The separate emergency unpublish workflow requires an exact version, an explicit confirmation, and an environment-specific token.\r\n"

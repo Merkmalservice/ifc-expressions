@@ -1,104 +1,183 @@
-name: Release and deploy to npm repository
+name: Release packages
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      release-type:
-        description: "Release version (such as 3.17.2) or bump type, i.e, one of: patch, minor, major, prepatch, preminor, premajor, or prerelease"
-        required: true
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "24"
+  PNPM_VERSION: 10.33.0
 
 jobs:
-  build:
+  select_mode:
+    name: Select release mode
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.select.outputs.mode }}
+      publish-plan-artifact-id: ${{ steps.select.outputs.publish-plan-artifact-id }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          token: ${{ secrets.MMS_GITHUB_TOKEN }}
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
         with:
-          distribution: "temurin"
-          java-version: "11"
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          cache: "npm"
-          registry-url: https://registry.npmjs.org/
-          node-version: "18"
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Build and run tests
-        run: npm run build-complete
+      - name: Select version or publish mode
+        id: select
+        uses: changesets/action/select-mode@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
 
-      - name: setup git config
-        run: |
-          git config user.name ${{ github.actor }}
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Bump release version
-        if: startsWith(github.event.inputs.release-type, 'pre') != true
-        run: |
-          echo "NEW_VERSION=$(npm --no-git-tag-version version $RELEASE_TYPE)" >> $GITHUB_ENV
-          echo "RELEASE_TAG=latest" >> $GITHUB_ENV
-        env:
-          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
-
-      - name: Bump pre-release version
-        if: startsWith(github.event.inputs.release-type, 'pre')
-        run: |
-          echo "NEW_VERSION=$(npm --no-git-tag-version --preid=beta version $RELEASE_TYPE)" >> $GITHUB_ENV
-          echo "RELEASE_TAG=beta" >> $GITHUB_ENV
-        env:
-          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
-
-      - name: Update changelog
-        uses: superfaceai/release-changelog-action@v1
+  version:
+    name: Create or update version pull request
+    needs: select_mode
+    if: needs.select_mode.outputs.mode == 'version'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          path-to-changelog: CHANGELOG.md
-          version: ${{ env.NEW_VERSION }}
-          operation: release
+          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Apply format using prettier
-        run: npx prettier --write CHANGELOG.md
-
-      - name: Commit and tag
-        run: |
-          git add --all
-          git commit -m "Release ${{ env.NEW_VERSION }}"
-          git tag ${{ env.NEW_VERSION }}
-
-      - name: Publish
-        run: npm publish --access public --tag ${{ env.RELEASE_TAG }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
-
-      - name: Push changes and tag
-        run: |
-          git push --force-with-lease origin main
-          git push origin ${{ env.NEW_VERSION }}
-
-      - id: get-changelog
-        name: Get version changelog
-        uses: superfaceai/release-changelog-action@v1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
         with:
-          path-to-changelog: CHANGELOG.md
-          version: ${{ env.NEW_VERSION }}
-          operation: read
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: Update GitHub release documentation
-        uses: softprops/action-gh-release@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          tag_name: ${{ env.NEW_VERSION }}
-          body: ${{ steps.get-changelog.outputs.changelog }}
-          prerelease: ${{ startsWith(github.event.inputs.release-type, 'pre') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
 
-      - name: Print summary
-        run: echo "Release ${{ env.NEW_VERSION }} deployed to npm." >> $GITHUB_STEP_SUMMARY
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Open version pull request
+        uses: changesets/action/version@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          github-token: ${{ github.token }}
+          script: pnpm version-packages
+          commit-message: "chore: version packages"
+          pr-title: "chore: version packages"
+          pr-base-branch: main
+
+  pack:
+    name: Build release artifacts
+    needs: select_mode
+    if: needs.select_mode.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Typecheck packages
+        run: pnpm typecheck
+
+      - name: Test packages
+        run: pnpm test
+
+      - name: Verify packed contents
+        run: pnpm pack:check
+
+      - name: Pack release artifacts
+        id: pack
+        uses: changesets/action/pack@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          publish-plan-artifact-id: ${{ needs.select_mode.outputs.publish-plan-artifact-id }}
+
+  publish:
+    name: Publish packages
+    needs:
+      - select_mode
+      - pack
+    if: needs.select_mode.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm-release
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js for npm trusted publishing
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org/
+          package-manager-cache: false
+
+      - name: Install publishing tooling
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Publish release artifacts
+        uses: changesets/action/publish@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
+          github-token: ${{ github.token }}
+          create-github-releases: true
+          push-git-tags: true
