@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: "24"
+  NODE_VERSION: "26.13.1"
   PNPM_VERSION: 10.33.0
 
 jobs:
@@ -140,8 +140,8 @@ jobs:
         with:
           publish-plan-artifact-id: ${{ needs.select_mode.outputs.publish-plan-artifact-id }}
 
-  publish:
-    name: Publish packages
+  stage:
+    name: Stage packages on npm
     needs:
       - select_mode
       - pack
@@ -150,34 +150,26 @@ jobs:
     timeout-minutes: 15
     environment: npm-release
     permissions:
-      contents: write
+      contents: read
       id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js for npm trusted publishing
+      - name: Set up Node.js for npm trusted staging
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: https://registry.npmjs.org/
           package-manager-cache: false
 
-      - name: Install publishing tooling
-        run: pnpm install --frozen-lockfile --ignore-scripts
-
-      - name: Publish release artifacts
-        uses: changesets/action/publish@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+      - name: Download verified release artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
-          github-token: ${{ github.token }}
-          create-github-releases: true
-          push-git-tags: true
+          artifact-ids: ${{ needs.pack.outputs.pack-dir-artifact-id }}
+          path: ${{ runner.temp }}/ifc-release
+
+      - name: Stage tarballs for npm maintainer approval
+        run: npm run stage-release -- "$RUNNER_TEMP/ifc-release"
