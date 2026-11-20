@@ -14,7 +14,8 @@
     "changeset": "changeset",
     "changeset:status": "changeset status --verbose",
     "version-packages": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "stage-release": "node .github/scripts/stage-release.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3"

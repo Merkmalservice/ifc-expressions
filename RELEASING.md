@@ -8,8 +8,8 @@ published together when their dependency graph requires it:
 3. `ifc-expressions-units-qudtlib`
 
 Changesets updates dependent peer ranges when a dependency bump makes the
-current range invalid. Its publish command discovers unpublished versions and
-publishes them in dependency order.
+current range invalid. It builds a publish plan and packs the unpublished
+versions in dependency order.
 
 ## Pull requests
 
@@ -28,8 +28,15 @@ pnpm changeset --empty
 ```
 
 On `main`, the release workflow creates or updates a version pull request.
-Merging that pull request starts a verified, dependency-ordered publish and
-creates package-specific Git tags and GitHub releases.
+Merging that pull request builds and verifies the tarballs. The staging job
+runs on Node.js 26.13.1 with npm 11.20.0 and uses OIDC to submit the verified
+tarballs to npm with their planned dist-tags.
+
+Review the exact versions under **Staged Packages** on npm and approve them
+with 2FA. Approve the core first, followed by the units package and the QUDT
+provider when they are part of the same release. After verifying the versions
+are public, create the GitHub releases with tags named `<package>@<version>`
+and target the commit that produced the tarballs.
 
 For a prerelease series, enter Changesets prerelease mode on a branch with
 `pnpm changeset pre enter beta`. Commit `.changeset/pre.json` and the generated
@@ -59,21 +66,24 @@ Configure a trusted publisher for each package on npm:
 - repository: `ifc-expressions`
 - workflow filename: `release-and-deploy.yml`
 - environment: `npm-release`
+- allowed actions: staged publishing only
 
 Do this independently for `ifc-expressions`, `ifc-expressions-units`, and
-`ifc-expressions-units-qudtlib`. The publish job receives an OIDC token only
+`ifc-expressions-units-qudtlib`. The staging job receives an OIDC token only
 after the build-and-pack job has succeeded and the protected environment has
-approved the release.
+approved the job. Replace an older trusted publisher configuration that only
+allows direct publishing. Configure the trusted publisher shortly before its
+first use because an unvalidated configuration expires after two days.
 
 npm requires an existing package before its trusted publisher can be
-configured. For the first release of a unit package, an npm maintainer can
-stage the verified tarball from the Changesets version commit with
-`npm stage publish <tarball>` and approve it with two-factor authentication.
-This requires npm 11.15.0 or later. An authenticated maintainer can also
-publish that tarball directly with `npm publish <tarball> --access public`.
-Publish the core before the units package, then publish the QUDT provider so
-their peer dependencies are available. Configure trusted publishing for each
-new package after its first release.
+configured. For a new package, download the verified tarball from the build
+job. Sign in to npm and run `npm stage publish <tarball> --access public --tag <tag>`
+using the dist-tag recorded in `publish-plan.json`. Approve the first version
+with 2FA, then configure its trusted publisher for the next release.
+
+If a staging run stops midway, review the staged entries on npm. Approve the
+successful submissions before rerunning the workflow so Changesets excludes
+those versions. Use a new workflow dispatch to generate a fresh publish plan.
 
 ## Emergency unpublish
 

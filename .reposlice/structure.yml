@@ -12,6 +12,10 @@ root:
       kind: directory
       direct_file_count: 1
       children:
+        - path: .github/scripts
+          kind: directory
+          direct_file_count: 1
+          children: []
         - path: .github/workflows
           kind: slice
           direct_file_count: 3
