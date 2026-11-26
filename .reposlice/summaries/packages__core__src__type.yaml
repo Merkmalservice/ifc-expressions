@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: packages/ifc-expressions/src/type
+target_path: packages/core/src/type
 head_tree: 507328ec4f400aa9638c5a6da8f326cef1ab3e12
 headline: Structural and nominal expression type system
 summary_md: |

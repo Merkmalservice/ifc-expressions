@@ -1,4 +1,4 @@
-import type { ContextObjectMemberProvider } from "ifc-expressions";
+import type { ContextObjectMemberProvider } from "@ifc-expressions/core";
 
 export type IfcExpressionCatalogCompletion = {
   names: ReadonlyArray<string>;

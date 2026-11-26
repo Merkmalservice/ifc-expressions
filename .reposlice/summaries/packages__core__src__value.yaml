@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: packages/ifc-expressions/src/value
+target_path: packages/core/src/value
 head_tree: 72e6437693fe7b82aa3b2ac03e86b6472f9e2a4d
 headline: Boxed expression values and factory-backed operations
 summary_md: |

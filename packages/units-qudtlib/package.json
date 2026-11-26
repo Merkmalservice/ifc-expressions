@@ -1,7 +1,7 @@
 {
-  "name": "ifc-expressions-units-qudtlib",
+  "name": "@ifc-expressions/units-qudtlib",
   "version": "0.1.1",
-  "description": "QUDT provider for ifc-expressions-units",
+  "description": "QUDT provider for @ifc-expressions/units",
   "type": "module",
   "exports": {
     ".": {
@@ -17,7 +17,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Merkmalservice/ifc-expressions.git",
-    "directory": "packages/ifc-expressions-units-qudtlib"
+    "directory": "packages/units-qudtlib"
   },
   "homepage": "https://github.com/Merkmalservice/ifc-expressions#readme",
   "bugs": {
@@ -30,19 +30,19 @@
     "node": ">=22"
   },
   "peerDependencies": {
-    "ifc-expressions": "^4.0.0",
-    "ifc-expressions-units": "^0.1.0"
+    "@ifc-expressions/core": "^4.0.0",
+    "@ifc-expressions/units": "^0.1.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "pretest": "pnpm --filter ifc-expressions build && pnpm --filter ifc-expressions-units build && pnpm run build",
+    "pretest": "pnpm --filter @ifc-expressions/core build && pnpm --filter @ifc-expressions/units build && pnpm run build",
     "test": "node --test test/*.test.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "pack:check": "npm pack --dry-run"
   },
   "devDependencies": {
-    "ifc-expressions": "workspace:*",
-    "ifc-expressions-units": "workspace:*",
+    "@ifc-expressions/core": "workspace:*",
+    "@ifc-expressions/units": "workspace:*",
     "typescript": "7.0.2"
   },
   "dependencies": {

@@ -6,8 +6,8 @@ import {
   IfcExpressionAutocomplete,
   IfcExpressionErrorListener,
   isExprEvalSuccess,
-} from "ifc-expressions";
-import { createIfcExpressionUnitsEnvironment } from "ifc-expressions-units";
+} from "@ifc-expressions/core";
+import { createIfcExpressionUnitsEnvironment } from "@ifc-expressions/units";
 import { QuantityKinds, Units, qudtUnitProvider } from "../dist/index.js";
 
 const environment = createIfcExpressionUnitsEnvironment(qudtUnitProvider);

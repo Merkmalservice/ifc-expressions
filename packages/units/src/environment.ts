@@ -8,7 +8,7 @@ import {
   ContextObjectValue,
   MapContextObjectMemberProvider,
   Types,
-} from "ifc-expressions";
+} from "@ifc-expressions/core";
 import {
   IFC_PORTABLE_MEASURE_NAMES,
   IFC_PORTABLE_UNIT_NAMES,
@@ -70,7 +70,7 @@ class UnitValueFactory<Unit extends object>
   ): ContextObjectValue<IfcExpressionUnitReference<Unit>> {
     if (!isIfcExpressionUnitReference<Unit>(value, this.referenceOwner)) {
       throw new TypeError(
-        "Unit context values must be created by the active ifc-expressions-units environment."
+        "Unit context values must be created by the active @ifc-expressions/units environment."
       );
     }
     return new ContextObjectValue(value, type);
@@ -296,12 +296,12 @@ export function createIfcExpressionUnitsEnvironment<
 ): IfcExpressionUnitsEnvironment<Unit, Measure> {
   if (!provider) {
     throw new IfcExpressionUnitsConfigurationError(
-      "ifc-expressions-units requires a unit provider. Install ifc-expressions-units-qudtlib and pass its provider to createIfcExpressionUnitsEnvironment(), or pass another compatible provider."
+      "@ifc-expressions/units requires a unit provider. Install @ifc-expressions/units-qudtlib and pass its provider to createIfcExpressionUnitsEnvironment(), or pass another compatible provider."
     );
   }
   if (!provider.id?.trim()) {
     throw new IfcExpressionUnitsConfigurationError(
-      "The configured ifc-expressions unit provider must have a non-empty id."
+      "The configured @ifc-expressions/units provider must have a non-empty id."
     );
   }
   validateProvider(provider);

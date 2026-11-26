@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: packages/ifc-expressions/src/expression/boolean
+target_path: packages/core/src/expression/boolean
 head_tree: 82087ed5ef364b783132e0c7bdd82890a9b99084
 headline: Short-circuiting boolean and logical expression nodes
 summary_md: |

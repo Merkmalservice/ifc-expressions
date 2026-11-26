@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Major Changes
 
+- The core is now published as `@ifc-expressions/core`. Install the scoped
+  package and update imports from `ifc-expressions`.
+
 - dfb7a21: Add provider-backed IFC units and measures, including conversions, comparisons,
   and unit provenance. Add a lazy `EXISTS(expression)` guard, improve completion
   for nested expressions and builtin results, and support coordinated npm releases.

@@ -1,4 +1,4 @@
-# ifc-expressions-units
+# @ifc-expressions/units
 
 ## 0.1.1
 
@@ -12,4 +12,4 @@
   Parenthesize mixed operators to preserve the evaluation order of an existing
   expression. `EXISTS` is reserved and must be called as `EXISTS(expression)`.
 - Updated dependencies [dfb7a21]
-  - ifc-expressions@4.0.0
+  - @ifc-expressions/core@4.0.0

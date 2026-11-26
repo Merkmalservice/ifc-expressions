@@ -7,7 +7,7 @@ import {
   IfcExpressionAutocomplete,
   Types,
   isExprEvalSuccess,
-} from "ifc-expressions";
+} from "@ifc-expressions/core";
 import {
   createIfcExpressionUnitsEnvironment,
   IFC_PORTABLE_MEASURE_NAMES,
@@ -114,7 +114,7 @@ test("fails immediately with an actionable error when no provider is supplied", 
     () => createIfcExpressionUnitsEnvironment(undefined),
     (error) =>
       error instanceof IfcExpressionUnitsConfigurationError &&
-      error.message.includes("ifc-expressions-units-qudtlib")
+      error.message.includes("@ifc-expressions/units-qudtlib")
   );
 });
 
@@ -242,7 +242,7 @@ test("carries occurrence provenance without changing unit identity", () => {
   const otherEnvironment = createIfcExpressionUnitsEnvironment(provider);
   assert.throws(
     () => otherEnvironment.unitType.createValue(projectUnit),
-    /active ifc-expressions-units environment/
+    /active @ifc-expressions\/units environment/
   );
 });
 

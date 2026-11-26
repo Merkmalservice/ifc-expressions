@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: packages/ifc-expressions/src/expression/function/impl
+target_path: packages/core/src/expression/function/impl
 head_tree: a0e75e2849dfc371079bb48c689d6f22d7f21a2d
 headline: Built-in functions with typed arguments and structured evaluation
 summary_md: |
