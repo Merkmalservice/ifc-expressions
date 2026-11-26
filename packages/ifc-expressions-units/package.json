@@ -1,6 +1,6 @@
 {
   "name": "ifc-expressions-units",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Provider-neutral unit and measure support for ifc-expressions",
   "type": "module",
   "exports": {
@@ -30,7 +30,7 @@
     "node": ">=22"
   },
   "peerDependencies": {
-    "ifc-expressions": "^3.0.0"
+    "ifc-expressions": "^4.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

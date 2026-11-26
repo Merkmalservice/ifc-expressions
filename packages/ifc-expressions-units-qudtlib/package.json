@@ -1,6 +1,6 @@
 {
   "name": "ifc-expressions-units-qudtlib",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "QUDT provider for ifc-expressions-units",
   "type": "module",
   "exports": {
@@ -30,7 +30,7 @@
     "node": ">=22"
   },
   "peerDependencies": {
-    "ifc-expressions": "^3.0.0",
+    "ifc-expressions": "^4.0.0",
     "ifc-expressions-units": "^0.1.0"
   },
   "scripts": {
