@@ -8,9 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - ifc-expressions
-          - ifc-expressions-units
-          - ifc-expressions-units-qudtlib
+          - "@ifc-expressions/core"
+          - "@ifc-expressions/units"
+          - "@ifc-expressions/units-qudtlib"
       version:
         description: Exact semantic version to unpublish
         required: true

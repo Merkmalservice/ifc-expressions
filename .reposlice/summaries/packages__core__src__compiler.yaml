@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: packages/ifc-expressions/src/compiler
+target_path: packages/core/src/compiler
 head_tree: 78f0bec29505a76408771d4360a72f9e0e8fcc30
 headline: Static validation and typed expression compilation
 summary_md: "IfcExpressionValidationListener resolves builtin roots and member types, validates arguments and operators through TypeManager, and records expression types before ExprCompiler maps parse contexts to evaluator nodes and source spans. The grammar and compiler use separate contexts for &&, ><, and ||, in descending precedence after unary !. Nominal object equality requires matching factories with equality support. Post-dot names can include reserved literals for provider catalogs.\r\n"

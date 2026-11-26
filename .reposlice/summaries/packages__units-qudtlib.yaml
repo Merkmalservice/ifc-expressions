@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: packages/ifc-expressions-units-qudtlib
+target_path: packages/units-qudtlib
 head_tree: 8c86d6e795aceea6c1ce6fb18b4f5d9f5427a69b
 headline: QUDT-backed units, measures, and completion
 summary_md: "QudtUnitProvider implements the provider-neutral units API with @qudtlib/allunits. It binds every portable IFC alias, delegates conversion and quantity-kind hierarchy to QUDT, and constructs scaled units for supported prefixes missing from the QUDT catalog. Lazy $unit.QUDT and $measure.QUDT catalogs expose case-sensitive upstream constant names with bounded completion. Integration tests exercise bindings, conversion, hierarchy, and parser compatibility across the upstream catalogs.\r\n"

@@ -2,9 +2,15 @@
 
 This project defines an expression language for IFC models. An expression is evaluated in the context of an element of the IFC model and a specific property of that element.
 
+## Installation
+
+```sh
+npm install @ifc-expressions/core
+```
+
 ## Interface
 
-Two ways to interact with 'ifc-expression':
+Two ways to interact with `@ifc-expressions/core`:
 
 - evaluate an expression string directly - receive `ExprEvalSuccessResult | ExprEvalError`
 
@@ -15,13 +21,12 @@ or
 
 ## Usage
 
-To connect `ifc-expressions` with your IFC model, you have to provide an
+To connect `@ifc-expressions/core` with your IFC model, you have to provide an
 implementation of `src/context/IfcExpressionContext`. Without such a context, the expressions that
 contain references to the model cannot be evaluated.
 
 ```ts
-import { IfcExpression } from "ifc-expression";
-import { IfcExpressionContext } from "./IfcExpressionContext";
+import { IfcExpression, type IfcExpressionContext } from "@ifc-expressions/core";
 
 const result = IfcExpression.evaluate("1 + 1"); // evaluation without context
 console.log(JSON.stringify(result));
@@ -44,7 +49,7 @@ const result2 = IfcExpression.evaluate(
 If you want a plain value structure for downstream code, use `IfcExpression.unwrapValue(...)` on the successful result value.
 
 ```ts
-import { IfcExpression, isExprEvalSuccess } from "ifc-expression";
+import { IfcExpression, isExprEvalSuccess } from "@ifc-expressions/core";
 
 const evaluation = IfcExpression.evaluate("$result.statusCode", ctx, {
   builtinVariableRegistry,
@@ -86,7 +91,7 @@ Client builtins support:
 Example:
 
 ```ts
-import { BuiltinVariableRegistry, IfcExpression, Type } from "ifc-expression";
+import { BuiltinVariableRegistry, IfcExpression, Type } from "@ifc-expressions/core";
 
 const builtinVariableRegistry = new BuiltinVariableRegistry([
   {
@@ -131,7 +136,7 @@ const parseResult = IfcExpression.parse(
 At evaluation time, the context supplies the values for those builtins:
 
 ```ts
-import { IfcExpressionContext } from "ifc-expression";
+import type { IfcExpressionContext } from "@ifc-expressions/core";
 
 const ctx: IfcExpressionContext = {
   resolveElemRef() {
@@ -165,7 +170,7 @@ const ctx: IfcExpressionContext = {
 
 ## Autocomplete
 
-`ifc-expressions` exposes autocomplete through `IfcExpressionAutocomplete.complete(input, cursorOffset, options)`.
+`@ifc-expressions/core` exposes autocomplete through `IfcExpressionAutocomplete.complete(input, cursorOffset, options)`.
 The autocompleter is aware of builtin roots, builtin functions, typed dotted member access, and function argument help.
 
 ```ts
@@ -173,7 +178,7 @@ import {
   BuiltinVariableRegistry,
   IfcExpressionAutocomplete,
   Type,
-} from "ifc-expression";
+} from "@ifc-expressions/core";
 
 const builtinVariableRegistry = new BuiltinVariableRegistry([
   {

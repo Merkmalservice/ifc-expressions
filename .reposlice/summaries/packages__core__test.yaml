@@ -1,5 +1,5 @@
 schema_version: 1
-target_path: packages/ifc-expressions/test
+target_path: packages/core/test
 head_tree: faefbbc4939c9723e017c09a512e34966df3928d
 headline: Core parser, evaluator, and completion regression tests
 summary_md: "Jest tests cover syntax, stringification, evaluation, temporal and boxed values, public exports, and unwrapping. SimpleIfcExpressionContext supplies representative IFC accessors. Evaluation cases cover mixed boolean precedence, lazy EXISTS guards, and short-circuit fallback. Completion cases cover typed operators, nested arguments, and builtin-result members. Context-object tests cover nominal identity, delegated equality, and lazy member-provider behavior.\r\n"

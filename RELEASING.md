@@ -3,9 +3,9 @@
 The three workspace packages are versioned independently with Changesets and
 published together when their dependency graph requires it:
 
-1. `ifc-expressions`
-2. `ifc-expressions-units`
-3. `ifc-expressions-units-qudtlib`
+1. `@ifc-expressions/core`
+2. `@ifc-expressions/units`
+3. `@ifc-expressions/units-qudtlib`
 
 Changesets updates dependent peer ranges when a dependency bump makes the
 current range invalid. It builds a publish plan and packs the unpublished
@@ -60,7 +60,8 @@ return to stable releases.
 
 ## One-time npm trusted-publisher setup
 
-Configure a trusted publisher for each package on npm:
+The publishing account needs access to the `@ifc-expressions` npm scope.
+Configure a trusted publisher for each scoped package on npm:
 
 - repository owner: `Merkmalservice`
 - repository: `ifc-expressions`
@@ -68,16 +69,17 @@ Configure a trusted publisher for each package on npm:
 - environment: `npm-release`
 - allowed actions: staged publishing only
 
-Do this independently for `ifc-expressions`, `ifc-expressions-units`, and
-`ifc-expressions-units-qudtlib`. The staging job receives an OIDC token only
+Do this independently for `@ifc-expressions/core`, `@ifc-expressions/units`,
+and `@ifc-expressions/units-qudtlib`. The staging job receives an OIDC token only
 after the build-and-pack job has succeeded and the protected environment has
 approved the job. Replace an older trusted publisher configuration that only
 allows direct publishing. Configure the trusted publisher shortly before its
 first use because an unvalidated configuration expires after two days.
 
 npm requires an existing package before its trusted publisher can be
-configured. For a new package, download the verified tarball from the build
-job. Sign in to npm and run `npm stage publish <tarball> --access public --tag <tag>`
+configured. Each scoped name needs its own first npm submission. Download the
+verified tarball from the build job. Sign in to npm and run
+`npm stage publish <tarball> --access public --tag <tag>`
 using the dist-tag recorded in `publish-plan.json`. Approve the first version
 with 2FA, then configure its trusted publisher for the next release.
 

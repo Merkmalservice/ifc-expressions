@@ -12,7 +12,7 @@ importers:
         specifier: 3.0.3
         version: 3.0.3
 
-  packages/ifc-expressions:
+  packages/core:
     dependencies:
       antlr4-c3:
         specifier: ^3.4.4
@@ -58,27 +58,27 @@ importers:
         specifier: npm:@typescript/typescript6@6.0.2
         version: '@typescript/typescript6@6.0.2'
 
-  packages/ifc-expressions-units:
+  packages/units:
     devDependencies:
-      ifc-expressions:
+      '@ifc-expressions/core':
         specifier: workspace:*
-        version: link:../ifc-expressions
+        version: link:../core
       typescript:
         specifier: 7.0.2
         version: 7.0.2
 
-  packages/ifc-expressions-units-qudtlib:
+  packages/units-qudtlib:
     dependencies:
       '@qudtlib/allunits':
         specifier: 7.1.0
         version: 7.1.0(@types/node@26.6.6)(encoding@0.1.13)
     devDependencies:
-      ifc-expressions:
+      '@ifc-expressions/core':
         specifier: workspace:*
-        version: link:../ifc-expressions
-      ifc-expressions-units:
+        version: link:../core
+      '@ifc-expressions/units':
         specifier: workspace:*
-        version: link:../ifc-expressions-units
+        version: link:../units
       typescript:
         specifier: 7.0.2
         version: 7.0.2

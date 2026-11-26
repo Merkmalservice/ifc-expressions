@@ -16,9 +16,9 @@ The first independently publishable npm packages are:
 
 | Package                         | Responsibility                                                                                                             |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `ifc-expressions`               | Parser, compiler, evaluator, context-object infrastructure, operator extension mechanism, and autocomplete infrastructure. |
-| `ifc-expressions-units`         | Optional unit-language contract, `$unit` builtin specification, portable aliases, and provider interfaces.                 |
-| `ifc-expressions-units-qudtlib` | Default/recommended implementation of the units extension using `qudtlib`, including the QUDT catalog.                     |
+| `@ifc-expressions/core`          | Parser, compiler, evaluator, context-object infrastructure, operator extension mechanism, and autocomplete infrastructure. |
+| `@ifc-expressions/units`         | Optional unit-language contract, `$unit` builtin specification, portable aliases, and provider interfaces. |
+| `@ifc-expressions/units-qudtlib` | Default implementation of the units extension using `qudtlib`, including the QUDT catalog. |
 
 Proposed repository layout, following the working `ecotwin-js` conventions:
 
@@ -30,9 +30,9 @@ Proposed repository layout, following the working `ecotwin-js` conventions:
 ├── tsconfig.base.json
 ├── architecture/
 └── packages/
-    ├── ifc-expressions/
-    ├── ifc-expressions-units/
-    └── ifc-expressions-units-qudtlib/
+    ├── core/
+    ├── units/
+    └── units-qudtlib/
 ```
 
 Each package owns its `package.json`, build, tests, exports, and publishable `dist` directory. Workspace scripts use recursive pnpm commands. Workspace packages use pnpm workspace dependencies during development and publish ordinary npm-compatible dependency ranges.
@@ -42,22 +42,22 @@ The three packages are versioned and released independently. Dependency ranges e
 ## Dependency direction
 
 ```text
-ifc-expressions-units-qudtlib
+@ifc-expressions/units-qudtlib
             ↓
-ifc-expressions-units
+@ifc-expressions/units
             ↓
-ifc-expressions
+@ifc-expressions/core
 ```
 
-`ifc-expressions` must remain usable without installing or configuring a unit provider. Without the units extension, `$unit` is unknown and unit-aware expressions fail during compilation.
+`@ifc-expressions/core` must remain usable without installing or configuring a unit provider. Without the units extension, `$unit` is unknown and unit-aware expressions fail during compilation.
 
-The QUDT implementation is the default recommendation, but `ifc-expressions-units` does not statically depend on it because the implementation already depends on the contract. Applications install and register a provider explicitly.
+The QUDT implementation is the default recommendation, but `@ifc-expressions/units` does not statically depend on it because the implementation already depends on the contract. Applications install and register a provider explicitly.
 
 Initializing the units extension without a provider is a fatal configuration error. Validation happens when the language environment is assembled, before expressions are compiled or evaluated. The error must name the missing capability and give an actionable remedy, for example:
 
 ```text
-ifc-expressions-units requires a unit provider.
-Install ifc-expressions-units-qudtlib and register its provider,
+@ifc-expressions/units requires a unit provider.
+Install @ifc-expressions/units-qudtlib and register its provider,
 or register another compatible unit provider.
 ```
 
@@ -113,7 +113,7 @@ Large catalogs return a bounded, prefix-filtered result and may mark it incomple
 
 ## Units extension
 
-`ifc-expressions-units` registers two optional top-level language surfaces and their factory contracts:
+`@ifc-expressions/units` registers two optional top-level language surfaces and their factory contracts:
 
 - `$unit` for units, conversion, and convertibility;
 - `$measure` for measures and their hierarchy.
@@ -171,9 +171,9 @@ The active unit provider exclusively owns:
 - mapping or constructing units from IFC input;
 - catalogued and anonymous derived units.
 
-An anonymous unit is a valid provider-level unit object without a public catalog constant. It is not a partial unit definition interpreted by `ifc-expressions-units`. If an IFC adapter cannot obtain a valid provider object, it must fail at that boundary rather than place an invalid unit in the expression context.
+An anonymous unit is a valid provider-level unit object without a public catalog constant. The units extension expects a complete provider object. If an IFC adapter cannot obtain a valid provider object, it must fail at that boundary rather than place an invalid unit in the expression context.
 
-`ifc-expressions-units` must not implement dimensional algebra, scaling, offsets, or conversion fallbacks.
+`@ifc-expressions/units` must not implement dimensional algebra, scaling, offsets, or conversion fallbacks.
 
 ## Constants and catalogs
 
@@ -223,7 +223,7 @@ Required gates:
 - Existing builtins, case-insensitive names, functions, and member access remain available.
 - Existing expression tests become a compatibility corpus and run unchanged after the package move.
 - Add golden tests for parse success, inferred types, expression rendering, and evaluation results of representative live expressions.
-- Keep the published package name `ifc-expressions` and its root export.
+- Keep the core root export when moving from `ifc-expressions` to `@ifc-expressions/core`.
 - Preserve all named exports currently available from the package root.
 - Preserve current ESM and CommonJS entry points initially unless evidence shows they are unused and a separately planned major release removes one.
 - No supported deep-import entry points are currently known; the existing package export map exposes only `"."`.

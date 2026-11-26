@@ -1,5 +1,5 @@
 {
-  "name": "ifc-expressions",
+  "name": "@ifc-expressions/core",
   "version": "4.0.0",
   "description": "Parsing and evaluation of IFC expressions",
   "main": "dist/cjs/IfcExpression.js",
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Merkmalservice/ifc-expressions.git",
-    "directory": "packages/ifc-expressions"
+    "directory": "packages/core"
   },
   "homepage": "https://github.com/Merkmalservice/ifc-expressions#readme",
   "bugs": {

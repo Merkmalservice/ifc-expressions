@@ -11,7 +11,7 @@ import {
 import type {
   IfcExpressionUnitProvider,
   IfcExpressionValueCatalog,
-} from "ifc-expressions-units";
+} from "@ifc-expressions/units";
 
 const unitKeysByIfcName = {
   AMPERE: "A",
