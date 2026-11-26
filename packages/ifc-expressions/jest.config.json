@@ -1,12 +1,9 @@
 {
-  "preset": "ts-jest",
-  "testEnvironment": "jest-environment-node",
+  "testEnvironment": "node",
   "verbose": true,
   "cacheDirectory": "tmp/jest/cache",
   "coverageDirectory": "tmp/jest/coverage",
-  "moduleNameMapper": {
-    "^(\\.\\.?\\/.+)\\.jsx?$": "$1"
-  },
-  "transform": {},
-  "extensionsToTreatAsEsm": [".ts"]
+  "coverageProvider": "v8",
+  "testMatch": ["<rootDir>/tmp/jest/compiled/test/**/*.test.js"],
+  "transform": {}
 }

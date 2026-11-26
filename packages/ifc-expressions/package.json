@@ -30,15 +30,15 @@
     "./dist/*"
   ],
   "engines": {
-    "node": ">=14.16"
+    "node": ">=22"
   },
   "scripts": {
     "build-complete": "pnpm run format-apply && pnpm run build && pnpm run test",
     "build": "pnpm run clean && pnpm run make-parser && pnpm run transpile",
-    "clean": "gulp clean",
+    "clean": "node scripts/build-files.mjs clean",
     "make-parser": "antlr-ng --generate-visitor --warnings-are-errors -Dlanguage=TypeScript --exact-output-dir -o src/gen/parser src/grammar/IfcExpression.g4",
-    "transpile": "gulp build",
-    "pretest": "pnpm run make-parser",
+    "transpile": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && tsc -p tsconfig-types.json && node scripts/build-files.mjs mark-modules",
+    "pretest": "pnpm run make-parser && node scripts/build-files.mjs clean-tests && tsc -p tsconfig-test.json",
     "test": "jest --coverage",
     "typecheck": "pnpm run make-parser && tsc --noEmit -p tsconfig.json",
     "format-apply": "prettier --write .",
@@ -60,20 +60,15 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@typescript/native": "npm:typescript@7.0.2",
     "@typescript-eslint/eslint-plugin": "^8.72.2",
     "@typescript-eslint/parser": "^8.72.2",
     "antlr-ng": "^1.0.10",
-    "del": "^9.0.1",
     "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
-    "gulp": "^5.0.1",
-    "gulp-replace": "^1.1.4",
-    "gulp-typescript": "^6.0.0-alpha.1",
-    "gulp-uglify": "^3.0.2",
     "jest": "^30.5.2",
     "prettier": "^3.10.1",
-    "ts-jest": "^29.4.15",
-    "typescript": "^7.0.2"
+    "typescript": "npm:@typescript/typescript6@6.0.2"
   }
 }

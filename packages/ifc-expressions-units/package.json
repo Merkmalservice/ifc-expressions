@@ -27,7 +27,7 @@
     "access": "public"
   },
   "engines": {
-    "node": ">=14.16"
+    "node": ">=22"
   },
   "peerDependencies": {
     "ifc-expressions": "^3.0.0"
@@ -41,6 +41,6 @@
   },
   "devDependencies": {
     "ifc-expressions": "workspace:*",
-    "typescript": "^7.0.2"
+    "typescript": "7.0.2"
   }
 }
