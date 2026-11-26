@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.0.0
+
+### Major Changes
+
+- dfb7a21: Add provider-backed IFC units and measures, including conversions, comparisons,
+  and unit provenance. Add a lazy `EXISTS(expression)` guard, improve completion
+  for nested expressions and builtin results, and support coordinated npm releases.
+  
+  Mixed boolean operators now bind in the order `!`, `&&`, `><`, `||`.
+  Parenthesize mixed operators to preserve the evaluation order of an existing
+  expression. `EXISTS` is reserved and must be called as `EXISTS(expression)`.
+
 ## 4.0.0-beta.0 - 2026-07-04
 
 ## 3.0.0 - 2026-07-06
