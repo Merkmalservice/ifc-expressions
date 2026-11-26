@@ -50,7 +50,7 @@ import { NopContext } from "./context/NopContext.js";
 import { ExprToTextInputLinker } from "./compiler/ExprToTextInputLinker.js";
 import { TextSpan } from "./util/TextSpan.js";
 import { ExprFacade } from "./expression/ExprFacade.js";
-import { IfcDurationValue } from "./value/IfcDurationValue";
+import { IfcDurationValue } from "./value/IfcDurationValue.js";
 import { IfcDateValue } from "./value/IfcDateValue.js";
 import { IfcDateTimeValue } from "./value/IfcDateTimeValue.js";
 import { IfcTimeValue } from "./value/IfcTimeValue.js";
